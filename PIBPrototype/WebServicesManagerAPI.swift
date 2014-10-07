@@ -90,6 +90,13 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
+    func downloadDescriptionForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        
+        //let urlString = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=" + escapedSearchString! + "&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
+    }
+    
     // MARK: - Helper Methods
     
     func urlStringForSearchString(searchString: String) -> String {
