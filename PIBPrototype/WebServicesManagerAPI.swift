@@ -94,7 +94,51 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        //let urlString = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=" + escapedSearchString! + "&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
+        // Reduce company.exchangeDisp to first 3 characters.
+        var range = NSMakeRange(0, 3)
+        var abbreviatedExchDisp: String! = (company.exchangeDisp as NSString).substringWithRange(range)
+        
+        let tickerSymbol: String! = company.tickerSymbol
+        
+        let urlString = "http://msn.com/en-us/money/stockdetails/fi-126.1.\(tickerSymbol).\(abbreviatedExchDisp)?symbol=\(tickerSymbol)&form=PRFISB"
+        println(urlString)
+        
+        let url = NSURL.URLWithString(urlString)
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in
+            
+            if error == nil {
+                
+                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)
+                println("rawStringData: \(rawStringData)")
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    if completion != nil {
+                        completion!(success: true)
+                    }
+                    
+                } else {
+                    println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(success: false)
+                    }
+                    self.sendGeneralErrorMessage()
+                }
+            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+                self.sendConnectionErrorMessage()
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        activeDataTask = dataTask
+        dataTask.resume()
     }
     
     // MARK: - Helper Methods

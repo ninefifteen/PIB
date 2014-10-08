@@ -77,6 +77,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 controller.company = company
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                 controller.navigationItem.leftItemsSupplementBackButton = true
+                
+                let webServicesManagerAPI = WebServicesManagerAPI()
+                webServicesManagerAPI.downloadDescriptionForCompany(company, withCompletion: nil)
             }
             
         } else if segue.identifier == "addCompany" {
