@@ -2,11 +2,12 @@
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13F34" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Company" representedClassName="PIBPrototype.Company">
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exchangeDisp" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
         <userInfo/>
     </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="90"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="103"/>
     </elements>
 </model>

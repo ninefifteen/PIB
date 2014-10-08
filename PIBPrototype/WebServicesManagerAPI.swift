@@ -126,6 +126,9 @@ class WebServicesManagerAPI: NSObject {
             if let exch = companyDictionary["exch"] as? String {
                 company.exchange = exch
             }
+            if let exchDisp = companyDictionary["exchDisp"] as? String {
+                company.exchangeDisp = exchDisp
+            }
             if let name = companyDictionary["name"] as? String {
                 company.name = name
             }

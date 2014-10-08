@@ -33,7 +33,6 @@ class BaseAddCompanyTableViewController: UITableViewController {
     // MARK: - Helper Methods
     
     func configureCell(cell: UITableViewCell, forCompany company: Company) {
-        
         cell.textLabel!.text = company.name
         cell.detailTextLabel!.text = company.exchange
     }
