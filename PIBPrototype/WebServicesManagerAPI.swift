@@ -49,7 +49,13 @@ class WebServicesManagerAPI: NSObject {
                     
                     let paddingStrippedData = self.stripJsonPaddingFromData(data)
                     
-                    var jsonError: NSError?
+                    companies = self.companiesFromData(paddingStrippedData)
+                    
+                    if completion != nil {
+                        completion!(companies: companies, success: true)
+                    }
+                    
+                    /*var jsonError: NSError?
                     let jsonDictionary: NSDictionary = NSJSONSerialization.JSONObjectWithData(paddingStrippedData, options: NSJSONReadingOptions.AllowFragments, error: &jsonError) as NSDictionary
                     
                     if jsonError == nil {
@@ -67,7 +73,7 @@ class WebServicesManagerAPI: NSObject {
                             completion!(companies: companies, success: false)
                         }
                         self.sendGeneralErrorMessage()
-                    }
+                    }*/
                     
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
@@ -155,6 +161,18 @@ class WebServicesManagerAPI: NSObject {
         range.location++
         range.length = dataString.length - range.location - 1
         return dataString.substringWithRange(range).dataUsingEncoding(NSUTF8StringEncoding)!
+    }
+    
+    func companiesFromData(data: NSData) -> [Company] {
+        
+        var companies = [Company]()
+        let context = managedObjectContext
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: context!)
+        
+        let json = JSON(data: data)
+        //println(json.description)
+        
+        return companies
     }
     
     func companiesFromJsonDictionary(dictionary: NSDictionary) -> [Company] {
