@@ -44,6 +44,7 @@ class DetailViewController: UIViewController {
             if let label = self.stockNameLabel { label.text = company.name }
             if let label = self.stockExchangeLabel { label.text = company.exchange }
             if let label = self.stockTickerLabel { label.text = company.tickerSymbol }
+            if let label = self.stockTickerLabel { title = company.tickerSymbol }
         }
     }
 }

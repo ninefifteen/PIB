@@ -136,7 +136,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="Arm-wq-HPj" style="IBUITableViewCellStyleDefault" id="WCw-Qf-5nD">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" textLabel="Arm-wq-HPj" style="IBUITableViewCellStyleDefault" id="WCw-Qf-5nD">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WCw-Qf-5nD" id="37f-cq-3Eg">
@@ -164,7 +164,7 @@
                             <outlet property="delegate" destination="7bK-jq-Zjz" id="RA6-mI-bju"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Master" id="Zdf-7t-Un8">
+                    <navigationItem key="navigationItem" id="Zdf-7t-Un8">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="EXy-zJ-gTc">
                             <connections>
                                 <segue destination="kpT-71-YMj" kind="popoverPresentation" identifier="addCompany" popoverAnchorBarButtonItem="EXy-zJ-gTc" id="ASX-cs-QqX">
@@ -178,7 +178,7 @@
             </objects>
             <point key="canvasLocation" x="709" y="-630"/>
         </scene>
-        <!--Add Company Table View Controller-->
+        <!--Add Company-->
         <scene sceneID="CVF-Rs-d2h">
             <objects>
                 <tableViewController id="vyy-Dr-AmZ" customClass="AddCompanyTableViewController" customModule="PIBPrototype" customModuleProvider="target" sceneMemberID="viewController">
@@ -186,7 +186,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" id="Qp8-jX-uXr">
+                        <searchBar key="tableHeaderView" contentMode="redraw" placeholder="Enter name of company to add..." id="Qp8-jX-uXr">
                             <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits"/>
@@ -220,7 +220,7 @@
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Xlq-QT-TM1" id="UJq-Zd-s4l">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zO8-DG-ZhT">
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="No Results" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zO8-DG-ZhT">
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -235,10 +235,10 @@
                             <outlet property="delegate" destination="vyy-Dr-AmZ" id="9qy-oY-z4T"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Jd9-aw-9RA">
+                    <navigationItem key="navigationItem" title="Add Company" id="Jd9-aw-9RA">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="0GW-M0-Hfa">
                             <connections>
-                                <segue destination="e5f-rv-lwX" kind="unwind" unwindAction="unwindFromAddCompanySegue:" id="hdZ-fB-X8S"/>
+                                <segue destination="e5f-rv-lwX" kind="unwind" identifier="unwindFromAddCompany" unwindAction="unwindFromAddCompanySegue:" id="hdZ-fB-X8S"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
