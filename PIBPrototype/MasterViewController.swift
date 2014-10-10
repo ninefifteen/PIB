@@ -84,14 +84,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
         } else if segue.identifier == "addCompany" {
             
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as AddCompanyViewController
+            let controller = (segue.destinationViewController as UINavigationController).topViewController as AddCompanyTableViewController
             controller.managedObjectContext = managedObjectContext
         }
     }
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
-        let controller = segue.sourceViewController as AddCompanyViewController
+        let controller = segue.sourceViewController as AddCompanyTableViewController
         
         if let newCompany = controller.companyToAdd {
             insertNewCompany(newCompany)

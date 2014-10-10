@@ -117,13 +117,6 @@ class AddCompanyViewController: BaseAddCompanyTableViewController, UISearchBarDe
         return 0
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-                
-        if let cancelButton = sender as? UIBarButtonItem {
-            companyToAdd = nil
-        }
-    }
-    
     // MARK: - Web Services Manager API Delegate
     
     func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
