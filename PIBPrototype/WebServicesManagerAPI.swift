@@ -55,26 +55,6 @@ class WebServicesManagerAPI: NSObject {
                         completion!(companies: companies, success: true)
                     }
                     
-                    /*var jsonError: NSError?
-                    let jsonDictionary: NSDictionary = NSJSONSerialization.JSONObjectWithData(paddingStrippedData, options: NSJSONReadingOptions.AllowFragments, error: &jsonError) as NSDictionary
-                    
-                    if jsonError == nil {
-                        
-                        //println("jsonDictionary: \(jsonDictionary)")
-                        companies = self.companiesFromJsonDictionary(jsonDictionary)
-                        
-                        if completion != nil {
-                            completion!(companies: companies, success: true)
-                        }
-                        
-                    } else {
-                        println("Unable To Download Company Data. JSON Error: \(jsonError?.localizedDescription)")
-                        if completion != nil {
-                            completion!(companies: companies, success: false)
-                        }
-                        self.sendGeneralErrorMessage()
-                    }*/
-                    
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
@@ -169,8 +149,30 @@ class WebServicesManagerAPI: NSObject {
         let context = managedObjectContext
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: context!)
         
-        let json = JSON(data: data)
+        let json = JSON(data: data)["ResultSet"]["Result"]
         //println(json.description)
+        
+        if let count = json.arrayValue?.count {
+            for index in 0...count-1 {
+                
+                var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+                
+                if let exch = json[index]["exch"].stringValue {
+                    company.exchange = exch
+                }
+                if let exchDisp = json[index]["exchDisp"].stringValue {
+                    company.exchangeDisp = exchDisp
+                }
+                if let name = json[index]["name"].stringValue {
+                    company.name = name
+                }
+                if let tickerSymbol = json[index]["symbol"].stringValue {
+                    company.tickerSymbol = tickerSymbol
+                }
+                
+                companies.append(company)
+            }
+        }
         
         return companies
     }
