@@ -21,6 +21,7 @@ class WebServicesManagerAPI: NSObject {
     var networkActivityCount: Int = 0
     var activeDataTask: NSURLSessionDataTask?
     weak var delegate: WebServicesMangerAPIDelegate?
+    let xigniteApiKey: String = "421808BFCE0243ACA014BDE9DB2489E4"
     
     // MARK: - Main Methods
     
@@ -55,28 +56,6 @@ class WebServicesManagerAPI: NSObject {
                         completion!(companies: companies, success: true)
                     }
                     
-                    /*var jsonError: NSError?
-                    if let jsonObject: AnyObject = NSJSONSerialization.JSONObjectWithData(paddingStrippedData, options: NSJSONReadingOptions.AllowFragments, error: &jsonError) {
-                        
-                    }
-                    
-                    if jsonError == nil {
-                        
-                        //println("jsonDictionary: \(jsonDictionary)")
-                        
-                        
-                        if completion != nil {
-                            completion!(companies: companies, success: true)
-                        }
-                        
-                    } else {
-                        println("Unable To Download Company Data. JSON Error: \(jsonError?.localizedDescription)")
-                        if completion != nil {
-                            completion!(companies: companies, success: false)
-                        }
-                        self.sendGeneralErrorMessage()
-                    }*/
-                    
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
@@ -98,20 +77,12 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadDescriptionForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadFundamentalsForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
-        // Reduce company.exchangeDisp to first 3 characters.
-        var range = NSMakeRange(0, 3)
-        var abbreviatedExchDisp: String! = (company.exchangeDisp as NSString).substringWithRange(range)
-        
-        let tickerSymbol: String! = company.tickerSymbol
-        
-        let urlString = "http://msn.com/en-us/money/stockdetails/fi-126.1.\(tickerSymbol).\(abbreviatedExchDisp)?symbol=\(tickerSymbol)&form=PRFISB"
-        println(urlString)
-        
-        let url = NSURL.URLWithString(urlString)
+        let url = NSURL.URLWithString(urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
+        println(url)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in
             
@@ -145,7 +116,6 @@ class WebServicesManagerAPI: NSObject {
             self.decrementNetworkActivityCount()
         })
         
-        activeDataTask = dataTask
         dataTask.resume()
     }
     
@@ -154,6 +124,14 @@ class WebServicesManagerAPI: NSObject {
     func urlStringForSearchString(searchString: String) -> String {
         let escapedSearchString = searchString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let urlString = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=" + escapedSearchString! + "&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
+        return urlString
+    }
+    
+    func urlStringForFundamentsForCompanyWithTickerSymbol(symbol: String) -> String {
+        
+        //let urlString = "http://financials.xignite.com/xFinancials.json/GetCompanyFinancial?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FinancialType=TotalRevenue&ReportType=Quarterly&AsOfDate=1/1/2012&UpdatedSince="
+        
+        let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=CurrentPERatioAsPercentOfFiveYearAveragePERatio,EBITDAMargin=&UpdatedSince="
         return urlString
     }
     
@@ -171,6 +149,7 @@ class WebServicesManagerAPI: NSObject {
         let context = managedObjectContext
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: context!)
         
+        // Use SwiftyJSON for handling JSON.
         let json = JSON(data: data)["ResultSet"]["Result"]
         //println(json.description)
         

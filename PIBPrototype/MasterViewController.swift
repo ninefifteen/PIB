@@ -79,7 +79,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 controller.navigationItem.leftItemsSupplementBackButton = true
                 
                 let webServicesManagerAPI = WebServicesManagerAPI()
-                webServicesManagerAPI.downloadDescriptionForCompany(company, withCompletion: nil)
+                webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)
             }
             
         } else if segue.identifier == "addCompany" {
