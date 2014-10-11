@@ -119,7 +119,7 @@ class WebServicesManagerAPI: NSObject {
             self.decrementNetworkActivityCount()
         })
         
-        dataTask.resume()
+        //dataTask.resume()
     }
     
     // MARK: - Helper Methods

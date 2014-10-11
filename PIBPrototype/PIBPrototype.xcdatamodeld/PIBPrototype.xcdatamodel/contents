@@ -1,13 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6244" systemVersion="13F34" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Company" representedClassName="PIBPrototype.Company">
+        <attribute name="currentPERatioAsPercentOfFiveYearAveragePERatio" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="ebitdaMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="ebitMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchangeDisp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="fiveYearAnnualCapitalSpendingGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAnnualDividendGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAnnualIncomeGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAnnualNormalizedIncomeGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAnnualRAndDGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAnnualRevenueGrowthRate" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAverageGrossProfitMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAverageNetProfitMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAveragePostTaxProfitMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAveragePreTaxProfitMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAverageRAndDAsPercentOfSales" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="fiveYearAverageSGAndAAsPercentOfSales" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="grossMargin" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="marketValueAsPercentOfRevenues" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rAndDAsPercentOfSales" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="sgAndAAsPercentOfSales" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
         <userInfo/>
     </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="103"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="390"/>
     </elements>
 </model>

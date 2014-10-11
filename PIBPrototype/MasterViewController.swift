@@ -63,6 +63,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             //println("Unresolved error \(error), \(error.userInfo)")
             abort()
         }
+        
+        // Download fundamentals for newly added company.
+        let webServicesManagerAPI = WebServicesManagerAPI()
+        webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)
     }
 
     // MARK: - Segues
@@ -77,9 +81,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 controller.company = company
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                 controller.navigationItem.leftItemsSupplementBackButton = true
-                
-                let webServicesManagerAPI = WebServicesManagerAPI()
-                webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)
             }
             
         } else if segue.identifier == "addCompany" {
