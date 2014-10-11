@@ -152,21 +152,21 @@ class WebServicesManagerAPI: NSObject {
         let json = JSON(data: data)["ResultSet"]["Result"]
         //println(json.description)
         
-        if let count = json.arrayValue?.count {
+        if let count = json.array?.count {
             for index in 0...count-1 {
                 
                 var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
                 
-                if let exch = json[index]["exch"].stringValue {
+                if let exch = json[index]["exch"].string {
                     company.exchange = exch
                 }
-                if let exchDisp = json[index]["exchDisp"].stringValue {
+                if let exchDisp = json[index]["exchDisp"].string {
                     company.exchangeDisp = exchDisp
                 }
-                if let name = json[index]["name"].stringValue {
+                if let name = json[index]["name"].string {
                     company.name = name
                 }
-                if let tickerSymbol = json[index]["symbol"].stringValue {
+                if let tickerSymbol = json[index]["symbol"].string {
                     company.tickerSymbol = tickerSymbol
                 }
                 
