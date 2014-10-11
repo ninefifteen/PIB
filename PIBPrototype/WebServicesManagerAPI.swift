@@ -21,7 +21,10 @@ class WebServicesManagerAPI: NSObject {
     var networkActivityCount: Int = 0
     var activeDataTask: NSURLSessionDataTask?
     weak var delegate: WebServicesMangerAPIDelegate?
-    let xigniteApiKey: String = "421808BFCE0243ACA014BDE9DB2489E4"
+    
+    let xigniteApiKey: String = "9BDE96F9CF53466188C1E992BBE56ED1"
+    
+    let fundamentalsArray: [String] = ["CurrentPERatioAsPercentOfFiveYearAveragePERatio", "EBITDAMargin,EBITMargin", "FiveYearAnnualCapitalSpendingGrowthRate", "FiveYearAnnualDividendGrowthRate", "FiveYearAnnualIncomeGrowthRate", "FiveYearAnnualNormalizedIncomeGrowthRate", "FiveYearAnnualRAndDGrowthRate", "FiveYearAnnualRevenueGrowthRate", "FiveYearAverageGrossProfitMargin", "FiveYearAverageNetProfitMargin", "FiveYearAveragePostTaxProfitMargin", "FiveYearAveragePreTaxProfitMargin", "FiveYearAverageRAndDAsPercentOfSales", "FiveYearAverageSGAndAAsPercentOfSales", "GrossMargin", "MarketValueAsPercentOfRevenues", "RAndDAsPercentOfSales", "SGAndAAsPercentOfSales"]
     
     // MARK: - Main Methods
     
@@ -82,7 +85,7 @@ class WebServicesManagerAPI: NSObject {
         incrementNetworkActivityCount()
         
         let url = NSURL.URLWithString(urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
-        println(url)
+        //println(url)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in
             
@@ -129,9 +132,18 @@ class WebServicesManagerAPI: NSObject {
     
     func urlStringForFundamentsForCompanyWithTickerSymbol(symbol: String) -> String {
         
-        //let urlString = "http://financials.xignite.com/xFinancials.json/GetCompanyFinancial?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FinancialType=TotalRevenue&ReportType=Quarterly&AsOfDate=1/1/2012&UpdatedSince="
+        var fundamentals: String = ""
         
-        let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=CurrentPERatioAsPercentOfFiveYearAveragePERatio,EBITDAMargin=&UpdatedSince="
+        for fundamental in fundamentalsArray {
+            if fundamentals.isEmpty {
+                fundamentals = fundamental
+            } else {
+                fundamentals += "," + fundamental
+            }
+        }
+        
+        let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=\(fundamentals)&UpdatedSince="
+        
         return urlString
     }
     
