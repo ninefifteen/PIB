@@ -66,6 +66,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         // Download fundamentals for newly added company.
         let webServicesManagerAPI = WebServicesManagerAPI()
+        webServicesManagerAPI.managedObjectContext = context
         webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)
     }
 

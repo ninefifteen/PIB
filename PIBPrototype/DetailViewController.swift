@@ -30,7 +30,7 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.configureView()
+        //self.configureView()
     }
 
     override func didReceiveMemoryWarning() {
@@ -45,6 +45,13 @@ class DetailViewController: UIViewController {
             if let label = self.stockExchangeLabel { label.text = company.exchange }
             if let label = self.stockTickerLabel { label.text = company.tickerSymbol }
             if let label = self.stockTickerLabel { title = company.tickerSymbol }
+        }
+        
+        // Temporary: Log all company properties to console.
+        if let company: Company = self.company {
+            println("CurrentPERatioAsPercentOfFiveYearAveragePERatio: \(company.currentPERatioAsPercentOfFiveYearAveragePERatio)")
+            println("EBITDAMargin: \(company.ebitdaMargin)")
+            println("EBITMargin: \(company.ebitMargin)")
         }
     }
 }
