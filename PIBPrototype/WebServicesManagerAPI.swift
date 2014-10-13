@@ -84,9 +84,7 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL.URLWithString("http://www.shawnseals915.com/sbmx/getPibFundamentals.php")
-        
-        //let url = NSURL.URLWithString(urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
+        let url = NSURL.URLWithString(urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
         //println(url)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in

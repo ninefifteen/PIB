@@ -18,19 +18,14 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var stockExchangeLabel: UILabel!
     @IBOutlet weak var stockTickerLabel: UILabel!
     
-    var company: Company! {
-        didSet {
-            // Update the view.
-            self.configureView()
-        }
-    }
+    var company: Company!
 
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        //self.configureView()
+        self.configureView()
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,6 +47,22 @@ class DetailViewController: UIViewController {
             println("CurrentPERatioAsPercentOfFiveYearAveragePERatio: \(company.currentPERatioAsPercentOfFiveYearAveragePERatio)")
             println("EBITDAMargin: \(company.ebitdaMargin)")
             println("EBITMargin: \(company.ebitMargin)")
+            println("FiveYearAnnualCapitalSpendingGrowthRate: \(company.fiveYearAnnualCapitalSpendingGrowthRate)")
+            println("FiveYearAnnualDividendGrowthRate: \(company.fiveYearAnnualDividendGrowthRate)")
+            println("FiveYearAnnualIncomeGrowthRate: \(company.fiveYearAnnualIncomeGrowthRate)")
+            println("FiveYearAnnualNormalizedIncomeGrowthRate: \(company.fiveYearAnnualNormalizedIncomeGrowthRate)")
+            println("FiveYearAnnualRAndDGrowthRate: \(company.fiveYearAnnualRAndDGrowthRate)")
+            println("FiveYearAnnualRevenueGrowthRate: \(company.fiveYearAnnualRevenueGrowthRate)")
+            println("FiveYearAverageGrossProfitMargin: \(company.fiveYearAverageGrossProfitMargin)")
+            println("FiveYearAverageNetProfitMargin: \(company.fiveYearAverageNetProfitMargin)")
+            println("FiveYearAveragePostTaxProfitMargin: \(company.fiveYearAveragePostTaxProfitMargin)")
+            println("FiveYearAveragePreTaxProfitMargin: \(company.fiveYearAveragePreTaxProfitMargin)")
+            println("FiveYearAverageRAndDAsPercentOfSales: \(company.fiveYearAverageRAndDAsPercentOfSales)")
+            println("FiveYearAverageSGAndAAsPercentOfSales: \(company.fiveYearAverageSGAndAAsPercentOfSales)")
+            println("GrossMargin: \(company.grossMargin)")
+            println("MarketValueAsPercentOfRevenues: \(company.marketValueAsPercentOfRevenues)")
+            println("RAndDAsPercentOfSales: \(company.rAndDAsPercentOfSales)")
+            println("SGAndAAsPercentOfSales: \(company.sgAndAAsPercentOfSales)")
         }
     }
 }
