@@ -71,9 +71,19 @@
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Wff-bE-bxO" customClass="CPTGraphHostingView">
+                                        <rect key="frame" x="172" y="214" width="256" height="286"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="256" id="Gzp-Do-cIu"/>
+                                            <constraint firstAttribute="height" constant="286" id="eew-lA-4Bq"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="pKw-e1-fgj" firstAttribute="leading" secondItem="xVs-gM-sXt" secondAttribute="leading" id="0XL-IW-vKf"/>
+                                    <constraint firstItem="Wff-bE-bxO" firstAttribute="top" secondItem="lVT-RE-aH7" secondAttribute="bottom" constant="8" id="6dV-AT-ld1"/>
+                                    <constraint firstAttribute="centerX" secondItem="Wff-bE-bxO" secondAttribute="centerX" id="AKp-Kk-Fkp"/>
                                     <constraint firstItem="pKw-e1-fgj" firstAttribute="leading" secondItem="uvk-ky-h0S" secondAttribute="leadingMargin" id="FNl-Ij-k4g"/>
                                     <constraint firstItem="B8r-bR-x5H" firstAttribute="leading" secondItem="pKw-e1-fgj" secondAttribute="leading" id="Jfz-GD-sw9"/>
                                     <constraint firstItem="i3c-U4-dXs" firstAttribute="leading" secondItem="lVT-RE-aH7" secondAttribute="leading" id="L91-mm-dQX"/>
@@ -104,6 +114,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" title="Detail" id="mOI-FS-AaM"/>
                     <connections>
+                        <outlet property="graphView" destination="Wff-bE-bxO" id="gMe-K9-Vdq"/>
                         <outlet property="stockExchangeLabel" destination="Wsd-Qg-o50" id="RCx-BH-tpm"/>
                         <outlet property="stockNameLabel" destination="pKw-e1-fgj" id="dg0-84-03U"/>
                         <outlet property="stockTickerLabel" destination="lVT-RE-aH7" id="dFm-9R-pbY"/>

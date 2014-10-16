@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, CPTPlotDataSource {
     
     // MARK: - Properties
     
@@ -18,6 +18,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var stockExchangeLabel: UILabel!
     @IBOutlet weak var stockTickerLabel: UILabel!
     
+    @IBOutlet weak var graphView: CPTGraphHostingView!
+    
     var company: Company!
 
     // MARK: - View Life Cycle
@@ -26,6 +28,7 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.configureView()
+        self.addTestPlot()
     }
 
     override func didReceiveMemoryWarning() {
@@ -64,6 +67,42 @@ class DetailViewController: UIViewController {
             println("RAndDAsPercentOfSales: \(company.rAndDAsPercentOfSales)")
             println("SGAndAAsPercentOfSales: \(company.sgAndAAsPercentOfSales)")
         }
+    }
+    
+    func addTestPlot() {
+        
+        // create graph
+        var graph = CPTXYGraph(frame: CGRectZero)
+        graph.title = "Hello Graph"
+        graph.paddingLeft = 0
+        graph.paddingTop = 0
+        graph.paddingRight = 0
+        graph.paddingBottom = 0
+        
+        // hide the axes
+        var axes = graph.axisSet as CPTXYAxisSet
+        var lineStyle = CPTMutableLineStyle()
+        lineStyle.lineWidth = 0
+        axes.xAxis.axisLineStyle = lineStyle
+        axes.yAxis.axisLineStyle = lineStyle
+        
+        // add a pie plot
+        var pie = CPTPieChart()
+        pie.dataSource = self
+        pie.pieRadius = (self.graphView.frame.size.width * 0.9) / 2.0
+        graph.addPlot(pie)
+        
+        self.graphView.hostedGraph = graph
+    }
+    
+    // MARK: - CPTPlotDataSource
+    
+    func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
+        return 4
+    }
+    
+    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: UInt) -> NSNumber! {
+        return idx+1
     }
 }
 
