@@ -46,7 +46,7 @@ class DetailViewController: UIViewController, CPTPlotDataSource {
         }
         
         // Temporary: Log all company properties to console.
-        if let company: Company = self.company {
+        /*if let company: Company = self.company {
             println("CurrentPERatioAsPercentOfFiveYearAveragePERatio: \(company.currentPERatioAsPercentOfFiveYearAveragePERatio)")
             println("EBITDAMargin: \(company.ebitdaMargin)")
             println("EBITMargin: \(company.ebitMargin)")
@@ -66,7 +66,7 @@ class DetailViewController: UIViewController, CPTPlotDataSource {
             println("MarketValueAsPercentOfRevenues: \(company.marketValueAsPercentOfRevenues)")
             println("RAndDAsPercentOfSales: \(company.rAndDAsPercentOfSales)")
             println("SGAndAAsPercentOfSales: \(company.sgAndAAsPercentOfSales)")
-        }
+        }*/
     }
     
     func addTestPlot() {
