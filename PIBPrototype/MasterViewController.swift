@@ -47,9 +47,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func insertNewCompany(newCompany: Company) {
         
         let context = self.fetchedResultsController.managedObjectContext
-        let entity = self.fetchedResultsController.fetchRequest.entity
+        let entity = self.fetchedResultsController.fetchRequest.entity!
         
-        var company: Company! = NSEntityDescription.insertNewObjectForEntityForName(entity.name, inManagedObjectContext: context) as Company
+        var company: Company! = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as Company
         company.name = newCompany.name
         company.exchange = newCompany.exchange
         company.exchangeDisp = newCompany.exchangeDisp
@@ -144,7 +144,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         //cell.textLabel?.text = object.valueForKey("name")!.description
         
         let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-        cell.textLabel?.text = company.name
+        cell.textLabel.text = company.name
     }
 
     // MARK: - Fetched results controller

@@ -36,9 +36,9 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL.URLWithString(urlStringForSearchString(searchTerm))
+        let url = NSURL(string: urlStringForSearchString(searchTerm))
         
-        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
             var companies = [Company]()
             
@@ -84,10 +84,10 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL.URLWithString(urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
+        let url = NSURL(string: urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
         //println(url)
         
-        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url, completionHandler: { (data, response, error) -> Void in
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
             if error == nil {
                 
@@ -152,7 +152,7 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func stripJsonPaddingFromData(data: NSData) -> NSData {
-        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)
+        let dataString = NSString(data: data, encoding: NSUTF8StringEncoding)!
         var range: NSRange = dataString.rangeOfString("(")
         range.location++
         range.length = dataString.length - range.location - 1
