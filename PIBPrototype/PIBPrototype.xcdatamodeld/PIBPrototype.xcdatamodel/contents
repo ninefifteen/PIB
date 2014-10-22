@@ -3,12 +3,17 @@
     <entity name="Company" representedClassName="PIBPrototype.Company">
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchangeDisp" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="grossProfit" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="netIncome" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rAndD" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="returnData" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="sgAndA" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="totalRevenue" optional="YES" attributeType="String" syncable="YES"/>
         <userInfo/>
     </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="120"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="195"/>
     </elements>
 </model>

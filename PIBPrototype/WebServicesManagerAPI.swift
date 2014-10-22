@@ -80,7 +80,7 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadFundamentalsForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadFinancialDataForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
@@ -99,7 +99,7 @@ class WebServicesManagerAPI: NSObject {
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        self.addFundamentalsToCompany(company, fromData: data)
+                        self.addFinancialDataToCompany(company, fromData: data)
                     })
                     
                     if completion != nil {
@@ -196,7 +196,7 @@ class WebServicesManagerAPI: NSObject {
         return companies
     }
     
-    func addFundamentalsToCompany(company: Company, fromData data: NSData) {
+    func addFinancialDataToCompany(company: Company, fromData data: NSData) {
         
         let context = managedObjectContext!
         
@@ -205,38 +205,90 @@ class WebServicesManagerAPI: NSObject {
         
         company.returnData = rawStringData
         
-        // Old code.
-        /*let context = managedObjectContext!
-        let json = JSON(data: data)["Fundamentals"]
-        
-        let formatter: NSNumberFormatter = NSNumberFormatter()
-        formatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+        let json = JSON(data: data)["ReturnData"]
+        //println(json)
         
         for (index: String, subJson: JSON) in json {
             
             if let type = subJson["Type"].string {
-                
+                                
                 switch type {
-
-                case "CurrentPERatioAsPercentOfFiveYearAveragePERatio":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            //company.currentPERatioAsPercentOfFiveYearAveragePERatio = value
-                        }
-                    }
                     
-                case "EBITDAMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            //company.ebitdaMargin = value
+                case "TotalRevenue":
+                    var dataString: String = "["
+                    for (index: String, subJson: JSON) in subJson["Data"] {
+                        if index != "0" { dataString += "," }
+                        if let year = subJson["Year"].string {
+                            dataString += "{\"\(year)\":"
+                        }
+                        if let value = subJson["Value"].string {
+                            dataString += "\"\(value)\"}"
                         }
                     }
+                    dataString += "]"
+                    company.totalRevenue = dataString
+                    
+                case "NetIncome":
+                    var dataString: String = "["
+                    for (index: String, subJson: JSON) in subJson["Data"] {
+                        if index != "0" { dataString += "," }
+                        if let year = subJson["Year"].string {
+                            dataString += "{\"\(year)\":"
+                        }
+                        if let value = subJson["Value"].string {
+                            dataString += "\"\(value)\"}"
+                        }
+                    }
+                    dataString += "]"
+                    company.netIncome = dataString
+                    
+                case "GrossProfit":
+                    var dataString: String = "["
+                    for (index: String, subJson: JSON) in subJson["Data"] {
+                        if index != "0" { dataString += "," }
+                        if let year = subJson["Year"].string {
+                            dataString += "{\"\(year)\":"
+                        }
+                        if let value = subJson["Value"].string {
+                            dataString += "\"\(value)\"}"
+                        }
+                    }
+                    dataString += "]"
+                    company.grossProfit = dataString
+                    
+                case "RandD":
+                    var dataString: String = "["
+                    for (index: String, subJson: JSON) in subJson["Data"] {
+                        if index != "0" { dataString += "," }
+                        if let year = subJson["Year"].string {
+                            dataString += "{\"\(year)\":"
+                        }
+                        if let value = subJson["Value"].string {
+                            dataString += "\"\(value)\"}"
+                        }
+                    }
+                    dataString += "]"
+                    company.rAndD = dataString
+                    
+                case "SGandA":
+                    var dataString: String = "["
+                    for (index: String, subJson: JSON) in subJson["Data"] {
+                        if index != "0" { dataString += "," }
+                        if let year = subJson["Year"].string {
+                            dataString += "{\"\(year)\":"
+                        }
+                        if let value = subJson["Value"].string {
+                            dataString += "\"\(value)\"}"
+                        }
+                    }
+                    dataString += "]"
+                    company.sgAndA = dataString
                     
                 default:
                     break
                 }
             }
-        }*/
+        }
         
         // Save the context.
         var error: NSError? = nil

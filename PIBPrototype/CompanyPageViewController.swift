@@ -54,9 +54,21 @@ class CompanyPageViewController: PageContentViewController {
             tickerSymbolLabel!.text = ""
         }
         
-        // Test company.returnData by outputting to console.
-        if let returnData: String = company?.returnData {
-            println("CompanyPageViewController viewWillAppear:\n\(returnData)")
+        // Test company attributes by outputting to console.
+        if let totalRevenue: String = company?.totalRevenue {
+            println("totalRevenue: \(totalRevenue)")
+        }
+        if let netIncome: String = company?.netIncome {
+            println("netIncome: \(netIncome)")
+        }
+        if let grossProfit: String = company?.grossProfit {
+            println("grossProfit: \(grossProfit)")
+        }
+        if let rAndD: String = company?.rAndD {
+            println("rAndD: \(rAndD)")
+        }
+        if let sgAndA: String = company?.sgAndA {
+            println("sgAndA: \(sgAndA)")
         }
     }
     

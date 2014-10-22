@@ -57,6 +57,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         company.exchange = newCompany.exchange
         company.exchangeDisp = newCompany.exchangeDisp
         company.tickerSymbol = newCompany.tickerSymbol
+        company.totalRevenue = ""
+        company.netIncome = ""
+        company.grossProfit = ""
+        company.rAndD = ""
+        company.sgAndA = ""
         
         // Save the context.
         var error: NSError? = nil
@@ -70,7 +75,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Download fundamentals for newly added company.
         let webServicesManagerAPI = WebServicesManagerAPI()
         webServicesManagerAPI.managedObjectContext = context
-        webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)
+        webServicesManagerAPI.downloadFinancialDataForCompany(company, withCompletion: nil)
     }
 
     

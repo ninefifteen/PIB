@@ -15,7 +15,6 @@
 		452EF1B319F75AF200D529B1 /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EF1B219F75AF200D529B1 /* GraphPageViewController.swift */; };
 		452EF1B919F75E2A00D529B1 /* CompanyPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EF1B819F75E2A00D529B1 /* CompanyPageViewController.swift */; };
 		4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541AAA119E8C267007825BC /* SwiftyJSON.swift */; };
-		4541AAA419E9E923007825BC /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541AAA319E9E923007825BC /* Company.swift */; };
 		457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FB83E19DDA0BC00A58B6E /* AppDelegate.swift */; };
 		457FB84219DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 457FB84019DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld */; };
 		457FB84419DDA0BC00A58B6E /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FB84319DDA0BC00A58B6E /* MasterViewController.swift */; };
@@ -24,6 +23,7 @@
 		457FB84B19DDA0BC00A58B6E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 457FB84A19DDA0BC00A58B6E /* Images.xcassets */; };
 		457FB84E19DDA0BC00A58B6E /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 457FB84C19DDA0BC00A58B6E /* LaunchScreen.xib */; };
 		457FB85A19DDA0BC00A58B6E /* PIBPrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FB85919DDA0BC00A58B6E /* PIBPrototypeTests.swift */; };
+		457FF51F19F838F400A57AAB /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FF51E19F838F400A57AAB /* Company.swift */; };
 		45939C4B19E84457009AD108 /* AddCompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */; };
 		45E3A4EB19E2FF7100D6F958 /* WebServicesManagerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E3A4EA19E2FF7100D6F958 /* WebServicesManagerAPI.swift */; };
 /* End PBXBuildFile section */
@@ -126,7 +126,6 @@
 		452EF1B219F75AF200D529B1 /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
 		452EF1B819F75E2A00D529B1 /* CompanyPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyPageViewController.swift; sourceTree = "<group>"; };
 		4541AAA119E8C267007825BC /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
-		4541AAA319E9E923007825BC /* Company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
 		457FB83919DDA0BC00A58B6E /* PIBPrototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PIBPrototype.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		457FB83D19DDA0BC00A58B6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		457FB83E19DDA0BC00A58B6E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +138,7 @@
 		457FB85319DDA0BC00A58B6E /* PIBPrototypeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PIBPrototypeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		457FB85819DDA0BC00A58B6E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		457FB85919DDA0BC00A58B6E /* PIBPrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PIBPrototypeTests.swift; sourceTree = "<group>"; };
+		457FF51E19F838F400A57AAB /* Company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
 		45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCompanyTableViewController.swift; sourceTree = "<group>"; };
 		45E3A4EA19E2FF7100D6F958 /* WebServicesManagerAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebServicesManagerAPI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -355,7 +355,7 @@
 			isa = PBXGroup;
 			children = (
 				457FB84019DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld */,
-				4541AAA319E9E923007825BC /* Company.swift */,
+				457FF51E19F838F400A57AAB /* Company.swift */,
 				45E3A4EA19E2FF7100D6F958 /* WebServicesManagerAPI.swift */,
 			);
 			name = Model;
@@ -476,11 +476,11 @@
 				457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */,
 				4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */,
 				452EF1B919F75E2A00D529B1 /* CompanyPageViewController.swift in Sources */,
+				457FF51F19F838F400A57AAB /* Company.swift in Sources */,
 				457FB84419DDA0BC00A58B6E /* MasterViewController.swift in Sources */,
 				45939C4B19E84457009AD108 /* AddCompanyTableViewController.swift in Sources */,
 				452EF1B319F75AF200D529B1 /* GraphPageViewController.swift in Sources */,
 				457FB84619DDA0BC00A58B6E /* DetailViewController.swift in Sources */,
-				4541AAA419E9E923007825BC /* Company.swift in Sources */,
 				45E3A4EB19E2FF7100D6F958 /* WebServicesManagerAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
