@@ -11,11 +11,13 @@ import CoreData
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
+    
     // MARK: - Properties
 
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext? = nil
 
+    
     // MARK: - View Life Cycle
 
     override func awakeFromNib() {
@@ -41,6 +43,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     // MARK: - General Methods
     
@@ -70,6 +73,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         webServicesManagerAPI.downloadFundamentalsForCompany(company, withCompletion: nil)*/
     }
 
+    
     // MARK: - Segues
 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -102,6 +106,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
     }
 
+    
     // MARK: - Table View
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -147,6 +152,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         cell.textLabel.text = company.name
     }
 
+    
     // MARK: - Fetched results controller
 
     var fetchedResultsController: NSFetchedResultsController {

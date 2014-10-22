@@ -8,27 +8,58 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, CPTPlotDataSource {
+class DetailViewController: UIViewController, UIPageViewControllerDelegate {
+    
     
     // MARK: - Properties
     
-    //let company: Company!
-
-    @IBOutlet weak var stockNameLabel: UILabel!
-    @IBOutlet weak var stockExchangeLabel: UILabel!
-    @IBOutlet weak var stockTickerLabel: UILabel!
+    @IBOutlet weak var pageContainerView: UIView!
     
-    @IBOutlet weak var graphView: CPTGraphHostingView!
+    var pageViewController: UIPageViewController?
     
     var company: Company!
+    
+    var _pageModelController: PageModelController? = nil
+    
+    var pageModelController: PageModelController {
+        // Return the model controller object, creating it if necessary.
+        // In more complex implementations, the model controller may be passed to the view controller.
+        if _pageModelController == nil {
+            _pageModelController = PageModelController()
+        }
+        return _pageModelController!
+    }
 
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        self.configureView()
-        self.addTestPlot()
+        
+        // Configure the page view controller and add it as a child view controller.
+        pageViewController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: nil)
+        pageViewController!.delegate = self
+        
+        let startingViewController: PageContentViewController = pageModelController.viewControllerAtIndex(0, storyboard: storyboard!)!
+        let viewControllers: NSArray = [startingViewController]
+        pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: false, completion: { done in })
+        
+        pageViewController!.dataSource = pageModelController
+        
+        addChildViewController(pageViewController!)
+        pageContainerView.addSubview(pageViewController!.view)
+        
+        // Set the page view controller's bounds using an inset rect so that self's view is visible around the edges of the pages.
+        var pageViewRect = pageContainerView.bounds
+        self.pageViewController!.view.frame = pageViewRect
+        
+        self.pageViewController!.didMoveToParentViewController(self)
+        
+        // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
+        self.view.gestureRecognizers = self.pageViewController!.gestureRecognizers
+        
+        //self.configureView()
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,6 +68,8 @@ class DetailViewController: UIViewController, CPTPlotDataSource {
     }
     
     func configureView() {
+        
+        /*
         // Update the user interface for the detail item.
         if let company: Company = self.company {
             if let label = self.stockNameLabel { label.text = company.name }
@@ -44,6 +77,7 @@ class DetailViewController: UIViewController, CPTPlotDataSource {
             if let label = self.stockTickerLabel { label.text = company.tickerSymbol }
             if let label = self.stockTickerLabel { title = company.tickerSymbol }
         }
+        */
         
         // Temporary: Log all company properties to console.
         /*if let company: Company = self.company {
@@ -69,40 +103,17 @@ class DetailViewController: UIViewController, CPTPlotDataSource {
         }*/
     }
     
-    func addTestPlot() {
-        
-        // create graph
-        var graph = CPTXYGraph(frame: CGRectZero)
-        graph.title = "Hello Graph"
-        graph.paddingLeft = 0
-        graph.paddingTop = 0
-        graph.paddingRight = 0
-        graph.paddingBottom = 0
-        
-        // hide the axes
-        var axes = graph.axisSet as CPTXYAxisSet
-        var lineStyle = CPTMutableLineStyle()
-        lineStyle.lineWidth = 0
-        axes.xAxis.axisLineStyle = lineStyle
-        axes.yAxis.axisLineStyle = lineStyle
-        
-        // add a pie plot
-        var pie = CPTPieChart()
-        pie.dataSource = self
-        pie.pieRadius = (self.graphView.frame.size.width * 0.9) / 2.0
-        graph.addPlot(pie)
-        
-        self.graphView.hostedGraph = graph
-    }
     
-    // MARK: - CPTPlotDataSource
+    // MARK: - UIPageViewController delegate methods
     
-    func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        return 4
-    }
-    
-    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: UInt) -> NSNumber! {
-        return idx+1
+    func pageViewController(pageViewController: UIPageViewController, spineLocationForInterfaceOrientation orientation: UIInterfaceOrientation) -> UIPageViewControllerSpineLocation {
+        // Set the spine position to "min" and the page view controller's view controllers array to contain just one view controller. Setting the spine position to 'UIPageViewControllerSpineLocationMid' in landscape orientation sets the doubleSided property to true, so set it to false here.
+        let currentViewController = self.pageViewController!.viewControllers[0] as UIViewController
+        let viewControllers: NSArray = [currentViewController]
+        self.pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: true, completion: {done in })
+        
+        self.pageViewController!.doubleSided = false
+        return .Min
     }
 }
 

@@ -10,6 +10,8 @@
 		450DFF9619F05DD00030B5B1 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9519F05DD00030B5B1 /* libCorePlot-CocoaTouch.a */; };
 		450DFF9819F05E4E0030B5B1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9719F05E4E0030B5B1 /* Accelerate.framework */; };
 		450DFF9A19F05E540030B5B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9919F05E540030B5B1 /* QuartzCore.framework */; };
+		452EF1AF19F72ADC00D529B1 /* PageContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EF1AE19F72ADC00D529B1 /* PageContentViewController.swift */; };
+		452EF1B119F72FE500D529B1 /* PageModelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452EF1B019F72FE500D529B1 /* PageModelController.swift */; };
 		4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541AAA119E8C267007825BC /* SwiftyJSON.swift */; };
 		4541AAA419E9E923007825BC /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541AAA319E9E923007825BC /* Company.swift */; };
 		457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457FB83E19DDA0BC00A58B6E /* AppDelegate.swift */; };
@@ -117,6 +119,8 @@
 		450DFF9719F05E4E0030B5B1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		450DFF9919F05E540030B5B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		450DFF9B19F05EAE0030B5B1 /* PIBPrototype-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PIBPrototype-Bridging-Header.h"; sourceTree = "<group>"; };
+		452EF1AE19F72ADC00D529B1 /* PageContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageContentViewController.swift; sourceTree = "<group>"; };
+		452EF1B019F72FE500D529B1 /* PageModelController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageModelController.swift; sourceTree = "<group>"; };
 		4541AAA119E8C267007825BC /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		4541AAA319E9E923007825BC /* Company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
 		457FB83919DDA0BC00A58B6E /* PIBPrototype.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PIBPrototype.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -326,6 +330,8 @@
 				457FB83E19DDA0BC00A58B6E /* AppDelegate.swift */,
 				457FB84319DDA0BC00A58B6E /* MasterViewController.swift */,
 				457FB84519DDA0BC00A58B6E /* DetailViewController.swift */,
+				452EF1AE19F72ADC00D529B1 /* PageContentViewController.swift */,
+				452EF1B019F72FE500D529B1 /* PageModelController.swift */,
 				45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */,
 			);
 			name = Controller;
@@ -457,6 +463,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				452EF1B119F72FE500D529B1 /* PageModelController.swift in Sources */,
+				452EF1AF19F72ADC00D529B1 /* PageContentViewController.swift in Sources */,
 				457FB84219DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld in Sources */,
 				457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */,
 				4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */,
