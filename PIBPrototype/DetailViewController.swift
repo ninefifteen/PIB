@@ -26,6 +26,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         // In more complex implementations, the model controller may be passed to the view controller.
         if _pageModelController == nil {
             _pageModelController = PageModelController()
+            _pageModelController!.company = company
         }
         return _pageModelController!
     }

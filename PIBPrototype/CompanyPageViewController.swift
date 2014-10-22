@@ -1,5 +1,5 @@
 //
-//  PageContentViewController.swift
+//  CompanyPageViewController.swift
 //  PIBPrototype
 //
 //  Created by Shawn Seals on 10/21/14.
@@ -8,16 +8,17 @@
 
 import UIKit
 
-class PageContentViewController: UIViewController {
-    
+class CompanyPageViewController: PageContentViewController {
+
     
     // MARK: - Properties
     
-    var pageIndex: Int = 0
+    @IBOutlet weak var nameLabel: UILabel!
+    var company: Company!
     
     
     // MARK: - View Life Cycle
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -27,6 +28,11 @@ class PageContentViewController: UIViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        nameLabel!.text = company.name
     }
     
 

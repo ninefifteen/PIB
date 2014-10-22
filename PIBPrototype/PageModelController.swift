@@ -13,7 +13,8 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
     
     // MARK: - Properties
     
-    var pageContent = NSArray()
+    var pages = NSArray()
+    var company: Company!
     
     
     // MARK: - Initializers
@@ -22,7 +23,7 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
         super.init()
         
         // Create the data model.
-        pageContent = ["Page 1", "Page 2", "Page 3"]
+        pages = [0, 1, 2, 3]
     }
     
     
@@ -30,31 +31,34 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
     
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> PageContentViewController? {
     
-        if pageContent.count == 0 || index >= pageContent.count {
+        if pages.count == 0 || index >= pages.count {
             return nil
         }
         
         // Create a new view controller and pass suitable data.
-        let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("PageContentViewController") as PageContentViewController
-        pageContentViewController.dataObject = pageContent[index]
-        return pageContentViewController
+        
+        if  index == 0 {
+            
+            let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("CompanyPageViewController") as CompanyPageViewController
+            pageContentViewController.pageIndex = index
+            pageContentViewController.company = company
+            return pageContentViewController
+            
+        } else {
+            
+            let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphPageViewController") as GraphPageViewController
+            pageContentViewController.pageIndex = index
+            return pageContentViewController
+        }
+        
     }
     
-    func indexOfViewController(viewController: PageContentViewController) -> Int {
-        // Return the index of the given data view controller.
-        // For simplicity, this implementation uses a static array of model objects and the view controller stores the model object; you can therefore use the model object to identify the index.
-        if let dataObject: AnyObject = viewController.dataObject {
-            return self.pageContent.indexOfObject(dataObject)
-        } else {
-            return NSNotFound
-        }
-    }
     
     // MARK: - Page View Controller Data Source
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = self.indexOfViewController(viewController as PageContentViewController)
+        var index = (viewController as PageContentViewController).pageIndex
         if (index == 0) || (index == NSNotFound) {
             return nil
         }
@@ -65,13 +69,13 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = self.indexOfViewController(viewController as PageContentViewController)
+        var index = (viewController as PageContentViewController).pageIndex
         if index == NSNotFound {
             return nil
         }
         
         index++
-        if index == self.pageContent.count {
+        if index == self.pages.count {
             return nil
         }
         return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)

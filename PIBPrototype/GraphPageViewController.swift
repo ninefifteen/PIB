@@ -1,5 +1,5 @@
 //
-//  PageContentViewController.swift
+//  GraphPageViewController.swift
 //  PIBPrototype
 //
 //  Created by Shawn Seals on 10/21/14.
@@ -8,15 +8,7 @@
 
 import UIKit
 
-class PageContentViewController: UIViewController {
-    
-    
-    // MARK: - Properties
-    
-    var pageIndex: Int = 0
-    
-    
-    // MARK: - View Life Cycle
+class GraphPageViewController: PageContentViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
