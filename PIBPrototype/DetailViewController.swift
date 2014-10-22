@@ -38,6 +38,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        if let titleText: String = company?.tickerSymbol {
+            title = titleText
+        } else {
+            title = ""
+        }
+        
         // Configure the page view controller and add it as a child view controller.
         pageViewController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: nil)
         pageViewController!.delegate = self

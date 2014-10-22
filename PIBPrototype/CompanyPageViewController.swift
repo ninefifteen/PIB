@@ -13,7 +13,10 @@ class CompanyPageViewController: PageContentViewController {
     
     // MARK: - Properties
     
-    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var companyNameLabel: UILabel!
+    @IBOutlet weak var exchangeNameLabel: UILabel!
+    @IBOutlet weak var tickerSymbolLabel: UILabel!
+    
     var company: Company!
     
     
@@ -34,9 +37,21 @@ class CompanyPageViewController: PageContentViewController {
         super.viewWillAppear(animated)
         
         if let labelText: String = company?.name {
-            nameLabel!.text = company.name
+            companyNameLabel!.text = labelText
         } else {
-            nameLabel!.text = ""
+            companyNameLabel!.text = ""
+        }
+        
+        if let labelText: String = company?.exchangeDisp {
+            exchangeNameLabel!.text = labelText
+        } else {
+            exchangeNameLabel!.text = ""
+        }
+        
+        if let labelText: String = company?.tickerSymbol {
+            tickerSymbolLabel!.text = labelText
+        } else {
+            tickerSymbolLabel!.text = ""
         }
         
         // Test company.returnData by outputting to console.
