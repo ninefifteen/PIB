@@ -39,6 +39,10 @@ class CompanyPageViewController: PageContentViewController {
             nameLabel!.text = ""
         }
         
+        // Test company.returnData by outputting to console.
+        if let returnData: String = company?.returnData {
+            println("CompanyPageViewController viewWillAppear:\n\(returnData)")
+        }
     }
     
 

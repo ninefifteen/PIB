@@ -45,7 +45,7 @@ class WebServicesManagerAPI: NSObject {
             if error == nil {
                 
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)
-                //println("rawStringData: \(rawStringData)")
+                //println("WebServicesManagerAPI downloadCompaniesMatchingSearchTerm rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
@@ -91,15 +91,15 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                println("rawStringData: \(rawStringData)")
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //println("WebServicesManagerAPI downloadFundamentalsForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        //self.addFundamentalsToCompany(company, fromData: data)
+                        self.addFundamentalsToCompany(company, fromData: data)
                     })
                     
                     if completion != nil {
@@ -199,6 +199,14 @@ class WebServicesManagerAPI: NSObject {
     func addFundamentalsToCompany(company: Company, fromData data: NSData) {
         
         let context = managedObjectContext!
+        
+        let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+        //println("rawStringData: \(rawStringData)")
+        
+        company.returnData = rawStringData
+        
+        // Old code.
+        /*let context = managedObjectContext!
         let json = JSON(data: data)["Fundamentals"]
         
         let formatter: NSNumberFormatter = NSNumberFormatter()
@@ -213,133 +221,14 @@ class WebServicesManagerAPI: NSObject {
                 case "CurrentPERatioAsPercentOfFiveYearAveragePERatio":
                     if let valueString = subJson["Value"].string {
                         if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.currentPERatioAsPercentOfFiveYearAveragePERatio = value
+                            //company.currentPERatioAsPercentOfFiveYearAveragePERatio = value
                         }
                     }
                     
                 case "EBITDAMargin":
                     if let valueString = subJson["Value"].string {
                         if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.ebitdaMargin = value
-                        }
-                    }
-                    
-                case "EBITMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.ebitMargin = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualCapitalSpendingGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualCapitalSpendingGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualDividendGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualDividendGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualIncomeGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualIncomeGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualNormalizedIncomeGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualNormalizedIncomeGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualRAndDGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualRAndDGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAnnualRevenueGrowthRate":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAnnualRevenueGrowthRate = value
-                        }
-                    }
-                    
-                case "FiveYearAverageGrossProfitMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAverageGrossProfitMargin = value
-                        }
-                    }
-                    
-                case "FiveYearAverageNetProfitMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAverageNetProfitMargin = value
-                        }
-                    }
-                    
-                case "FiveYearAveragePostTaxProfitMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAveragePostTaxProfitMargin = value
-                        }
-                    }
-                    
-                case "FiveYearAveragePreTaxProfitMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAveragePreTaxProfitMargin = value
-                        }
-                    }
-                    
-                case "FiveYearAverageRAndDAsPercentOfSales":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAverageRAndDAsPercentOfSales = value
-                        }
-                    }
-                    
-                case "FiveYearAverageSGAndAAsPercentOfSales":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.fiveYearAverageSGAndAAsPercentOfSales = value
-                        }
-                    }
-                    
-                case "GrossMargin":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.grossMargin = value
-                        }
-                    }
-                    
-                case "MarketValueAsPercentOfRevenues":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.marketValueAsPercentOfRevenues = value
-                        }
-                    }
-                    
-                case "RAndDAsPercentOfSales":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.rAndDAsPercentOfSales = value
-                        }
-                    }
-                    
-                case "SGAndAAsPercentOfSales":
-                    if let valueString = subJson["Value"].string {
-                        if let value: NSNumber = formatter.numberFromString(valueString) {
-                            company.sgAndAAsPercentOfSales = value
+                            //company.ebitdaMargin = value
                         }
                     }
                     
@@ -347,7 +236,8 @@ class WebServicesManagerAPI: NSObject {
                     break
                 }
             }
-        }
+        }*/
+        
         // Save the context.
         var error: NSError? = nil
         if !context.save(&error) {
