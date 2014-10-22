@@ -91,15 +91,15 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)
-                //println("rawStringData: \(rawStringData)")
+                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                println("rawStringData: \(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        self.addFundamentalsToCompany(company, fromData: data)
+                        //self.addFundamentalsToCompany(company, fromData: data)
                     })
                     
                     if completion != nil {
@@ -146,7 +146,11 @@ class WebServicesManagerAPI: NSObject {
             }
         }
         
-        let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=\(fundamentals)&UpdatedSince="
+        // URL for trial data from Xignite.
+        //let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=\(fundamentals)&UpdatedSince="
+        
+        // URL for fake data.
+        let urlString = "http://www.shawnseals915.com/sbmx/getFakeData.php"
         
         return urlString
     }

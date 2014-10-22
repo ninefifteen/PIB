@@ -32,7 +32,13 @@ class CompanyPageViewController: PageContentViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        nameLabel!.text = company.name
+        
+        if let labelText: String = company?.name {
+            nameLabel!.text = company.name
+        } else {
+            nameLabel!.text = ""
+        }
+        
     }
     
 
