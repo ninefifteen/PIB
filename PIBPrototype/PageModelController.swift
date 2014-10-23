@@ -46,10 +46,15 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
             
         } else {
             
-            let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphPageViewController") as GraphPageViewController
-            pageContentViewController.pageIndex = index
-            pageContentViewController.company = company
-            return pageContentViewController
+            if  company != nil {
+                let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphPageViewController") as GraphPageViewController
+                pageContentViewController.pageIndex = index
+                pageContentViewController.company = company
+                return pageContentViewController
+            } else {
+                return nil
+            }
+            
         }
         
     }
