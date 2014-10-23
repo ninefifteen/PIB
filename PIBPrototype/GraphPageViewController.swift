@@ -59,7 +59,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     func configureRevenueIncomeMarginGraph() {
         
         let graph = CPTXYGraph()
-        graph.applyTheme(CPTTheme(named: kCPTDarkGradientTheme))
+        graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
         
         // Border
         graph.plotAreaFrame.borderLineStyle = nil
@@ -82,7 +82,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         paragraphStyle.alignment = .Center
         
         let lineOne = "Graph Title"
-        let lineTwo = "Line 2"
+        let lineTwo = "Subtitle"
         
         let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
         let line2Font = UIFont(name: "Helvetica", size: 12.0)
@@ -90,9 +90,9 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
         
         let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
-        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count)
+        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
         
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: titleRange1)
+        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
         graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
         graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
         graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
@@ -106,7 +106,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         // Plot Space
         let plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: 0.0, length: 200.0)
-        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 3.0)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
         
         let axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -124,7 +124,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         x.labelRotation = CGFloat(M_PI_4)
         x.labelingPolicy = .None
         
-        let customTickLocations = [0.3, 1.3, 2.3]
+        let customTickLocations = [1.0, 2.0, 3.0]
         
         var xAxisLabels = Array<String>()
         
@@ -156,22 +156,35 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         y.titleOffset = 45.0
         y.titleLocation = 150.0
         
+        // Create bar line style.
+        var barLineStyle = CPTMutableLineStyle()
+        barLineStyle.lineWidth = 1.0
+        barLineStyle.lineColor = CPTColor.blackColor()
+        
         // First Bar Plot
-        let barPlot1 = CPTBarPlot.tubularBarPlotWithColor(CPTColor.greenColor(), horizontalBars: false)
-        barPlot1.baseValue = 0.0
-        barPlot1.dataSource = self
-        barPlot1.barOffset = 0.25
-        barPlot1.identifier = "Bar Plot 1"
-        graph.addPlot(barPlot1, toPlotSpace:plotSpace)
+        let revenueBarPlot = CPTBarPlot()
+        revenueBarPlot.barsAreHorizontal = false
+        revenueBarPlot.lineStyle = barLineStyle
+        revenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+        revenueBarPlot.barWidth = 0.3
+        revenueBarPlot.baseValue = 0.0
+        revenueBarPlot.barOffset = -0.25
+        revenueBarPlot.identifier = "RevenueBarPlot"
+        revenueBarPlot.dataSource = self
+        graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
         // Second bar plot
-        let barPlot2 = CPTBarPlot.tubularBarPlotWithColor(CPTColor.blueColor(), horizontalBars:false)
-        barPlot2.dataSource = self
-        barPlot2.baseValue = 0.0
-        barPlot2.barOffset = 0.50
-        barPlot2.barCornerRadius = 2.0
-        barPlot2.identifier = "Bar Plot 2"
-        graph.addPlot(barPlot2, toPlotSpace:plotSpace)
+        let netIncomeBarPlot = CPTBarPlot()
+        netIncomeBarPlot.barsAreHorizontal = false
+        netIncomeBarPlot.lineStyle = barLineStyle
+        netIncomeBarPlot.fill = CPTFill(color: CPTColor.yellowColor())
+        netIncomeBarPlot.barWidth = 0.3
+        netIncomeBarPlot.baseValue = 0.0
+        netIncomeBarPlot.barOffset = 0.1
+        netIncomeBarPlot.barCornerRadius = 2.0
+        netIncomeBarPlot.identifier = "NetIncomeBarPlot"
+        netIncomeBarPlot.dataSource = self
+        graph.addPlot(netIncomeBarPlot, toPlotSpace:plotSpace)
         
         self.graphView.hostedGraph = graph
     }
@@ -219,7 +232,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     // MARK: - CPTPlotDataSource
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        return 3
+        return UInt(graphDataDictionaryArray[0].count)
     }
     
     func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {
@@ -230,35 +243,21 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
             
             switch CPTBarPlotField(rawValue: Int(field))! {
             case .BarLocation:
-                return recordIndex as NSNumber
+                return recordIndex + 1 as NSNumber
                 
             case .BarTip:
                 
                 let plotID = plot.identifier as String
                 
-                if plotID == "Bar Plot 1" {
+                if plotID == "RevenueBarPlot" {
                     let value: Double = graphDataDictionaryArray[0][Int(recordIndex)]["Value"]! / 1000.0
                     return NSNumber(double: value)
-                } else if plotID == "Bar Plot 2" {
+                } else if plotID == "NetIncomeBarPlot" {
                     let value: Double = graphDataDictionaryArray[1][Int(recordIndex)]["Value"]! / 1000.0
                     return NSNumber(double: value)
                 } else {
                     return nil
                 }
-                
-            default:
-                return nil
-            }
-            
-        case 2:
-            
-            switch CPTBarPlotField(rawValue: Int(field))! {
-            case .BarLocation:
-                return recordIndex as NSNumber
-                
-            case .BarTip:
-                let plotID = plot.identifier as String
-                return (plotID == "Bar Plot 2" ? recordIndex : ((recordIndex + 1) * (recordIndex + 1)) ) as NSNumber
                 
             default:
                 return nil
