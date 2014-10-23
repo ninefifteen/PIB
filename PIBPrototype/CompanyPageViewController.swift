@@ -17,8 +17,6 @@ class CompanyPageViewController: PageContentViewController {
     @IBOutlet weak var exchangeNameLabel: UILabel!
     @IBOutlet weak var tickerSymbolLabel: UILabel!
     
-    var company: Company!
-    
     
     // MARK: - View Life Cycle
     

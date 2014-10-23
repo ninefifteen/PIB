@@ -14,6 +14,7 @@ class PageContentViewController: UIViewController {
     // MARK: - Properties
     
     var pageIndex: Int = 0
+    var company: Company!
     
     
     // MARK: - View Life Cycle

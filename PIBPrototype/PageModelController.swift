@@ -23,7 +23,7 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
         super.init()
         
         // Create the data model.
-        pages = [0, 1, 2, 3]
+        pages = [0, 1, 2, 3, 4]
     }
     
     
@@ -48,6 +48,7 @@ class PageModelController: NSObject, UIPageViewControllerDataSource {
             
             let pageContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphPageViewController") as GraphPageViewController
             pageContentViewController.pageIndex = index
+            pageContentViewController.company = company
             return pageContentViewController
         }
         

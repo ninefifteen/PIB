@@ -219,10 +219,10 @@ class WebServicesManagerAPI: NSObject {
                     for (index: String, subJson: JSON) in subJson["Data"] {
                         if index != "0" { dataString += "," }
                         if let year = subJson["Year"].string {
-                            dataString += "{\"\(year)\":"
+                            dataString += "{\"Year\":\"\(year)\","
                         }
                         if let value = subJson["Value"].string {
-                            dataString += "\"\(value)\"}"
+                            dataString += "\"Value\":\"\(value)\"}"
                         }
                     }
                     dataString += "]"
@@ -233,10 +233,10 @@ class WebServicesManagerAPI: NSObject {
                     for (index: String, subJson: JSON) in subJson["Data"] {
                         if index != "0" { dataString += "," }
                         if let year = subJson["Year"].string {
-                            dataString += "{\"\(year)\":"
+                            dataString += "{\"Year\":\"\(year)\","
                         }
                         if let value = subJson["Value"].string {
-                            dataString += "\"\(value)\"}"
+                            dataString += "\"Value\":\"\(value)\"}"
                         }
                     }
                     dataString += "]"
@@ -247,10 +247,10 @@ class WebServicesManagerAPI: NSObject {
                     for (index: String, subJson: JSON) in subJson["Data"] {
                         if index != "0" { dataString += "," }
                         if let year = subJson["Year"].string {
-                            dataString += "{\"\(year)\":"
+                            dataString += "{\"Year\":\"\(year)\","
                         }
                         if let value = subJson["Value"].string {
-                            dataString += "\"\(value)\"}"
+                            dataString += "\"Value\":\"\(value)\"}"
                         }
                     }
                     dataString += "]"
@@ -261,10 +261,10 @@ class WebServicesManagerAPI: NSObject {
                     for (index: String, subJson: JSON) in subJson["Data"] {
                         if index != "0" { dataString += "," }
                         if let year = subJson["Year"].string {
-                            dataString += "{\"\(year)\":"
+                            dataString += "{\"Year\":\"\(year)\","
                         }
                         if let value = subJson["Value"].string {
-                            dataString += "\"\(value)\"}"
+                            dataString += "\"Value\":\"\(value)\"}"
                         }
                     }
                     dataString += "]"
@@ -275,10 +275,10 @@ class WebServicesManagerAPI: NSObject {
                     for (index: String, subJson: JSON) in subJson["Data"] {
                         if index != "0" { dataString += "," }
                         if let year = subJson["Year"].string {
-                            dataString += "{\"\(year)\":"
+                            dataString += "{\"Year\":\"\(year)\","
                         }
                         if let value = subJson["Value"].string {
-                            dataString += "\"\(value)\"}"
+                            dataString += "\"Value\":\"\(value)\"}"
                         }
                     }
                     dataString += "]"
