@@ -121,7 +121,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         x.titleOffset = 55.0
         
         // Custom Labels
-        x.labelRotation = CGFloat(M_PI_4)
+        //x.labelRotation = CGFloat(M_PI_4)
         x.labelingPolicy = .None
         
         let customTickLocations = [1.0, 2.0, 3.0]
@@ -140,16 +140,22 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
             let newLabel = CPTAxisLabel(text: xAxisLabels[labelLocation++], textStyle: x.labelTextStyle)
             newLabel.tickLocation = tickLocation
             newLabel.offset = x.labelOffset + x.majorTickLength
-            newLabel.rotation = CGFloat(M_PI_4)
+            //newLabel.rotation = CGFloat(M_PI_4)
             customLabels.addObject(newLabel)
         }
         
         x.axisLabels = customLabels
         
+        // Create y-axis major tick line style.
+        var yMajorGridLineStyle = CPTMutableLineStyle()
+        yMajorGridLineStyle.lineWidth = 1.0
+        yMajorGridLineStyle.lineColor = CPTColor.lightGrayColor()
+        
         let y = axisSet.yAxis
         y.axisLineStyle = nil
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
+        y.majorGridLineStyle = yMajorGridLineStyle
         y.majorIntervalLength = 50.0
         y.orthogonalPosition = 0.0
         y.title = "Y Axis"
@@ -168,7 +174,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         revenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = -0.25
+        revenueBarPlot.barOffset = -0.17
         revenueBarPlot.identifier = "RevenueBarPlot"
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
@@ -180,7 +186,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         netIncomeBarPlot.fill = CPTFill(color: CPTColor.yellowColor())
         netIncomeBarPlot.barWidth = 0.3
         netIncomeBarPlot.baseValue = 0.0
-        netIncomeBarPlot.barOffset = 0.1
+        netIncomeBarPlot.barOffset = 0.17
         netIncomeBarPlot.barCornerRadius = 2.0
         netIncomeBarPlot.identifier = "NetIncomeBarPlot"
         netIncomeBarPlot.dataSource = self
@@ -232,7 +238,12 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     // MARK: - CPTPlotDataSource
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        return UInt(graphDataDictionaryArray[0].count)
+        if graphDataDictionaryArray.count > 0 {
+            return UInt(graphDataDictionaryArray[0].count)
+        } else {
+            return 0
+        }
+        
     }
     
     func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {
