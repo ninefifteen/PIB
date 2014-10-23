@@ -29,6 +29,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         case 1:
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.totalRevenue))
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.netIncome))
+            let yAxisMinMaxAndInterval: Dictionary<String,Double> = yAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)
             configureRevenueIncomeMarginGraph()
             
         case 2:
@@ -212,6 +213,74 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     
     
     // MARK: - Data Convenience Methods
+    
+    func roundNumber(number: Double, toSignificantFigures significantFigures: Int) -> Double {
+        
+        if number == 0.0 { return 0.0 }
+        
+        let places: Double = ceil(log10(number < 0 ? -number : number))
+        let power: Int = significantFigures - Int(places)
+        let magnitude: Double = pow(10.0, Double(power))
+        
+        var shifted: Int = 0
+        if number > 0.0 {
+            shifted = Int(ceil(number * magnitude))
+        } else {
+            shifted = Int(floor(number * magnitude))
+        }
+        
+        return Double(shifted)/magnitude
+    }
+    
+    func yAxisMinMaxAndIntervalForDataInArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Dictionary<String,Double> {
+        
+        let range: Double = (maximumValueInDataArray(dataArray) + minimumValueInDataArray(dataArray)) * 1.15
+        println("range: \(range)")
+        let interval: Double = range / 7.0
+        println("interval: \(interval)")
+        
+        // Finish this function!!
+        
+        return ["Value": 0.0]
+    }
+    
+    func minimumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
+        
+        var minimumValue: Double = 0.0
+        
+        for (index, dataPoint) in enumerate(graphDataDictionaryArray[0]) {
+            let currentValue: Double = Double(dataPoint["Value"]!)
+            if currentValue < minimumValue { minimumValue = currentValue }
+        }
+        
+        if graphDataDictionaryArray.count > 1 {
+            for (index, dataPoint) in enumerate(graphDataDictionaryArray[1]) {
+                let currentValue: Double = Double(dataPoint["Value"]!)
+                if currentValue < minimumValue { minimumValue = currentValue }
+            }
+        }
+        
+        return minimumValue
+    }
+    
+    func maximumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
+        
+        var maximumValue: Double = 0.0
+        
+        for (index, dataPoint) in enumerate(graphDataDictionaryArray[0]) {
+            let currentValue: Double = Double(dataPoint["Value"]!)
+            if currentValue > maximumValue { maximumValue = currentValue }
+        }
+        
+        if graphDataDictionaryArray.count > 1 {
+            for (index, dataPoint) in enumerate(graphDataDictionaryArray[1]) {
+                let currentValue: Double = Double(dataPoint["Value"]!)
+                if currentValue > maximumValue { maximumValue = currentValue }
+            }
+        }
+        
+        return maximumValue
+    }
     
     func dictionaryArrayFromDataString(dataString: String) -> Array<Dictionary<String,Double>> {
         
