@@ -30,8 +30,8 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         // Do any additional setup after loading the view.
         
         // Temporary code for testing charts.
-        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"14109.0\"},{\"Year\":\"2012\",\"Value\":\"9508.0\"},{\"Year\":\"2011\",\"Value\":\"10249.0\"}]"
-        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-4033.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
+        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"1409.0\"},{\"Year\":\"2012\",\"Value\":\"908.0\"},{\"Year\":\"2011\",\"Value\":\"1249.0\"}]"
+        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-933.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
         company.totalRevenue = totalRevenueString
         company.netIncome = netIncomeString*/
         
@@ -128,15 +128,14 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         x.minorTickLineStyle = nil
         x.majorIntervalLength = 1.0
         x.orthogonalPosition = yAxisMin
-        x.title = "X Axis"
-        x.titleLocation = 1.5
-        x.titleOffset = 35
+        //x.title = "X Axis"
+        //x.titleLocation = 1.5
+        //x.titleOffset = 35
         
-        // Custom Labels
-        //x.labelRotation = CGFloat(M_PI_4)
+        // Custom X Axis Labels
         x.labelingPolicy = .None
         
-        let customTickLocations = [1.0, 2.0, 3.0]
+        let xAxisCustomTickLocations = [1.0, 2.0, 3.0]
         
         var xAxisLabels = Array<String>()
         
@@ -146,17 +145,24 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
             xAxisLabels.append(label)
         }
         
-        var labelLocation = 0
-        let customLabels = NSMutableSet(capacity: xAxisLabels.count)
-        for tickLocation in customTickLocations {
-            let newLabel = CPTAxisLabel(text: xAxisLabels[labelLocation++], textStyle: x.labelTextStyle)
+        var xLabelLocation = 0
+        let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
+        for tickLocation in xAxisCustomTickLocations {
+            let newLabel = CPTAxisLabel(text: xAxisLabels[xLabelLocation++], textStyle: x.labelTextStyle)
             newLabel.tickLocation = tickLocation
             newLabel.offset = x.labelOffset + x.majorTickLength
             //newLabel.rotation = CGFloat(M_PI_4)
-            customLabels.addObject(newLabel)
+            xAxisCustomLabels.addObject(newLabel)
         }
         
-        x.axisLabels = customLabels
+        x.axisLabels = xAxisCustomLabels
+        
+        // Create y-axis custom tick locations.
+        var yAxisCustomTickLocations = Array<Double>()
+        for index in 0...Int(numberOfYAxisIntervals) {
+            let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
+            yAxisCustomTickLocations.append(tickLocation)
+        }
         
         // Create y-axis major tick line style.
         var yMajorGridLineStyle = CPTMutableLineStyle()
@@ -167,12 +173,45 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         y.axisLineStyle = nil
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
+        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations)
         y.majorGridLineStyle = yMajorGridLineStyle
         y.majorIntervalLength = yAxisInterval
         y.orthogonalPosition = 0.0
-        y.title = "Y Axis"
-        y.titleOffset = 45.0
-        y.titleLocation = yAxisMin + yAxisRange / 2.0
+        //y.title = "Y Axis"
+        //y.titleOffset = 45.0
+        //y.titleLocation = yAxisMin + yAxisRange / 2.0
+        
+        // Custom Y Axis Labels
+        y.labelingPolicy = .None
+
+        var yAxisLabels = Array<String>()
+        
+        for (index, value) in enumerate(yAxisCustomTickLocations) {
+            
+            var unitAdjustedValue = value
+            var label: String = ""
+            if Double(abs(unitAdjustedValue)) >= 1000.0 {
+                unitAdjustedValue /= 1000.0
+                label = "\(unitAdjustedValue)B"
+            } else if Double(abs(unitAdjustedValue)) != 0.0 {
+                label = "\(unitAdjustedValue)M"
+            } else {
+                label = "\(unitAdjustedValue)"
+            }
+            
+            yAxisLabels.append(label)
+        }
+        
+        var yLabelLocation = 0
+        let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
+        for tickLocation in yAxisCustomTickLocations {
+            let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
+            newLabel.tickLocation = tickLocation
+            newLabel.offset = y.labelOffset + y.majorTickLength
+            yAxisCustomLabels.addObject(newLabel)
+        }
+        
+        y.axisLabels = yAxisCustomLabels
         
         // Create bar line style.
         var barLineStyle = CPTMutableLineStyle()
@@ -271,10 +310,10 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         
         maxY = minY + numberOfYAxisIntervals * interval
         
-        yAxisMin = minY / 1000.0
-        yAxisMax = maxY / 1000.0
-        yAxisInterval = interval / 1000.0
-        yAxisRange = numberOfYAxisIntervals * interval / 1000.0
+        yAxisMin = minY
+        yAxisMax = maxY
+        yAxisInterval = interval
+        yAxisRange = numberOfYAxisIntervals * interval
     }
     
     func minimumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
@@ -363,10 +402,10 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
                 let plotID = plot.identifier as String
                 
                 if plotID == "RevenueBarPlot" {
-                    let value: Double = graphDataDictionaryArray[0][Int(recordIndex)]["Value"]! / 1000.0
+                    let value: Double = graphDataDictionaryArray[0][Int(recordIndex)]["Value"]!
                     return NSNumber(double: value)
                 } else if plotID == "NetIncomeBarPlot" {
-                    let value: Double = graphDataDictionaryArray[1][Int(recordIndex)]["Value"]! / 1000.0
+                    let value: Double = graphDataDictionaryArray[1][Int(recordIndex)]["Value"]!
                     return NSNumber(double: value)
                 } else {
                     return nil
