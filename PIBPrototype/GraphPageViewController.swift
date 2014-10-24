@@ -15,6 +15,11 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
 
     @IBOutlet weak var graphView: CPTGraphHostingView!
     var graphDataDictionaryArray = Array<Array<Dictionary<String,Double>>>()
+    var yAxisMin: Double = 0.0
+    var yAxisMax: Double = 0.0
+    var yAxisInterval: Double = 0.0
+    var yAxisRange: Double = 0.0
+    let numberOfYAxisIntervals: Double = 7.0
     
     
     // MARK: - View Life Cycle
@@ -24,12 +29,18 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
 
         // Do any additional setup after loading the view.
         
+        // Temporary code for testing charts.
+        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"2109.0\"},{\"Year\":\"2012\",\"Value\":\"508.0\"},{\"Year\":\"2011\",\"Value\":\"249.0\"}]"
+        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-433.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
+        company.totalRevenue = totalRevenueString
+        company.netIncome = netIncomeString*/
+        
         switch pageIndex {
             
         case 1:
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.totalRevenue))
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.netIncome))
-            let yAxisMinMaxAndInterval: Dictionary<String,Double> = yAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)
+            calculateyYAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)
             configureRevenueIncomeMarginGraph()
             
         case 2:
@@ -76,7 +87,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         graph.plotAreaFrame.paddingLeft   = 70.0
         graph.plotAreaFrame.paddingTop    = 20.0
         graph.plotAreaFrame.paddingRight  = 20.0
-        graph.plotAreaFrame.paddingBottom = 80.0
+        graph.plotAreaFrame.paddingBottom = 60.0
         
         // Graph Title
         let paragraphStyle = NSMutableParagraphStyle()
@@ -106,7 +117,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         
         // Plot Space
         let plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
-        plotSpace.yRange = CPTPlotRange(location: 0.0, length: 200.0)
+        plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
         
         let axisSet = graph.axisSet as CPTXYAxisSet
@@ -119,7 +130,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         x.orthogonalPosition = 0.0
         x.title = "X Axis"
         x.titleLocation = 1.5
-        x.titleOffset = 55.0
+        x.titleOffset = 35
         
         // Custom Labels
         //x.labelRotation = CGFloat(M_PI_4)
@@ -157,11 +168,11 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
         y.majorGridLineStyle = yMajorGridLineStyle
-        y.majorIntervalLength = 50.0
+        y.majorIntervalLength = yAxisInterval
         y.orthogonalPosition = 0.0
         y.title = "Y Axis"
         y.titleOffset = 45.0
-        y.titleLocation = 150.0
+        y.titleLocation = yAxisMin + yAxisRange / 2.0
         
         // Create bar line style.
         var barLineStyle = CPTMutableLineStyle()
@@ -214,7 +225,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     
     // MARK: - Data Convenience Methods
     
-    func roundNumber(number: Double, toSignificantFigures significantFigures: Int) -> Double {
+    func multipleOfFiveCeilNumber(number: Double, toSignificantFigures significantFigures: Int) -> Double {
         
         if number == 0.0 { return 0.0 }
         
@@ -229,19 +240,41 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
             shifted = Int(floor(number * magnitude))
         }
         
+        // Round last significant digit up (down, if negative) to next multiple of 5.
+        var fiveMultiple: Int = shifted / 5
+        if shifted % 5 != 0 {
+            if shifted >= 0 {
+                fiveMultiple++
+            } else {
+                fiveMultiple--
+            }
+        }
+        shifted = fiveMultiple * 5
+        
         return Double(shifted)/magnitude
     }
     
-    func yAxisMinMaxAndIntervalForDataInArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Dictionary<String,Double> {
+    func calculateyYAxisMinMaxAndIntervalForDataInArray(dataArray: Array<Array<Dictionary<String,Double>>>) {
         
-        let range: Double = (maximumValueInDataArray(dataArray) + minimumValueInDataArray(dataArray)) * 1.15
-        println("range: \(range)")
-        let interval: Double = range / 7.0
-        println("interval: \(interval)")
+        var minY: Double = minimumValueInDataArray(dataArray)
+        var maxY: Double = maximumValueInDataArray(dataArray)
+        let range: Double = (maxY - minY) * 1.15
         
-        // Finish this function!!
+        var interval: Double = range / numberOfYAxisIntervals
+        interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
-        return ["Value": 0.0]
+        if minY < 0.0 {
+            var intervalMultiple = (minY * 1.05) / interval
+            intervalMultiple = floor(intervalMultiple)
+            minY = intervalMultiple * interval
+        }
+        
+        maxY = minY + numberOfYAxisIntervals * interval
+        
+        yAxisMin = minY / 1000.0
+        yAxisMax = maxY / 1000.0
+        yAxisInterval = interval / 1000.0
+        yAxisRange = numberOfYAxisIntervals * interval / 1000.0
     }
     
     func minimumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
