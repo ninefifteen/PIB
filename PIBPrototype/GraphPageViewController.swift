@@ -30,8 +30,8 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         // Do any additional setup after loading the view.
         
         // Temporary code for testing charts.
-        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"2109.0\"},{\"Year\":\"2012\",\"Value\":\"508.0\"},{\"Year\":\"2011\",\"Value\":\"249.0\"}]"
-        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-433.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
+        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"14109.0\"},{\"Year\":\"2012\",\"Value\":\"9508.0\"},{\"Year\":\"2011\",\"Value\":\"10249.0\"}]"
+        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-4033.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
         company.totalRevenue = totalRevenueString
         company.netIncome = netIncomeString*/
         
@@ -127,7 +127,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         x.majorTickLineStyle = nil
         x.minorTickLineStyle = nil
         x.majorIntervalLength = 1.0
-        x.orthogonalPosition = 0.0
+        x.orthogonalPosition = yAxisMin
         x.title = "X Axis"
         x.titleLocation = 1.5
         x.titleOffset = 35
