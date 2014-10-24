@@ -73,24 +73,24 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         let graph = CPTXYGraph()
         graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
         
-        // Border
+        // Graph border.
         graph.plotAreaFrame.borderLineStyle = nil
         graph.plotAreaFrame.cornerRadius = 0.0
         graph.plotAreaFrame.masksToBorder = false
         
-        // Paddings
+        // Graph paddings.
         graph.paddingLeft = 0.0
         graph.paddingRight = 0.0
         graph.paddingTop = 0.0
         graph.paddingBottom = 0.0
         
-        graph.plotAreaFrame.paddingLeft   = 70.0
+        graph.plotAreaFrame.paddingLeft   = 64.0
         graph.plotAreaFrame.paddingTop    = 20.0
         graph.plotAreaFrame.paddingRight  = 20.0
         graph.plotAreaFrame.paddingBottom = 60.0
         
-        // Graph Title
-        let paragraphStyle = NSMutableParagraphStyle()
+        // Graph title.
+        /*let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = .Center
         
         let lineOne = "Graph Title"
@@ -113,9 +113,9 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         graph.attributedTitle = graphTitle
         
         graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
-        graph.titlePlotAreaFrameAnchor = .Top
+        graph.titlePlotAreaFrameAnchor = .Top*/
         
-        // Plot Space
+        // Plot space.
         let plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
@@ -132,7 +132,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         //x.titleLocation = 1.5
         //x.titleOffset = 35
         
-        // Custom X Axis Labels
+        // Custom X-axis labels.
         x.labelingPolicy = .None
         
         let xAxisCustomTickLocations = [1.0, 2.0, 3.0]
@@ -207,7 +207,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         for tickLocation in yAxisCustomTickLocations {
             let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
             newLabel.tickLocation = tickLocation
-            newLabel.offset = y.labelOffset + y.majorTickLength
+            newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
             yAxisCustomLabels.addObject(newLabel)
         }
         
@@ -218,7 +218,7 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         barLineStyle.lineWidth = 1.0
         barLineStyle.lineColor = CPTColor.blackColor()
         
-        // First Bar Plot
+        // First bar plot.
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = barLineStyle
@@ -226,11 +226,11 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = -0.17
-        revenueBarPlot.identifier = "RevenueBarPlot"
+        revenueBarPlot.identifier = "Revenue"
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
-        // Second bar plot
+        // Second bar plot.
         let netIncomeBarPlot = CPTBarPlot()
         netIncomeBarPlot.barsAreHorizontal = false
         netIncomeBarPlot.lineStyle = barLineStyle
@@ -239,9 +239,30 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         netIncomeBarPlot.baseValue = 0.0
         netIncomeBarPlot.barOffset = 0.17
         netIncomeBarPlot.barCornerRadius = 2.0
-        netIncomeBarPlot.identifier = "NetIncomeBarPlot"
+        netIncomeBarPlot.identifier = "Net Income"
         netIncomeBarPlot.dataSource = self
         graph.addPlot(netIncomeBarPlot, toPlotSpace:plotSpace)
+        
+        // Add legend.
+        let graphLegend = CPTLegend(graph: graph)
+        graphLegend.fill = CPTFill(color: CPTColor.whiteColor())
+        graphLegend.borderLineStyle = nil
+        graphLegend.cornerRadius = 10.0
+        graphLegend.swatchSize = CGSizeMake(14.0, 14.0)
+        let blackTextStyle = CPTMutableTextStyle()
+        blackTextStyle.color = CPTColor.blackColor()
+        blackTextStyle.fontSize = 12.0
+        graphLegend.textStyle = blackTextStyle
+        graphLegend.rowMargin = 10.0
+        graphLegend.numberOfRows = 1
+        graphLegend.paddingLeft = 8.0
+        graphLegend.paddingTop = 8.0
+        graphLegend.paddingRight = 8.0
+        graphLegend.paddingBottom = 8.0
+        
+        graph.legend = graphLegend
+        graph.legendAnchor = .Bottom
+        graph.legendDisplacement = CGPointMake(0.0, 0.0)
         
         self.graphView.hostedGraph = graph
     }
@@ -401,10 +422,10 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
                 
                 let plotID = plot.identifier as String
                 
-                if plotID == "RevenueBarPlot" {
+                if plotID == "Revenue" {
                     let value: Double = graphDataDictionaryArray[0][Int(recordIndex)]["Value"]!
                     return NSNumber(double: value)
-                } else if plotID == "NetIncomeBarPlot" {
+                } else if plotID == "Net Income" {
                     let value: Double = graphDataDictionaryArray[1][Int(recordIndex)]["Value"]!
                     return NSNumber(double: value)
                 } else {
