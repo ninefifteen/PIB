@@ -30,29 +30,24 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         // Do any additional setup after loading the view.
         
         // Temporary code for testing charts.
-        /*let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"1409.0\"},{\"Year\":\"2012\",\"Value\":\"908.0\"},{\"Year\":\"2011\",\"Value\":\"1249.0\"}]"
+        let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"1409.0\"},{\"Year\":\"2012\",\"Value\":\"908.0\"},{\"Year\":\"2011\",\"Value\":\"1249.0\"}]"
         let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-933.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
-        company.totalRevenue = totalRevenueString
-        company.netIncome = netIncomeString*/
         
         switch pageIndex {
             
         case 1:
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.totalRevenue))
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.netIncome))
+            graphDataDictionaryArray.append(dictionaryArrayFromDataString(totalRevenueString))
+            graphDataDictionaryArray.append(dictionaryArrayFromDataString(netIncomeString))
             calculateyYAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)
             configureRevenueIncomeMarginGraph()
             
         case 2:
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.grossProfit))
             configureGrossMarginGraph()
         
         case 3:
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.rAndD))
             configureRAndDGraph()
             
         case 4:
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(company.sgAndA))
             configureSGAndAGraph()
             
         default:

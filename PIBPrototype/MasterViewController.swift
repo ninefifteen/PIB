@@ -55,13 +55,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         var company: Company! = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as Company
         company.name = newCompany.name
         company.exchange = newCompany.exchange
-        company.exchangeDisp = newCompany.exchangeDisp
+        company.exchangeDisplayName = newCompany.exchangeDisplayName
         company.tickerSymbol = newCompany.tickerSymbol
-        company.totalRevenue = ""
-        company.netIncome = ""
-        company.grossProfit = ""
-        company.rAndD = ""
-        company.sgAndA = ""
         
         // Save the context.
         var error: NSError? = nil

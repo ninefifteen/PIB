@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14A389" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Company" representedClassName="PIBPrototype.Company">
+        <attribute name="companyDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="exchangeDisp" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="grossProfit" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="exchangeDisplayName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="netIncome" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="rAndD" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="returnData" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="sgAndA" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="totalRevenue" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="grossProfitValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GrossProfit" inverseName="company" inverseEntity="GrossProfit" syncable="YES"/>
+        <relationship name="netIncomeValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NetIncome" inverseName="company" inverseEntity="NetIncome" syncable="YES"/>
+        <relationship name="totalRevenueValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TotalRevenue" inverseName="company" inverseEntity="TotalRevenue" syncable="YES"/>
         <userInfo/>
     </entity>
+    <entity name="GrossProfit" representedClassName="PIBPrototype.GrossProfit" syncable="YES">
+        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="grossProfitValues" inverseEntity="Company" syncable="YES"/>
+    </entity>
+    <entity name="NetIncome" representedClassName="PIBPrototype.NetIncome" syncable="YES">
+        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="netIncomeValues" inverseEntity="Company" syncable="YES"/>
+    </entity>
+    <entity name="TotalRevenue" representedClassName="PIBPrototype.TotalRevenue" syncable="YES">
+        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="totalRevenueValues" inverseEntity="Company" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="195"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="163"/>
+        <element name="GrossProfit" positionX="279" positionY="279" width="128" height="88"/>
+        <element name="TotalRevenue" positionX="297" positionY="288" width="128" height="88"/>
+        <element name="NetIncome" positionX="315" positionY="297" width="128" height="88"/>
     </elements>
 </model>

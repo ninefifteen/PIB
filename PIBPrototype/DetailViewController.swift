@@ -38,7 +38,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        if let titleText: String = company?.tickerSymbol {
+        if let titleText: String = company?.name {
             title = titleText
         } else {
             title = ""
@@ -65,49 +65,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
         self.view.gestureRecognizers = self.pageViewController!.gestureRecognizers
-        
-        //self.configureView()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    func configureView() {
-        
-        /*
-        // Update the user interface for the detail item.
-        if let company: Company = self.company {
-            if let label = self.stockNameLabel { label.text = company.name }
-            if let label = self.stockExchangeLabel { label.text = company.exchange }
-            if let label = self.stockTickerLabel { label.text = company.tickerSymbol }
-            if let label = self.stockTickerLabel { title = company.tickerSymbol }
-        }
-        */
-        
-        // Temporary: Log all company properties to console.
-        /*if let company: Company = self.company {
-            println("CurrentPERatioAsPercentOfFiveYearAveragePERatio: \(company.currentPERatioAsPercentOfFiveYearAveragePERatio)")
-            println("EBITDAMargin: \(company.ebitdaMargin)")
-            println("EBITMargin: \(company.ebitMargin)")
-            println("FiveYearAnnualCapitalSpendingGrowthRate: \(company.fiveYearAnnualCapitalSpendingGrowthRate)")
-            println("FiveYearAnnualDividendGrowthRate: \(company.fiveYearAnnualDividendGrowthRate)")
-            println("FiveYearAnnualIncomeGrowthRate: \(company.fiveYearAnnualIncomeGrowthRate)")
-            println("FiveYearAnnualNormalizedIncomeGrowthRate: \(company.fiveYearAnnualNormalizedIncomeGrowthRate)")
-            println("FiveYearAnnualRAndDGrowthRate: \(company.fiveYearAnnualRAndDGrowthRate)")
-            println("FiveYearAnnualRevenueGrowthRate: \(company.fiveYearAnnualRevenueGrowthRate)")
-            println("FiveYearAverageGrossProfitMargin: \(company.fiveYearAverageGrossProfitMargin)")
-            println("FiveYearAverageNetProfitMargin: \(company.fiveYearAverageNetProfitMargin)")
-            println("FiveYearAveragePostTaxProfitMargin: \(company.fiveYearAveragePostTaxProfitMargin)")
-            println("FiveYearAveragePreTaxProfitMargin: \(company.fiveYearAveragePreTaxProfitMargin)")
-            println("FiveYearAverageRAndDAsPercentOfSales: \(company.fiveYearAverageRAndDAsPercentOfSales)")
-            println("FiveYearAverageSGAndAAsPercentOfSales: \(company.fiveYearAverageSGAndAAsPercentOfSales)")
-            println("GrossMargin: \(company.grossMargin)")
-            println("MarketValueAsPercentOfRevenues: \(company.marketValueAsPercentOfRevenues)")
-            println("RAndDAsPercentOfSales: \(company.rAndDAsPercentOfSales)")
-            println("SGAndAAsPercentOfSales: \(company.sgAndAAsPercentOfSales)")
-        }*/
     }
     
     

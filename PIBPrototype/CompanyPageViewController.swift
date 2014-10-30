@@ -40,7 +40,7 @@ class CompanyPageViewController: PageContentViewController {
             companyNameLabel!.text = ""
         }
         
-        if let labelText: String = company?.exchangeDisp {
+        if let labelText: String = company?.exchangeDisplayName {
             exchangeNameLabel!.text = labelText
         } else {
             exchangeNameLabel!.text = ""
@@ -50,23 +50,6 @@ class CompanyPageViewController: PageContentViewController {
             tickerSymbolLabel!.text = labelText
         } else {
             tickerSymbolLabel!.text = ""
-        }
-        
-        // Test company attributes by outputting to console.
-        if let totalRevenue: String = company?.totalRevenue {
-            println("totalRevenue: \(totalRevenue)")
-        }
-        if let netIncome: String = company?.netIncome {
-            println("netIncome: \(netIncome)")
-        }
-        if let grossProfit: String = company?.grossProfit {
-            println("grossProfit: \(grossProfit)")
-        }
-        if let rAndD: String = company?.rAndD {
-            println("rAndD: \(rAndD)")
-        }
-        if let sgAndA: String = company?.sgAndA {
-            println("sgAndA: \(sgAndA)")
         }
     }
     

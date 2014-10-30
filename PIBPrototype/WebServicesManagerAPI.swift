@@ -17,7 +17,7 @@ class WebServicesManagerAPI: NSObject {
     
     // MARK: - Properties
     
-    var managedObjectContext: NSManagedObjectContext? = nil
+    var managedObjectContext: NSManagedObjectContext!
     var networkActivityCount: Int = 0
     var activeDataTask: NSURLSessionDataTask?
     weak var delegate: WebServicesMangerAPIDelegate?
@@ -166,8 +166,7 @@ class WebServicesManagerAPI: NSObject {
     func companiesFromData(data: NSData) -> [Company] {
         
         var companies = [Company]()
-        let context = managedObjectContext
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: context!)
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
         
         // Use SwiftyJSON for handling JSON.
         let json = JSON(data: data)["ResultSet"]["Result"]
@@ -181,7 +180,7 @@ class WebServicesManagerAPI: NSObject {
                 company.exchange = exch
             }
             if let exchDisp = subJson["exchDisp"].string {
-                company.exchangeDisp = exchDisp
+                company.exchangeDisplayName = exchDisp
             }
             if let name = subJson["name"].string {
                 company.name = name
@@ -203,8 +202,6 @@ class WebServicesManagerAPI: NSObject {
         let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
         //println("rawStringData: \(rawStringData)")
         
-        company.returnData = rawStringData
-        
         let json = JSON(data: data)["ReturnData"]
         //println(json)
         
@@ -215,46 +212,82 @@ class WebServicesManagerAPI: NSObject {
                 switch type {
                     
                 case "TotalRevenue":
-                    var dataString: String = "["
+                    
+                    let entity = NSEntityDescription.entityForName("TotalRevenue", inManagedObjectContext: managedObjectContext)
+                    var totalRevenueValues = company.totalRevenueValues.mutableCopy() as NSMutableSet
+                    
                     for (index: String, subJson: JSON) in subJson["Data"] {
-                        if index != "0" { dataString += "," }
-                        if let year = subJson["Year"].string {
-                            dataString += "{\"Year\":\"\(year)\","
+                        
+                        let totalRevenue: TotalRevenue! = TotalRevenue(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                        
+                        if let year = subJson["Year"].int {
+                            totalRevenue.year = year
                         }
-                        if let value = subJson["Value"].string {
-                            dataString += "\"Value\":\"\(value)\"}"
+                        if let value = subJson["Value"].double {
+                            totalRevenue.value = value
                         }
+                        
+                        totalRevenueValues.addObject(totalRevenue)
                     }
-                    dataString += "]"
-                    company.totalRevenue = dataString
+                    
+                    company.totalRevenueValues = totalRevenueValues.copy() as NSSet
+                    
+                    var error: NSError?
+                    if !managedObjectContext.save(&error) {
+                        println("Could not save: \(error)")
+                    }
                     
                 case "NetIncome":
-                    var dataString: String = "["
+                    
+                    let entity = NSEntityDescription.entityForName("NetIncome", inManagedObjectContext: managedObjectContext)
+                    var netIncomeValues = company.netIncomeValues.mutableCopy() as NSMutableSet
+                    
                     for (index: String, subJson: JSON) in subJson["Data"] {
-                        if index != "0" { dataString += "," }
-                        if let year = subJson["Year"].string {
-                            dataString += "{\"Year\":\"\(year)\","
+                        
+                        let netIncome: NetIncome! = NetIncome(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                        
+                        if let year = subJson["Year"].int {
+                            netIncome.year = year
                         }
-                        if let value = subJson["Value"].string {
-                            dataString += "\"Value\":\"\(value)\"}"
+                        if let value = subJson["Value"].double {
+                            netIncome.value = value
                         }
+                        
+                        netIncomeValues.addObject(netIncome)
                     }
-                    dataString += "]"
-                    company.netIncome = dataString
+                    
+                    company.netIncomeValues = netIncomeValues.copy() as NSSet
+                    
+                    var error: NSError?
+                    if !managedObjectContext.save(&error) {
+                        println("Could not save: \(error)")
+                    }
                     
                 case "GrossProfit":
-                    var dataString: String = "["
+                    
+                    let entity = NSEntityDescription.entityForName("GrossProfit", inManagedObjectContext: managedObjectContext)
+                    var grossProfitValues = company.grossProfitValues.mutableCopy() as NSMutableSet
+                    
                     for (index: String, subJson: JSON) in subJson["Data"] {
-                        if index != "0" { dataString += "," }
-                        if let year = subJson["Year"].string {
-                            dataString += "{\"Year\":\"\(year)\","
+                        
+                        let grossProfit: GrossProfit! = GrossProfit(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                        
+                        if let year = subJson["Year"].int {
+                            grossProfit.year = year
                         }
-                        if let value = subJson["Value"].string {
-                            dataString += "\"Value\":\"\(value)\"}"
+                        if let value = subJson["Value"].double {
+                            grossProfit.value = value
                         }
+                        
+                        grossProfitValues.addObject(grossProfit)
                     }
-                    dataString += "]"
-                    company.grossProfit = dataString
+                    
+                    company.grossProfitValues = grossProfitValues.copy() as NSSet
+                    
+                    var error: NSError?
+                    if !managedObjectContext.save(&error) {
+                        println("Could not save: \(error)")
+                    }
                     
                 case "RandD":
                     var dataString: String = "["
@@ -268,7 +301,6 @@ class WebServicesManagerAPI: NSObject {
                         }
                     }
                     dataString += "]"
-                    company.rAndD = dataString
                     
                 case "SGandA":
                     var dataString: String = "["
@@ -282,7 +314,6 @@ class WebServicesManagerAPI: NSObject {
                         }
                     }
                     dataString += "]"
-                    company.sgAndA = dataString
                     
                 default:
                     break
