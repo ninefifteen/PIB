@@ -36,6 +36,19 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         switch pageIndex {
             
         case 1:
+            var totalRevenueValues: [TotalRevenue] = company.totalRevenueValues.allObjects as [TotalRevenue]
+            totalRevenueValues.sort({ $0.year < $1.year })
+            var netIncomeValues: [NetIncome] = company.netIncomeValues.allObjects as [NetIncome]
+            netIncomeValues.sort({ $0.year < $1.year })
+            
+            for (index, dataPoint) in enumerate(totalRevenueValues) {
+                println("TotalRevenue: Year: \(dataPoint.year), Value: \(dataPoint.value)")
+            }
+            
+            for (index, dataPoint) in enumerate(netIncomeValues) {
+                println("NetIncome: Year: \(dataPoint.year), Value: \(dataPoint.value)")
+            }
+            
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(totalRevenueString))
             graphDataDictionaryArray.append(dictionaryArrayFromDataString(netIncomeString))
             calculateyYAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)

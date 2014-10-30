@@ -220,12 +220,8 @@ class WebServicesManagerAPI: NSObject {
                         
                         let totalRevenue: TotalRevenue! = TotalRevenue(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                         
-                        if let year = subJson["Year"].int {
-                            totalRevenue.year = year
-                        }
-                        if let value = subJson["Value"].double {
-                            totalRevenue.value = value
-                        }
+                        totalRevenue.year = subJson["Year"].intValue
+                        totalRevenue.value = subJson["Value"].doubleValue
                         
                         totalRevenueValues.addObject(totalRevenue)
                     }
@@ -246,12 +242,8 @@ class WebServicesManagerAPI: NSObject {
                         
                         let netIncome: NetIncome! = NetIncome(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                         
-                        if let year = subJson["Year"].int {
-                            netIncome.year = year
-                        }
-                        if let value = subJson["Value"].double {
-                            netIncome.value = value
-                        }
+                        netIncome.year = subJson["Year"].intValue
+                        netIncome.value = subJson["Value"].doubleValue
                         
                         netIncomeValues.addObject(netIncome)
                     }
@@ -272,12 +264,8 @@ class WebServicesManagerAPI: NSObject {
                         
                         let grossProfit: GrossProfit! = GrossProfit(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                         
-                        if let year = subJson["Year"].int {
-                            grossProfit.year = year
-                        }
-                        if let value = subJson["Value"].double {
-                            grossProfit.value = value
-                        }
+                        grossProfit.year = subJson["Year"].intValue
+                        grossProfit.value = subJson["Value"].doubleValue
                         
                         grossProfitValues.addObject(grossProfit)
                     }
@@ -290,30 +278,10 @@ class WebServicesManagerAPI: NSObject {
                     }
                     
                 case "RandD":
-                    var dataString: String = "["
-                    for (index: String, subJson: JSON) in subJson["Data"] {
-                        if index != "0" { dataString += "," }
-                        if let year = subJson["Year"].string {
-                            dataString += "{\"Year\":\"\(year)\","
-                        }
-                        if let value = subJson["Value"].string {
-                            dataString += "\"Value\":\"\(value)\"}"
-                        }
-                    }
-                    dataString += "]"
+                    break
                     
                 case "SGandA":
-                    var dataString: String = "["
-                    for (index: String, subJson: JSON) in subJson["Data"] {
-                        if index != "0" { dataString += "," }
-                        if let year = subJson["Year"].string {
-                            dataString += "{\"Year\":\"\(year)\","
-                        }
-                        if let value = subJson["Value"].string {
-                            dataString += "\"Value\":\"\(value)\"}"
-                        }
-                    }
-                    dataString += "]"
+                    break
                     
                 default:
                     break
