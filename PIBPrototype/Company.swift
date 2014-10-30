@@ -16,8 +16,6 @@ class Company: NSManagedObject {
     @NSManaged var name: String
     @NSManaged var tickerSymbol: String
     @NSManaged var companyDescription: String
-    @NSManaged var grossProfitValues: NSSet
-    @NSManaged var netIncomeValues: NSSet
-    @NSManaged var totalRevenueValues: NSSet
+    @NSManaged var financialMetrics: NSSet
 
 }

@@ -6,30 +6,17 @@
         <attribute name="exchangeDisplayName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="grossProfitValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="GrossProfit" inverseName="company" inverseEntity="GrossProfit" syncable="YES"/>
-        <relationship name="netIncomeValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NetIncome" inverseName="company" inverseEntity="NetIncome" syncable="YES"/>
-        <relationship name="totalRevenueValues" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TotalRevenue" inverseName="company" inverseEntity="TotalRevenue" syncable="YES"/>
+        <relationship name="financialMetrics" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FinancialMetric" inverseName="company" inverseEntity="FinancialMetric" syncable="YES"/>
         <userInfo/>
     </entity>
-    <entity name="GrossProfit" representedClassName="PIBPrototype.GrossProfit" syncable="YES">
+    <entity name="FinancialMetric" representedClassName="PIBPrototype.FinancialMetric" syncable="YES">
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="grossProfitValues" inverseEntity="Company" syncable="YES"/>
-    </entity>
-    <entity name="NetIncome" representedClassName="PIBPrototype.NetIncome" syncable="YES">
-        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="netIncomeValues" inverseEntity="Company" syncable="YES"/>
-    </entity>
-    <entity name="TotalRevenue" representedClassName="PIBPrototype.TotalRevenue" syncable="YES">
-        <attribute name="value" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="year" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
-        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="totalRevenueValues" inverseEntity="Company" syncable="YES"/>
+        <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="financialMetrics" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="163"/>
-        <element name="GrossProfit" positionX="279" positionY="279" width="128" height="88"/>
-        <element name="TotalRevenue" positionX="297" positionY="288" width="128" height="88"/>
-        <element name="NetIncome" positionX="315" positionY="297" width="128" height="88"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="133"/>
+        <element name="FinancialMetric" positionX="306" positionY="270" width="128" height="103"/>
     </elements>
 </model>

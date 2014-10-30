@@ -14,7 +14,10 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
     // MARK: - Properties
 
     @IBOutlet weak var graphView: CPTGraphHostingView!
-    var graphDataDictionaryArray = Array<Array<Dictionary<String,Double>>>()
+    
+    var totalRevenueArray = Array<FinancialMetric>()
+    var netIncomeArray = Array<FinancialMetric>()
+    
     var yAxisMin: Double = 0.0
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
@@ -30,28 +33,32 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         // Do any additional setup after loading the view.
         
         // Temporary code for testing charts.
-        let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"1409.0\"},{\"Year\":\"2012\",\"Value\":\"908.0\"},{\"Year\":\"2011\",\"Value\":\"1249.0\"}]"
-        let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-933.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
+        //let totalRevenueString: String = "[{\"Year\":\"2013\",\"Value\":\"1409.0\"},{\"Year\":\"2012\",\"Value\":\"908.0\"},{\"Year\":\"2011\",\"Value\":\"1249.0\"}]"
+        //let netIncomeString: String = "[{\"Year\":\"2013\",\"Value\":\"637.0\"},{\"Year\":\"2012\",\"Value\":\"-933.0\"},{\"Year\":\"2011\",\"Value\":\"222.0\"}]"
         
         switch pageIndex {
             
         case 1:
-            var totalRevenueValues: [TotalRevenue] = company.totalRevenueValues.allObjects as [TotalRevenue]
-            totalRevenueValues.sort({ $0.year < $1.year })
-            var netIncomeValues: [NetIncome] = company.netIncomeValues.allObjects as [NetIncome]
-            netIncomeValues.sort({ $0.year < $1.year })
+            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, dataPoint) in enumerate(totalRevenueValues) {
-                println("TotalRevenue: Year: \(dataPoint.year), Value: \(dataPoint.value)")
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                switch financialMetric.type {
+                case "TotalRevenue":
+                    totalRevenueArray.append(financialMetric)
+                case "NetIncome":
+                    netIncomeArray.append(financialMetric)
+                default:
+                    break
+                }
             }
             
-            for (index, dataPoint) in enumerate(netIncomeValues) {
-                println("NetIncome: Year: \(dataPoint.year), Value: \(dataPoint.value)")
-            }
+            totalRevenueArray.sort({ $0.year < $1.year })
+            netIncomeArray.sort({ $0.year < $1.year })
             
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(totalRevenueString))
-            graphDataDictionaryArray.append(dictionaryArrayFromDataString(netIncomeString))
-            calculateyYAxisMinMaxAndIntervalForDataInArray(graphDataDictionaryArray)
+            var minValue = minimumValueInFinancialMetricArray(totalRevenueArray) < minimumValueInFinancialMetricArray(netIncomeArray) ? minimumValueInFinancialMetricArray(totalRevenueArray) : minimumValueInFinancialMetricArray(netIncomeArray)
+            var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray) > maximumValueInFinancialMetricArray(netIncomeArray) ? maximumValueInFinancialMetricArray(totalRevenueArray) : maximumValueInFinancialMetricArray(netIncomeArray)
+            
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             configureRevenueIncomeMarginGraph()
             
         case 2:
@@ -147,9 +154,8 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         
         var xAxisLabels = Array<String>()
         
-        for (index, value) in enumerate(graphDataDictionaryArray[0]) {
-            let year: Int = Int(value["Year"]!)
-            let label: String = "\(year)"
+        for (index, financialMetric) in enumerate(totalRevenueArray) {
+            let label: String = "\(financialMetric.year)"
             xAxisLabels.append(label)
         }
         
@@ -322,10 +328,10 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         return Double(shifted)/magnitude
     }
     
-    func calculateyYAxisMinMaxAndIntervalForDataInArray(dataArray: Array<Array<Dictionary<String,Double>>>) {
+    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double) {
         
-        var minY: Double = minimumValueInDataArray(dataArray)
-        var maxY: Double = maximumValueInDataArray(dataArray)
+        var minY: Double = minimumValue
+        var maxY: Double = maximumValue
         let range: Double = (maxY - minY) * 1.15
         
         var interval: Double = range / numberOfYAxisIntervals
@@ -345,75 +351,35 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
         yAxisRange = numberOfYAxisIntervals * interval
     }
     
-    func minimumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
+    func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
         
         var minimumValue: Double = 0.0
         
-        for (index, dataPoint) in enumerate(graphDataDictionaryArray[0]) {
-            let currentValue: Double = Double(dataPoint["Value"]!)
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let currentValue: Double = Double(financialMetric.value)
             if currentValue < minimumValue { minimumValue = currentValue }
-        }
-        
-        if graphDataDictionaryArray.count > 1 {
-            for (index, dataPoint) in enumerate(graphDataDictionaryArray[1]) {
-                let currentValue: Double = Double(dataPoint["Value"]!)
-                if currentValue < minimumValue { minimumValue = currentValue }
-            }
         }
         
         return minimumValue
     }
     
-    func maximumValueInDataArray(dataArray: Array<Array<Dictionary<String,Double>>>) -> Double {
+    func maximumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
         
         var maximumValue: Double = 0.0
         
-        for (index, dataPoint) in enumerate(graphDataDictionaryArray[0]) {
-            let currentValue: Double = Double(dataPoint["Value"]!)
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let currentValue: Double = Double(financialMetric.value)
             if currentValue > maximumValue { maximumValue = currentValue }
         }
         
-        if graphDataDictionaryArray.count > 1 {
-            for (index, dataPoint) in enumerate(graphDataDictionaryArray[1]) {
-                let currentValue: Double = Double(dataPoint["Value"]!)
-                if currentValue > maximumValue { maximumValue = currentValue }
-            }
-        }
-        
         return maximumValue
-    }
-    
-    func dictionaryArrayFromDataString(dataString: String) -> Array<Dictionary<String,Double>> {
-        
-        var dictionaryArray = Array<Dictionary<String,Double>>()
-        
-        let data = (dataString as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-        let json = JSON(data: data!)
-        
-        for (index: String, subJson: JSON) in json {
-            
-            let value: Double = subJson["Value"].doubleValue
-            let year: Double = subJson["Year"].doubleValue
-            let dictionary: Dictionary<String,Double> = ["Year": year, "Value": value]
-            dictionaryArray.append(dictionary)
-        }
-        
-        // Sort in ascending order by year.
-        dictionaryArray.sort({ $0["Year"] < $1["Year"] })
-        
-        return dictionaryArray
     }
     
     
     // MARK: - CPTPlotDataSource
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        if graphDataDictionaryArray.count > 0 {
-            return UInt(graphDataDictionaryArray[0].count)
-        } else {
-            return 0
-        }
-        
+        return 3
     }
     
     func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {
@@ -431,11 +397,9 @@ class GraphPageViewController: PageContentViewController, CPTPlotDataSource {
                 let plotID = plot.identifier as String
                 
                 if plotID == "Revenue" {
-                    let value: Double = graphDataDictionaryArray[0][Int(recordIndex)]["Value"]!
-                    return NSNumber(double: value)
+                    return totalRevenueArray[Int(recordIndex)].value
                 } else if plotID == "Net Income" {
-                    let value: Double = graphDataDictionaryArray[1][Int(recordIndex)]["Value"]!
-                    return NSNumber(double: value)
+                    return netIncomeArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }

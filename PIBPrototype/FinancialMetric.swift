@@ -1,5 +1,5 @@
 //
-//  TotalRevenue.swift
+//  FinancialMetric.swift
 //  PIBPrototype
 //
 //  Created by Shawn Seals on 10/30/14.
@@ -9,8 +9,9 @@
 import Foundation
 import CoreData
 
-class TotalRevenue: NSManagedObject {
+class FinancialMetric: NSManagedObject {
 
+    @NSManaged var type: String
     @NSManaged var year: NSNumber
     @NSManaged var value: NSNumber
     @NSManaged var company: Company

@@ -205,87 +205,25 @@ class WebServicesManagerAPI: NSObject {
         let json = JSON(data: data)["ReturnData"]
         //println(json)
         
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        
         for (index: String, subJson: JSON) in json {
             
             if let type = subJson["Type"].string {
-                                
-                switch type {
+                
+                for (index: String, subJson: JSON) in subJson["Data"] {
                     
-                case "TotalRevenue":
+                    let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     
-                    let entity = NSEntityDescription.entityForName("TotalRevenue", inManagedObjectContext: managedObjectContext)
-                    var totalRevenueValues = company.totalRevenueValues.mutableCopy() as NSMutableSet
+                    financialMetric.type = type
+                    financialMetric.year = subJson["Year"].intValue
+                    financialMetric.value = subJson["Value"].doubleValue
                     
-                    for (index: String, subJson: JSON) in subJson["Data"] {
-                        
-                        let totalRevenue: TotalRevenue! = TotalRevenue(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                        
-                        totalRevenue.year = subJson["Year"].intValue
-                        totalRevenue.value = subJson["Value"].doubleValue
-                        
-                        totalRevenueValues.addObject(totalRevenue)
-                    }
-                    
-                    company.totalRevenueValues = totalRevenueValues.copy() as NSSet
-                    
-                    var error: NSError?
-                    if !managedObjectContext.save(&error) {
-                        println("Could not save: \(error)")
-                    }
-                    
-                case "NetIncome":
-                    
-                    let entity = NSEntityDescription.entityForName("NetIncome", inManagedObjectContext: managedObjectContext)
-                    var netIncomeValues = company.netIncomeValues.mutableCopy() as NSMutableSet
-                    
-                    for (index: String, subJson: JSON) in subJson["Data"] {
-                        
-                        let netIncome: NetIncome! = NetIncome(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                        
-                        netIncome.year = subJson["Year"].intValue
-                        netIncome.value = subJson["Value"].doubleValue
-                        
-                        netIncomeValues.addObject(netIncome)
-                    }
-                    
-                    company.netIncomeValues = netIncomeValues.copy() as NSSet
-                    
-                    var error: NSError?
-                    if !managedObjectContext.save(&error) {
-                        println("Could not save: \(error)")
-                    }
-                    
-                case "GrossProfit":
-                    
-                    let entity = NSEntityDescription.entityForName("GrossProfit", inManagedObjectContext: managedObjectContext)
-                    var grossProfitValues = company.grossProfitValues.mutableCopy() as NSMutableSet
-                    
-                    for (index: String, subJson: JSON) in subJson["Data"] {
-                        
-                        let grossProfit: GrossProfit! = GrossProfit(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                        
-                        grossProfit.year = subJson["Year"].intValue
-                        grossProfit.value = subJson["Value"].doubleValue
-                        
-                        grossProfitValues.addObject(grossProfit)
-                    }
-                    
-                    company.grossProfitValues = grossProfitValues.copy() as NSSet
-                    
-                    var error: NSError?
-                    if !managedObjectContext.save(&error) {
-                        println("Could not save: \(error)")
-                    }
-                    
-                case "RandD":
-                    break
-                    
-                case "SGandA":
-                    break
-                    
-                default:
-                    break
+                    financialMetrics.addObject(financialMetric)
                 }
+                
+                company.financialMetrics = financialMetrics.copy() as NSSet
             }
         }
         
