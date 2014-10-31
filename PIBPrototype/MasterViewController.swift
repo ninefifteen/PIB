@@ -93,7 +93,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) as UITableViewCell
+        //let cell = tableView.dequeueReusableCellWithIdentifier("CellA", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("CellB", forIndexPath: indexPath) as UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }
@@ -123,7 +124,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         //cell.textLabel?.text = object.valueForKey("name")!.description
         
         let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-        cell.textLabel.text = company.name
+        let nameLabel = cell.viewWithTag(101) as UILabel
+        nameLabel.text = company.name
     }
 
     
