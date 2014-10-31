@@ -14,7 +14,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     // MARK: - Properties
     
     let webServicesManagerAPI = WebServicesManagerAPI()
-    var managedObjectContext: NSManagedObjectContext? = nil
+    var managedObjectContext: NSManagedObjectContext!
     var companyToAdd: Company?
     var searchResultsCompanies = [Company]()
     
@@ -112,9 +112,39 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        companyToAdd = searchResultsCompanies[indexPath.row]
+        // Add selected company to Core Data.
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+        companyToAdd = searchResultsCompanies[indexPath.row]
+        insertNewCompany(companyToAdd!)
+    }
+    
+    func insertNewCompany(newCompany: Company) {
+        
+        // Create new company managed object.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+        
+        // Set attributes.
+        company.name = newCompany.name
+        company.exchange = newCompany.exchange
+        company.exchangeDisplayName = newCompany.exchangeDisplayName
+        company.tickerSymbol = newCompany.tickerSymbol
+        
+        // Save the context.
+        var error: NSError? = nil
+        if !managedObjectContext.save(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
+        }
+        
+        // Download fundamentals for newly added company.
+        webServicesManagerAPI.downloadFinancialDataForCompany(company, withCompletion: { (success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+            })
+        })
     }
 
     // MARK: - Web Services Manager API Delegate

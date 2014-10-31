@@ -15,7 +15,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Properties
 
     var detailViewController: DetailViewController? = nil
-    var managedObjectContext: NSManagedObjectContext? = nil
+    var managedObjectContext: NSManagedObjectContext!
 
     
     // MARK: - View Life Cycle
@@ -32,6 +32,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
+        title = "Companies"
+        let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButtonItem
 
         if let split = self.splitViewController {
             let controllers = split.viewControllers
@@ -42,35 +45,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    
-    // MARK: - General Methods
-    
-    func insertNewCompany(newCompany: Company) {
-        
-        let context = self.fetchedResultsController.managedObjectContext
-        let entity = self.fetchedResultsController.fetchRequest.entity!
-        
-        var company: Company! = NSEntityDescription.insertNewObjectForEntityForName(entity.name!, inManagedObjectContext: context) as Company
-        company.name = newCompany.name
-        company.exchange = newCompany.exchange
-        company.exchangeDisplayName = newCompany.exchangeDisplayName
-        company.tickerSymbol = newCompany.tickerSymbol
-        
-        // Save the context.
-        var error: NSError? = nil
-        if !context.save(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-        
-        // Download fundamentals for newly added company.
-        let webServicesManagerAPI = WebServicesManagerAPI()
-        webServicesManagerAPI.managedObjectContext = context
-        webServicesManagerAPI.downloadFinancialDataForCompany(company, withCompletion: nil)
     }
 
     
@@ -100,7 +74,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = segue.sourceViewController as AddCompanyTableViewController
         
         if let newCompany = controller.companyToAdd {
-            insertNewCompany(newCompany)
+            //insertNewCompany(newCompany)
         }
         
         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)

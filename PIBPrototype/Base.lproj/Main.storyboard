@@ -45,9 +45,6 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
-                    <connections>
-                        <outlet property="pageContainerView" destination="Izw-1s-gsb" id="9wk-ZV-HPj"/>
-                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
             </objects>
