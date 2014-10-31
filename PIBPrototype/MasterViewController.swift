@@ -53,9 +53,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == "showDetail" {
+            println("001")
             
             if let indexPath = self.tableView.indexPathForSelectedRow() {
             let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                println("002")
                 let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
                 controller.company = company
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
@@ -93,8 +95,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        //let cell = tableView.dequeueReusableCellWithIdentifier("CellA", forIndexPath: indexPath) as UITableViewCell
-        let cell = tableView.dequeueReusableCellWithIdentifier("CellB", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("CellA", forIndexPath: indexPath) as UITableViewCell
+        //let cell = tableView.dequeueReusableCellWithIdentifier("CellB", forIndexPath: indexPath) as UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }
