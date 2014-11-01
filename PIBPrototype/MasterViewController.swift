@@ -53,11 +53,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == "showDetail" {
-            println("001")
             
             if let indexPath = self.tableView.indexPathForSelectedRow() {
             let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-                println("002")
                 let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
                 controller.company = company
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()

@@ -142,7 +142,7 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M7v-Sz-UVP">
                                 <rect key="frame" x="0.0" y="208" width="600" height="248"/>
                                 <connections>
-                                    <segue destination="nMb-JC-i6a" kind="embed" id="ZgX-Ft-HsG"/>
+                                    <segue destination="8O1-Nn-uAe" kind="embed" id="1bD-Mt-tkz"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -167,24 +167,12 @@
             <point key="canvasLocation" x="709" y="129"/>
         </scene>
         <!--Graph Page View Controller-->
-        <scene sceneID="0D0-eJ-n5g">
+        <scene sceneID="y51-Kr-IEX">
             <objects>
-                <viewController storyboardIdentifier="GraphPageViewController" id="BHu-Of-VB1" customClass="GraphPageViewController" customModule="PIBPrototype" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="z9h-sP-1Kc"/>
-                        <viewControllerLayoutGuide type="bottom" id="Cy4-Pr-1R0"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="9uS-K0-QvA" customClass="CPTGraphHostingView">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                    </view>
-                    <connections>
-                        <outlet property="graphView" destination="9uS-K0-QvA" id="c39-RU-EWU"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="f3d-7P-5p3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="8O1-Nn-uAe" customClass="GraphPageViewController" customModule="PIBPrototype" customModuleProvider="target" sceneMemberID="viewController"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AGR-Ck-RrW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1523" y="129"/>
+            <point key="canvasLocation" x="1404" y="129"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="Nki-YV-4Qg">
@@ -476,7 +464,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JD1-M0-Rbd" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="e5f-rv-lwX" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2254" y="-630"/>
+            <point key="canvasLocation" x="2276" y="-630"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="r7l-gg-dq7">
@@ -510,24 +498,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7pL-Wb-sMD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1523" y="-630"/>
-        </scene>
-        <!--View Controller-->
-        <scene sceneID="Tm3-ug-9Sz">
-            <objects>
-                <viewController automaticallyAdjustsScrollViewInsets="NO" id="nMb-JC-i6a" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="ffB-xL-Ibo"/>
-                        <viewControllerLayoutGuide type="bottom" id="wJM-NW-x4L"/>
-                    </layoutGuides>
-                    <view key="view" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="30q-Vz-apF">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="248"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                    <toolbarItems/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="PYF-dp-m4v" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
         </scene>
     </scenes>
     <resources>

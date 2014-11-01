@@ -8,29 +8,13 @@
 
 import UIKit
 
-class DetailViewController: UIViewController, UIPageViewControllerDelegate {
+class DetailViewController: UIViewController {
     
     
     // MARK: - Properties
     
-    //@IBOutlet weak var pageContainerView: UIView!
-    
-    var pageViewController: UIPageViewController?
-    
     var company: Company!
     
-    var _pageModelController: PageModelController? = nil
-    
-    var pageModelController: PageModelController {
-        // Return the model controller object, creating it if necessary.
-        // In more complex implementations, the model controller may be passed to the view controller.
-        if _pageModelController == nil {
-            _pageModelController = PageModelController()
-            _pageModelController!.company = company
-        }
-        return _pageModelController!
-    }
-
     
     // MARK: - View Life Cycle
     
@@ -43,19 +27,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         } else {
             title = ""
         }
-    }
-    
-    
-    // MARK: - UIPageViewController delegate methods
-    
-    func pageViewController(pageViewController: UIPageViewController, spineLocationForInterfaceOrientation orientation: UIInterfaceOrientation) -> UIPageViewControllerSpineLocation {
-        // Set the spine position to "min" and the page view controller's view controllers array to contain just one view controller. Setting the spine position to 'UIPageViewControllerSpineLocationMid' in landscape orientation sets the doubleSided property to true, so set it to false here.
-        let currentViewController = self.pageViewController!.viewControllers[0] as UIViewController
-        let viewControllers: NSArray = [currentViewController]
-        self.pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: true, completion: {done in })
-        
-        self.pageViewController!.doubleSided = false
-        return .Min
     }
     
     
