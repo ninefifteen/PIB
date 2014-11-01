@@ -24,6 +24,7 @@
 		45939C4B19E84457009AD108 /* AddCompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */; };
 		45E3A4EB19E2FF7100D6F958 /* WebServicesManagerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E3A4EA19E2FF7100D6F958 /* WebServicesManagerAPI.swift */; };
 		45E8F43F1A04517A008DBF74 /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E8F43E1A04517A008DBF74 /* GraphPageViewController.swift */; };
+		45E8F4411A053181008DBF74 /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E8F4401A053181008DBF74 /* GraphContentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -137,6 +138,7 @@
 		45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCompanyTableViewController.swift; sourceTree = "<group>"; };
 		45E3A4EA19E2FF7100D6F958 /* WebServicesManagerAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebServicesManagerAPI.swift; sourceTree = "<group>"; };
 		45E8F43E1A04517A008DBF74 /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
+		45E8F4401A053181008DBF74 /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,6 +333,7 @@
 				457FB84319DDA0BC00A58B6E /* MasterViewController.swift */,
 				457FB84519DDA0BC00A58B6E /* DetailViewController.swift */,
 				45E8F43E1A04517A008DBF74 /* GraphPageViewController.swift */,
+				45E8F4401A053181008DBF74 /* GraphContentViewController.swift */,
 				45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */,
 			);
 			name = Controller;
@@ -467,6 +470,7 @@
 				457FB84219DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld in Sources */,
 				457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */,
 				4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */,
+				45E8F4411A053181008DBF74 /* GraphContentViewController.swift in Sources */,
 				4538417A1A02D2AF006A4620 /* Company.swift in Sources */,
 				457FB84419DDA0BC00A58B6E /* MasterViewController.swift in Sources */,
 				45939C4B19E84457009AD108 /* AddCompanyTableViewController.swift in Sources */,

@@ -142,7 +142,7 @@
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M7v-Sz-UVP">
                                 <rect key="frame" x="0.0" y="208" width="600" height="248"/>
                                 <connections>
-                                    <segue destination="8O1-Nn-uAe" kind="embed" id="1bD-Mt-tkz"/>
+                                    <segue destination="8O1-Nn-uAe" kind="embed" identifier="embedGraph" id="1bD-Mt-tkz"/>
                                 </connections>
                             </containerView>
                         </subviews>
@@ -172,7 +172,28 @@
                 <pageViewController autoresizesArchivedViewToFullSize="NO" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="8O1-Nn-uAe" customClass="GraphPageViewController" customModule="PIBPrototype" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="AGR-Ck-RrW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1404" y="129"/>
+            <point key="canvasLocation" x="1433" y="-47"/>
+        </scene>
+        <!--Graph Content View Controller-->
+        <scene sceneID="p2t-uU-GoQ">
+            <objects>
+                <viewController storyboardIdentifier="GraphContentViewController" id="1zm-eX-qNe" customClass="GraphContentViewController" customModule="PIBPrototype" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="lvf-DP-VcI"/>
+                        <viewControllerLayoutGuide type="bottom" id="kCw-tb-Ppq"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ggK-qC-wbi" customClass="CPTGraphHostingView">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="graphView" destination="ggK-qC-wbi" id="V0h-7q-dZN"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="IkJ-Zc-RIK" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1433" y="494"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="Nki-YV-4Qg">
