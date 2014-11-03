@@ -25,7 +25,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
     var yAxisRange: Double = 0.0
-    let numberOfYAxisIntervals: Double = 7.0
+    let numberOfYAxisIntervals: Double = 4.0
     
     
     // MARK: - View Life Cycle
@@ -100,9 +100,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         graph.paddingBottom = 0.0
         
         graph.plotAreaFrame.paddingLeft   = 64.0
-        graph.plotAreaFrame.paddingTop    = 20.0
+        graph.plotAreaFrame.paddingTop    = 24.0
         graph.plotAreaFrame.paddingRight  = 20.0
-        graph.plotAreaFrame.paddingBottom = 60.0
+        graph.plotAreaFrame.paddingBottom = 80.0
         
         // Graph title.
         /*let paragraphStyle = NSMutableParagraphStyle()
@@ -276,7 +276,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         
         graph.legend = graphLegend
         graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 0.0)
+        graph.legendDisplacement = CGPointMake(0.0, 25.0)
         
         self.graphView.hostedGraph = graph
     }
