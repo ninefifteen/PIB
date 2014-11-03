@@ -285,12 +285,19 @@
                                     <constraint firstItem="MiL-nh-mpT" firstAttribute="top" secondItem="h7o-Cn-RDn" secondAttribute="top" constant="8" id="jmQ-N1-muf"/>
                                 </constraints>
                             </view>
+                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="4" translatesAutoresizingMaskIntoConstraints="NO" id="tZT-SE-RgZ">
+                                <rect key="frame" x="273" y="439" width="55" height="37"/>
+                                <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="currentPageIndicatorTintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            </pageControl>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailingMargin" secondItem="NPq-gS-bve" secondAttribute="trailing" constant="-16" id="JOC-WW-HK8"/>
+                            <constraint firstAttribute="centerX" secondItem="tZT-SE-RgZ" secondAttribute="centerX" id="KZ9-bl-MtU"/>
                             <constraint firstItem="h7o-Cn-RDn" firstAttribute="top" secondItem="M7v-Sz-UVP" secondAttribute="bottom" id="Ldg-v6-J6Z"/>
                             <constraint firstAttribute="trailingMargin" secondItem="h7o-Cn-RDn" secondAttribute="trailing" constant="-16" id="RXe-Hq-8Wm"/>
                             <constraint firstItem="h7o-Cn-RDn" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leadingMargin" constant="-16" id="V30-Lk-Cqp"/>
+                            <constraint firstItem="h7o-Cn-RDn" firstAttribute="top" secondItem="tZT-SE-RgZ" secondAttribute="bottom" id="X49-nq-uBb"/>
                             <constraint firstItem="GAO-Cl-Wes" firstAttribute="top" secondItem="h7o-Cn-RDn" secondAttribute="bottom" id="XG3-h6-Lur"/>
                             <constraint firstAttribute="trailingMargin" secondItem="M7v-Sz-UVP" secondAttribute="trailing" constant="-16" id="q9M-BE-fmP"/>
                             <constraint firstItem="NPq-gS-bve" firstAttribute="top" secondItem="SYR-Wa-9uf" secondAttribute="bottom" id="qQh-Zk-Q2G"/>
@@ -304,6 +311,7 @@
                     <connections>
                         <outlet property="companyNameLabel" destination="UPa-yy-aSe" id="8ag-2g-8pd"/>
                         <outlet property="competitorScrollView" destination="e9e-pq-149" id="rij-V6-eBg"/>
+                        <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>

@@ -15,6 +15,7 @@ class DetailViewController: UIViewController {
     
     @IBOutlet weak var companyNameLabel: UILabel!
     @IBOutlet weak var competitorScrollView: UIScrollView!
+    @IBOutlet weak var pageControl: UIPageControl!
     
     var company: Company!
     
