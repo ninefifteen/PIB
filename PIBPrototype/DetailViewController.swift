@@ -32,9 +32,7 @@ class DetailViewController: UIViewController {
             title = ""
             companyNameLabel.text = ""
         }
-        println(competitorScrollView.contentSize.width)
         competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
-        println(competitorScrollView.contentSize.width)
     }
     
     
