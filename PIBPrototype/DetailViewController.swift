@@ -36,33 +36,6 @@ class DetailViewController: UIViewController {
     }
     
     
-    /*
-    // Used in old design.
-    func configureFullSizePageViewController() {
-    // Configure the page view controller and add it as a child view controller.
-    pageViewController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: nil)
-    pageViewController!.delegate = self
-    
-    let startingViewController: PageContentViewController = pageModelController.viewControllerAtIndex(0, storyboard: storyboard!)!
-    let viewControllers: NSArray = [startingViewController]
-    pageViewController!.setViewControllers(viewControllers, direction: .Forward, animated: false, completion: { done in })
-    
-    pageViewController!.dataSource = pageModelController
-    
-    addChildViewController(pageViewController!)
-    pageContainerView.addSubview(pageViewController!.view)
-    
-    // Set the page view controller's bounds using an inset rect so that self's view is visible around the edges of the pages.
-    var pageViewRect = pageContainerView.bounds
-    self.pageViewController!.view.frame = pageViewRect
-    
-    self.pageViewController!.didMoveToParentViewController(self)
-    
-    // Add the page view controller's gesture recognizers to the book view controller's view so that the gestures are started more easily.
-    self.view.gestureRecognizers = self.pageViewController!.gestureRecognizers
-    }
-    */
-    
     override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
