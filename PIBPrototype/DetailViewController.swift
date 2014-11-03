@@ -13,6 +13,9 @@ class DetailViewController: UIViewController {
     
     // MARK: - Properties
     
+    @IBOutlet weak var companyNameLabel: UILabel!
+    @IBOutlet weak var competitorScrollView: UIScrollView!
+    
     var company: Company!
     
     
@@ -22,11 +25,16 @@ class DetailViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
                 
-        if let titleText: String = company?.name {
-            title = titleText
+        if let companyName: String = company?.name {
+            title = companyName
+            companyNameLabel.text = companyName
         } else {
             title = ""
+            companyNameLabel.text = ""
         }
+        println(competitorScrollView.contentSize.width)
+        competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
+        println(competitorScrollView.contentSize.width)
     }
     
     

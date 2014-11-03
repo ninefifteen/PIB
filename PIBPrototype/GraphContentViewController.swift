@@ -386,7 +386,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         
         switch pageIndex {
             
-        case 1:
+        case 0:
             
             switch CPTBarPlotField(rawValue: Int(field))! {
             case .BarLocation:
