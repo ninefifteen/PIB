@@ -14,18 +14,33 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
     
-    var pageIndex: Int = 0
-    
     var company: Company!
+    
+    let graph = CPTXYGraph()
+    var pageIndex: Int = 0
     
     var totalRevenueArray = Array<FinancialMetric>()
     var netIncomeArray = Array<FinancialMetric>()
+    var grossProfitArray = Array<FinancialMetric>()
+    var rAndDArray = Array<FinancialMetric>()
+    var sgAndAArray = Array<FinancialMetric>()
     
     var yAxisMin: Double = 0.0
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
     var yAxisRange: Double = 0.0
     let numberOfYAxisIntervals: Double = 4.0
+    
+    var xAxisLabels = Array<String>()
+    var yAxisLabels = Array<String>()
+    var plotSpace = CPTXYPlotSpace()
+    var axisSet = CPTXYAxisSet()
+    var x = CPTXYAxis()
+    var y = CPTXYAxis()
+    var xAxisCustomTickLocations = Array<Double>()
+    var yAxisCustomTickLocations = Array<Double>()
+    var yMajorGridLineStyle = CPTMutableLineStyle()
+    var barLineStyle = CPTMutableLineStyle()
     
     
     // MARK: - View Life Cycle
@@ -59,15 +74,74 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray) > maximumValueInFinancialMetricArray(netIncomeArray) ? maximumValueInFinancialMetricArray(totalRevenueArray) : maximumValueInFinancialMetricArray(netIncomeArray)
             
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
+            
             configureRevenueIncomeMarginGraph()
             
         case 1:
+            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+            
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                switch financialMetric.type {
+                case "GrossProfit":
+                    grossProfitArray.append(financialMetric)
+                default:
+                    break
+                }
+            }
+            
+            grossProfitArray.sort({ $0.year < $1.year })
+            
+            var minValue = minimumValueInFinancialMetricArray(grossProfitArray)
+            var maxValue = maximumValueInFinancialMetricArray(grossProfitArray)
+            
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(grossProfitArray)
+            
             configureGrossMarginGraph()
             
         case 2:
+            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+            
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                switch financialMetric.type {
+                case "RandD":
+                    rAndDArray.append(financialMetric)
+                default:
+                    break
+                }
+            }
+            
+            rAndDArray.sort({ $0.year < $1.year })
+            
+            var minValue = minimumValueInFinancialMetricArray(rAndDArray)
+            var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
+            
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            
             configureRAndDGraph()
             
         case 3:
+            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+            
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                switch financialMetric.type {
+                case "SGandA":
+                    sgAndAArray.append(financialMetric)
+                default:
+                    break
+                }
+            }
+            
+            sgAndAArray.sort({ $0.year < $1.year })
+            
+            var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
+            var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
+            
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            
             configureSGAndAGraph()
             
         default:
@@ -83,9 +157,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     
     // MARK: - Graph Configure Methods
     
-    func configureRevenueIncomeMarginGraph() {
+    func configureBaseBarGraph() {
         
-        let graph = CPTXYGraph()
         graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
         
         // Graph border.
@@ -104,40 +177,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         graph.plotAreaFrame.paddingRight  = 20.0
         graph.plotAreaFrame.paddingBottom = 80.0
         
-        // Graph title.
-        /*let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Center
-        
-        let lineOne = "Graph Title"
-        let lineTwo = "Subtitle"
-        
-        let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
-        let line2Font = UIFont(name: "Helvetica", size: 12.0)
-        
-        let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
-        
-        let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
-        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
-        
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
-        graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
-        graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
-        graphTitle.addAttribute(NSFontAttributeName, value: line2Font!, range: titleRange2)
-        
-        graph.attributedTitle = graphTitle
-        
-        graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
-        graph.titlePlotAreaFrameAnchor = .Top*/
-        
         // Plot space.
-        let plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
+        plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
         
-        let axisSet = graph.axisSet as CPTXYAxisSet
+        axisSet = graph.axisSet as CPTXYAxisSet
         
-        let x = axisSet.xAxis
+        x = axisSet.xAxis
         x.axisLineStyle = nil
         x.majorTickLineStyle = nil
         x.minorTickLineStyle = nil
@@ -150,14 +197,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         // Custom X-axis labels.
         x.labelingPolicy = .None
         
-        let xAxisCustomTickLocations = [1.0, 2.0, 3.0]
-        
-        var xAxisLabels = Array<String>()
-        
-        for (index, financialMetric) in enumerate(totalRevenueArray) {
-            let label: String = "\(financialMetric.year)"
-            xAxisLabels.append(label)
-        }
+        xAxisCustomTickLocations = [1.0, 2.0, 3.0]
         
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
@@ -172,18 +212,16 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         x.axisLabels = xAxisCustomLabels
         
         // Create y-axis custom tick locations.
-        var yAxisCustomTickLocations = Array<Double>()
         for index in 0...Int(numberOfYAxisIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
         }
         
         // Create y-axis major tick line style.
-        var yMajorGridLineStyle = CPTMutableLineStyle()
         yMajorGridLineStyle.lineWidth = 1.0
         yMajorGridLineStyle.lineColor = CPTColor.lightGrayColor()
         
-        let y = axisSet.yAxis
+        y = axisSet.yAxis
         y.axisLineStyle = nil
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
@@ -194,12 +232,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         //y.title = "Y Axis"
         //y.titleOffset = 45.0
         //y.titleLocation = yAxisMin + yAxisRange / 2.0
-        
-        // Custom Y Axis Labels
         y.labelingPolicy = .None
         
-        var yAxisLabels = Array<String>()
-        
+        // Custom Y Axis Labels
         for (index, value) in enumerate(yAxisCustomTickLocations) {
             
             var unitAdjustedValue = value
@@ -228,9 +263,39 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         y.axisLabels = yAxisCustomLabels
         
         // Create bar line style.
-        var barLineStyle = CPTMutableLineStyle()
         barLineStyle.lineWidth = 1.0
         barLineStyle.lineColor = CPTColor.blackColor()
+    }
+    
+    func configureRevenueIncomeMarginGraph() {
+        
+        configureBaseBarGraph()
+        
+        // Graph title.
+        /*let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .Center
+        
+        let lineOne = "Graph Title"
+        let lineTwo = "Subtitle"
+        
+        let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
+        let line2Font = UIFont(name: "Helvetica", size: 12.0)
+        
+        let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
+        
+        let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
+        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
+        
+        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
+        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
+        graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
+        graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
+        graphTitle.addAttribute(NSFontAttributeName, value: line2Font!, range: titleRange2)
+        
+        graph.attributedTitle = graphTitle
+        
+        graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
+        graph.titlePlotAreaFrameAnchor = .Top*/
         
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
@@ -283,7 +348,68 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     
     func configureGrossMarginGraph() {
         
-        //
+        configureBaseBarGraph()
+        
+        // Graph title.
+        /*let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .Center
+        
+        let lineOne = "Graph Title"
+        let lineTwo = "Subtitle"
+        
+        let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
+        let line2Font = UIFont(name: "Helvetica", size: 12.0)
+        
+        let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
+        
+        let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
+        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
+        
+        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
+        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
+        graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
+        graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
+        graphTitle.addAttribute(NSFontAttributeName, value: line2Font!, range: titleRange2)
+        
+        graph.attributedTitle = graphTitle
+        
+        graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
+        graph.titlePlotAreaFrameAnchor = .Top*/
+        
+        // First bar plot.
+        let revenueBarPlot = CPTBarPlot()
+        revenueBarPlot.barsAreHorizontal = false
+        revenueBarPlot.lineStyle = barLineStyle
+        revenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+        revenueBarPlot.barWidth = 0.3
+        revenueBarPlot.baseValue = 0.0
+        revenueBarPlot.barOffset = -0.17
+        revenueBarPlot.identifier = "Gross Profit"
+        revenueBarPlot.dataSource = self
+        graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
+        
+        // Add legend.
+        let graphLegend = CPTLegend(graph: graph)
+        graphLegend.fill = CPTFill(color: CPTColor.whiteColor())
+        graphLegend.borderLineStyle = nil
+        graphLegend.cornerRadius = 10.0
+        graphLegend.swatchSize = CGSizeMake(14.0, 14.0)
+        let blackTextStyle = CPTMutableTextStyle()
+        blackTextStyle.color = CPTColor.blackColor()
+        blackTextStyle.fontSize = 12.0
+        graphLegend.textStyle = blackTextStyle
+        graphLegend.rowMargin = 10.0
+        graphLegend.numberOfRows = 1
+        graphLegend.paddingLeft = 8.0
+        graphLegend.paddingTop = 8.0
+        graphLegend.paddingRight = 8.0
+        graphLegend.paddingBottom = 8.0
+        
+        graph.legend = graphLegend
+        graph.legendAnchor = .Bottom
+        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        
+        self.graphView.hostedGraph = graph
     }
     
     func configureRAndDGraph() {
@@ -375,6 +501,18 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         return maximumValue
     }
     
+    func xAxisLabelsForFinancialMetrics(financialMetrics: Array<FinancialMetric>) -> Array<String> {
+        
+        var xAxisLabels = Array<String>()
+        
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let label: String = "\(financialMetric.year)"
+            xAxisLabels.append(label)
+        }
+        
+        return xAxisLabels
+    }
+    
     
     // MARK: - CPTPlotDataSource
     
@@ -389,6 +527,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         case 0:
             
             switch CPTBarPlotField(rawValue: Int(field))! {
+                
             case .BarLocation:
                 return recordIndex + 1 as NSNumber
                 
@@ -408,11 +547,30 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
                 return nil
             }
             
+        case 1:
+            
+            switch CPTBarPlotField(rawValue: Int(field))! {
+                
+            case .BarLocation:
+                return recordIndex + 1 as NSNumber
+                
+            case .BarTip:
+                
+                let plotID = plot.identifier as String
+                
+                if plotID == "Gross Profit" {
+                    return grossProfitArray[Int(recordIndex)].value
+                } else {
+                    return nil
+                }
+                
+            default:
+                return nil
+            }
+            
         default:
             return nil
         }
-        
-        
     }
     
     
