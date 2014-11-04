@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     
     // MARK: - Properties
@@ -16,6 +16,8 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var companyNameLabel: UILabel!
     @IBOutlet weak var competitorScrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
+    
+    weak var graphPageViewController: GraphPageViewController!
     
     var company: Company!
     
@@ -33,13 +35,25 @@ class DetailViewController: UIViewController {
             title = ""
             companyNameLabel.text = ""
         }
+        
+        
+        
         competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
     }
     
     
     override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // MARK: - UIPageViewControllerDelegate
+    
+    func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
+        let currentContentPage = graphPageViewController.viewControllers.last as GraphContentViewController
+        let currentPageIndex = currentContentPage.pageIndex
+        pageControl.currentPage = currentPageIndex
     }
     
     
@@ -48,8 +62,9 @@ class DetailViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == "embedGraph" {
-            let controller = segue.destinationViewController as GraphPageViewController
-            controller.company = company
+            graphPageViewController = segue.destinationViewController as GraphPageViewController
+            graphPageViewController.company = company
+            graphPageViewController.delegate = self
         }
     }
 }
