@@ -36,8 +36,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             companyNameLabel.text = ""
         }
         
-        
-        
         competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
     }
     
@@ -45,6 +43,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // MARK: - UIPageControl
+    
+    @IBAction func pageControlValueChanged(sender: UIPageControl) {
+        let newPageIndex = sender.currentPage
+        graphPageViewController.scrollToViewControllerAtIndex(newPageIndex)
     }
     
     

@@ -53,6 +53,13 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
     }
     
+    func scrollToViewControllerAtIndex(index: Int) {
+        let graphContentViewController = self.viewControllerAtIndex(index, storyboard: storyboard!)
+        if graphContentViewController != nil {
+            setViewControllers([graphContentViewController!], direction: UIPageViewControllerNavigationDirection.Forward, animated: true, completion: nil)
+        }
+    }
+    
     
     // MARK: - Page View Controller Data Source
     

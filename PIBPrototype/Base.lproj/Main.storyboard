@@ -289,6 +289,9 @@
                                 <rect key="frame" x="273" y="439" width="55" height="37"/>
                                 <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="currentPageIndicatorTintColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <action selector="pageControlValueChanged:" destination="JEX-9P-axG" eventType="valueChanged" id="1ZA-iV-4bx"/>
+                                </connections>
                             </pageControl>
                         </subviews>
                         <constraints>
