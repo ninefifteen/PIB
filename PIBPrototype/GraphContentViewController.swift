@@ -121,6 +121,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
+            xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
+            
             configureRAndDGraph()
             
         case 3:
@@ -267,6 +269,113 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         barLineStyle.lineColor = CPTColor.blackColor()
     }
     
+    func configureBaseCurvedLineGraph() {
+        
+        graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
+        
+        // Graph border.
+        graph.plotAreaFrame.borderLineStyle = nil
+        graph.plotAreaFrame.cornerRadius = 0.0
+        graph.plotAreaFrame.masksToBorder = false
+        
+        // Graph paddings.
+        graph.paddingLeft = 0.0
+        graph.paddingRight = 0.0
+        graph.paddingTop = 0.0
+        graph.paddingBottom = 0.0
+        
+        graph.plotAreaFrame.paddingLeft   = 64.0
+        graph.plotAreaFrame.paddingTop    = 24.0
+        graph.plotAreaFrame.paddingRight  = 20.0
+        graph.plotAreaFrame.paddingBottom = 80.0
+        
+        // Plot space.
+        plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
+        plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+        
+        axisSet = graph.axisSet as CPTXYAxisSet
+        
+        x = axisSet.xAxis
+        x.axisLineStyle = nil
+        x.majorTickLineStyle = nil
+        x.minorTickLineStyle = nil
+        x.majorIntervalLength = 1.0
+        x.orthogonalPosition = yAxisMin
+        //x.title = "X Axis"
+        //x.titleLocation = 1.5
+        //x.titleOffset = 35
+        
+        // Custom X-axis labels.
+        x.labelingPolicy = .None
+        
+        xAxisCustomTickLocations = [1.0, 2.0, 3.0]
+        
+        var xLabelLocation = 0
+        let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
+        for tickLocation in xAxisCustomTickLocations {
+            let newLabel = CPTAxisLabel(text: xAxisLabels[xLabelLocation++], textStyle: x.labelTextStyle)
+            newLabel.tickLocation = tickLocation
+            newLabel.offset = x.labelOffset + x.majorTickLength
+            //newLabel.rotation = CGFloat(M_PI_4)
+            xAxisCustomLabels.addObject(newLabel)
+        }
+        
+        x.axisLabels = xAxisCustomLabels
+        
+        // Create y-axis custom tick locations.
+        for index in 0...Int(numberOfYAxisIntervals) {
+            let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
+            yAxisCustomTickLocations.append(tickLocation)
+        }
+        
+        // Create y-axis major tick line style.
+        yMajorGridLineStyle.lineWidth = 1.0
+        yMajorGridLineStyle.lineColor = CPTColor.lightGrayColor()
+        
+        y = axisSet.yAxis
+        y.axisLineStyle = nil
+        y.majorTickLineStyle = nil
+        y.minorTickLineStyle = nil
+        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations)
+        y.majorGridLineStyle = yMajorGridLineStyle
+        y.majorIntervalLength = yAxisInterval
+        y.orthogonalPosition = 0.0
+        //y.title = "Y Axis"
+        //y.titleOffset = 45.0
+        //y.titleLocation = yAxisMin + yAxisRange / 2.0
+        y.labelingPolicy = .None
+        
+        // Custom Y Axis Labels
+        for (index, value) in enumerate(yAxisCustomTickLocations) {
+            
+            var unitAdjustedValue = value
+            var label: String = ""
+            if Double(abs(unitAdjustedValue)) >= 1000.0 {
+                unitAdjustedValue /= 1000.0
+                label = "\(unitAdjustedValue)B"
+            } else if Double(abs(unitAdjustedValue)) != 0.0 {
+                label = "\(unitAdjustedValue)M"
+            } else {
+                label = "\(unitAdjustedValue)"
+            }
+            
+            yAxisLabels.append(label)
+        }
+        
+        var yLabelLocation = 0
+        let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
+        for tickLocation in yAxisCustomTickLocations {
+            let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
+            newLabel.tickLocation = tickLocation
+            newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
+            yAxisCustomLabels.addObject(newLabel)
+        }
+        
+        y.axisLabels = yAxisCustomLabels
+        
+    }
+    
     func configureRevenueIncomeMarginGraph() {
         
         configureBaseBarGraph()
@@ -350,32 +459,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         
         configureBaseBarGraph()
         
-        // Graph title.
-        /*let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Center
-        
-        let lineOne = "Graph Title"
-        let lineTwo = "Subtitle"
-        
-        let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
-        let line2Font = UIFont(name: "Helvetica", size: 12.0)
-        
-        let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
-        
-        let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
-        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
-        
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
-        graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
-        graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
-        graphTitle.addAttribute(NSFontAttributeName, value: line2Font!, range: titleRange2)
-        
-        graph.attributedTitle = graphTitle
-        
-        graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
-        graph.titlePlotAreaFrameAnchor = .Top*/
-        
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
@@ -414,7 +497,20 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     
     func configureRAndDGraph() {
         
-        //
+        configureBaseCurvedLineGraph()
+        
+        let rAndDPlotLineStyle = CPTMutableLineStyle()
+        rAndDPlotLineStyle.lineWidth = 3.0
+        rAndDPlotLineStyle.lineColor = CPTColor.greenColor()
+        
+        let rAndDPlot = CPTScatterPlot()
+        rAndDPlot.dataSource = self
+        rAndDPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        rAndDPlot.dataLineStyle = rAndDPlotLineStyle
+        rAndDPlot.identifier = "R And D"
+        graph.addPlot(rAndDPlot, toPlotSpace:plotSpace)
+        
+        self.graphView.hostedGraph = graph
     }
     
     func configureSGAndAGraph() {
@@ -560,6 +656,26 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
                 
                 if plotID == "Gross Profit" {
                     return grossProfitArray[Int(recordIndex)].value
+                } else {
+                    return nil
+                }
+                
+            default:
+                return nil
+            }
+            
+        case 2:
+                        
+            switch CPTScatterPlotField(rawValue: Int(field))! {
+                
+            case .X:
+                return recordIndex + 1 as NSNumber
+                
+            case .Y:
+                let plotID = plot.identifier as String
+                
+                if plotID == "R And D" {
+                    return rAndDArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
