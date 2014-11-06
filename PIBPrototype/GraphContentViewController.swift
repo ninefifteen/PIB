@@ -499,16 +499,25 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         
         configureBaseCurvedLineGraph()
         
-        let rAndDPlotLineStyle = CPTMutableLineStyle()
-        rAndDPlotLineStyle.lineWidth = 3.0
-        rAndDPlotLineStyle.lineColor = CPTColor.greenColor()
+        let rAndDLinePlotLineStyle = CPTMutableLineStyle()
+        rAndDLinePlotLineStyle.lineWidth = 3.0
+        rAndDLinePlotLineStyle.lineColor = CPTColor.greenColor()
         
-        let rAndDPlot = CPTScatterPlot()
-        rAndDPlot.dataSource = self
-        rAndDPlot.interpolation = CPTScatterPlotInterpolation.Curved
-        rAndDPlot.dataLineStyle = rAndDPlotLineStyle
-        rAndDPlot.identifier = "R And D"
-        graph.addPlot(rAndDPlot, toPlotSpace:plotSpace)
+        let rAndDLinePlot = CPTScatterPlot()
+        rAndDLinePlot.dataSource = self
+        rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
+        rAndDLinePlot.identifier = "RAndDLine"
+        
+        let symbolLineStyle = CPTMutableLineStyle()
+        symbolLineStyle.lineColor = CPTColor.blackColor()
+        let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        plotSymbol.fill = CPTFill(color: CPTColor.yellowColor())
+        plotSymbol.lineStyle = symbolLineStyle
+        plotSymbol.size = CGSizeMake(10.0, 10.0)
+        rAndDLinePlot.plotSymbol = plotSymbol
+        
+        graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
         
         self.graphView.hostedGraph = graph
     }
@@ -665,7 +674,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             }
             
         case 2:
-                        
+            
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
             case .X:
@@ -674,7 +683,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             case .Y:
                 let plotID = plot.identifier as String
                 
-                if plotID == "R And D" {
+                if plotID == "RAndDLine" {
                     return rAndDArray[Int(recordIndex)].value
                 } else {
                     return nil
