@@ -266,6 +266,13 @@
 			path = CorePlotHeaders;
 			sourceTree = "<group>";
 		};
+		4522FCB41A0D661300A0049C /* NDHpple */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = NDHpple;
+			sourceTree = "<group>";
+		};
 		457FB83019DDA0BB00A58B6E = {
 			isa = PBXGroup;
 			children = (
@@ -292,6 +299,7 @@
 				457FB86419DDB0A200A58B6E /* View */,
 				457FB86319DDB09800A58B6E /* Controller */,
 				45939C4C19E89C86009AD108 /* SwiftyJSON */,
+				4522FCB41A0D661300A0049C /* NDHpple */,
 				450DFF4519F05DA70030B5B1 /* CorePlot */,
 				457FB84A19DDA0BC00A58B6E /* Images.xcassets */,
 				457FB84C19DDA0BC00A58B6E /* LaunchScreen.xib */,
