@@ -14,6 +14,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     var window: UIWindow?
     
+//    func showNDHpple() {
+//        
+//        NSURLSession.sharedSession().dataTaskWithURL(NSURL(string: "http://www.reddit.com/r/swift")!) { data, response, error in
+//            
+//            let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+//            let parser = NDHpple(HTMLData: html!)
+//            
+//            let old_xpath = "/html/body/div[3]/div[2]/div/div[2]/p[@class='title']/a"
+//            let xpath = "//*[@id='siteTable']/div/div[2]/p[@class='title']/a"
+//            
+//            let titles = parser.searchWithXPathQuery(xpath)!
+//            
+//            for node in titles {
+//                
+//                println(node.firstChild?.content?)
+//            }
+//            }.resume()
+//    }
+    
     func customizeAppearance() {
         UINavigationBar.appearance().barTintColor = UIColor.redColor()
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
@@ -36,6 +55,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         splitViewController.preferredDisplayMode = UISplitViewControllerDisplayMode.AllVisible
         
         customizeAppearance()
+        
+//        showNDHpple()
         
         return true
     }
