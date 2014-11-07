@@ -10,6 +10,9 @@
 		450DFF9619F05DD00030B5B1 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9519F05DD00030B5B1 /* libCorePlot-CocoaTouch.a */; };
 		450DFF9819F05E4E0030B5B1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9719F05E4E0030B5B1 /* Accelerate.framework */; };
 		450DFF9A19F05E540030B5B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9919F05E540030B5B1 /* QuartzCore.framework */; };
+		4522FCCB1A0D6C0900A0049C /* NDHpple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCC81A0D6C0900A0049C /* NDHpple.swift */; };
+		4522FCCC1A0D6C0900A0049C /* NDHppleElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCC91A0D6C0900A0049C /* NDHppleElement.swift */; };
+		4522FCCD1A0D6C0900A0049C /* XPathQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCCA1A0D6C0900A0049C /* XPathQuery.swift */; };
 		4538417A1A02D2AF006A4620 /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453841791A02D2AF006A4620 /* Company.swift */; };
 		4538417C1A02D2AF006A4620 /* FinancialMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4538417B1A02D2AF006A4620 /* FinancialMetric.swift */; };
 		4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4541AAA119E8C267007825BC /* SwiftyJSON.swift */; };
@@ -120,6 +123,9 @@
 		450DFF9719F05E4E0030B5B1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		450DFF9919F05E540030B5B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		450DFF9B19F05EAE0030B5B1 /* PIBPrototype-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PIBPrototype-Bridging-Header.h"; sourceTree = "<group>"; };
+		4522FCC81A0D6C0900A0049C /* NDHpple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NDHpple.swift; sourceTree = "<group>"; };
+		4522FCC91A0D6C0900A0049C /* NDHppleElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NDHppleElement.swift; sourceTree = "<group>"; };
+		4522FCCA1A0D6C0900A0049C /* XPathQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XPathQuery.swift; sourceTree = "<group>"; };
 		453841791A02D2AF006A4620 /* Company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
 		4538417B1A02D2AF006A4620 /* FinancialMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinancialMetric.swift; sourceTree = "<group>"; };
 		4541AAA119E8C267007825BC /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
@@ -269,6 +275,9 @@
 		4522FCB41A0D661300A0049C /* NDHpple */ = {
 			isa = PBXGroup;
 			children = (
+				4522FCC81A0D6C0900A0049C /* NDHpple.swift */,
+				4522FCC91A0D6C0900A0049C /* NDHppleElement.swift */,
+				4522FCCA1A0D6C0900A0049C /* XPathQuery.swift */,
 			);
 			name = NDHpple;
 			sourceTree = "<group>";
@@ -475,9 +484,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4522FCCC1A0D6C0900A0049C /* NDHppleElement.swift in Sources */,
 				457FB84219DDA0BC00A58B6E /* PIBPrototype.xcdatamodeld in Sources */,
+				4522FCCD1A0D6C0900A0049C /* XPathQuery.swift in Sources */,
 				457FB83F19DDA0BC00A58B6E /* AppDelegate.swift in Sources */,
 				4541AAA219E8C267007825BC /* SwiftyJSON.swift in Sources */,
+				4522FCCB1A0D6C0900A0049C /* NDHpple.swift in Sources */,
 				45E8F4411A053181008DBF74 /* GraphContentViewController.swift in Sources */,
 				4538417A1A02D2AF006A4620 /* Company.swift in Sources */,
 				457FB84419DDA0BC00A58B6E /* MasterViewController.swift in Sources */,
@@ -622,7 +634,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PIBPrototype",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "PIBPrototype/PIBPrototype-Bridging-Header.h";
 			};
@@ -644,7 +659,10 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/PIBPrototype",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-lxml2",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				"SWIFT_OBJC_BRIDGING_HEADER[arch=*]" = "PIBPrototype/PIBPrototype-Bridging-Header.h";
 			};
