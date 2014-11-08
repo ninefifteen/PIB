@@ -89,14 +89,15 @@ class WebServicesManagerAPI: NSObject {
             if error == nil {
                 
                 let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        //self.addFinancialDataToCompany(company, fromData: data)
+                        
+                        self.parseAndAddGoogleSummaryData(data, forCompany: company)
                     })
                     
                     if completion != nil {
@@ -135,7 +136,7 @@ class WebServicesManagerAPI: NSObject {
             if error == nil {
                 
                 let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
@@ -312,6 +313,45 @@ class WebServicesManagerAPI: NSObject {
             alert.addAction(action)
             self.delegate?.webServicesManagerAPI!(self, errorAlert: alert)
         })
+    }
+    
+    
+    // MARK: - HTML Parsing
+    
+    func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) {
+        
+        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+        let parser = NDHpple(HTMLData: html!)
+        
+        println("\nDescription:")
+        
+        let descriptionPath = "//div[@class='companySummary']"
+        let companyDescription = parser.searchWithXPathQuery(descriptionPath)!
+        
+        for node in companyDescription {
+            
+            println(node.firstChild?.content?)
+        }
+        
+        println("\nAddress:")
+        
+        let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
+        let address = parser.searchWithXPathQuery(addressPath)!
+        
+        for node in address {
+            for child in node.children! {
+                println(child.content?)
+            }
+        }
+        
+        println("\nEmployees:")
+        
+        let employeesPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
+        let employees = parser.searchWithXPathQuery(employeesPath)!
+        
+        for node in employees {
+            println(node.firstChild?.content?)
+        }
     }
     
 }
