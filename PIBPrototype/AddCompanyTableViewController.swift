@@ -140,9 +140,11 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         }
         
         // Download fundamentals for newly added company.
-        webServicesManagerAPI.downloadFinancialDataForCompany(company, withCompletion: { (success) -> Void in
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+        webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+            self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+                })
             })
         })
     }

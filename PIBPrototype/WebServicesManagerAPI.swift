@@ -22,9 +22,6 @@ class WebServicesManagerAPI: NSObject {
     var activeDataTask: NSURLSessionDataTask?
     weak var delegate: WebServicesMangerAPIDelegate?
     
-    let xigniteApiKey: String = "9BDE96F9CF53466188C1E992BBE56ED1"
-    
-    let fundamentalsArray: [String] = ["CurrentPERatioAsPercentOfFiveYearAveragePERatio", "EBITDAMargin", "EBITMargin", "FiveYearAnnualCapitalSpendingGrowthRate", "FiveYearAnnualDividendGrowthRate", "FiveYearAnnualIncomeGrowthRate", "FiveYearAnnualNormalizedIncomeGrowthRate", "FiveYearAnnualRAndDGrowthRate", "FiveYearAnnualRevenueGrowthRate", "FiveYearAverageGrossProfitMargin", "FiveYearAverageNetProfitMargin", "FiveYearAveragePostTaxProfitMargin", "FiveYearAveragePreTaxProfitMargin", "FiveYearAverageRAndDAsPercentOfSales", "FiveYearAverageSGAndAAsPercentOfSales", "GrossMargin", "MarketValueAsPercentOfRevenues", "RAndDAsPercentOfSales", "SGAndAAsPercentOfSales"]
     
     // MARK: - Main Methods
     
@@ -80,26 +77,26 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadFinancialDataForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadGoogleSummaryForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL(string: urlStringForFundamentsForCompanyWithTickerSymbol(company.tickerSymbol))
+        let url = NSURL(string: urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
         //println(url)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
             if error == nil {
                 
-                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                //println("WebServicesManagerAPI downloadFundamentalsForCompany rawStringData:\n\(rawStringData)")
+                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        self.addFinancialDataToCompany(company, fromData: data)
+                        //self.addFinancialDataToCompany(company, fromData: data)
                     })
                     
                     if completion != nil {
@@ -126,6 +123,53 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
+    func downloadGoogleFinancialsForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        
+        let url = NSURL(string: urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
+        //println(url)
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            if error == nil {
+                
+                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                        //self.addFinancialDataToCompany(company, fromData: data)
+                    })
+                    
+                    if completion != nil {
+                        completion!(success: true)
+                    }
+                    
+                } else {
+                    println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(success: false)
+                    }
+                    self.sendGeneralErrorMessage()
+                }
+            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+                self.sendConnectionErrorMessage()
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        dataTask.resume()
+    }
+    
+    
     // MARK: - Helper Methods
     
     func urlStringForSearchString(searchString: String) -> String {
@@ -134,24 +178,13 @@ class WebServicesManagerAPI: NSObject {
         return urlString
     }
     
-    func urlStringForFundamentsForCompanyWithTickerSymbol(symbol: String) -> String {
-        
-        var fundamentals: String = ""
-        
-        for fundamental in fundamentalsArray {
-            if fundamentals.isEmpty {
-                fundamentals = fundamental
-            } else {
-                fundamentals += "," + fundamental
-            }
-        }
-        
-        // URL for trial data from Xignite.
-        //let urlString = "http://fundamentals.xignite.com/xFundamentals.json/GetCompanyFundamentalList?_Token=\(xigniteApiKey)&IdentifierType=Symbol&Identifier=\(symbol)&FundamentalTypes=\(fundamentals)&UpdatedSince="
-        
-        // URL for fake data.
-        let urlString = "http://www.shawnseals915.com/sbmx/getFakeData.php"
-        
+    func urlStringForGoogleSummaryForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
+        let urlString = "http://www.google.com/finance?q=" + exchange + "%3A" + symbol
+        return urlString
+    }
+    
+    func urlStringForGoogleFinancialsForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
+        let urlString = "http://www.google.com/finance?q=" + exchange + "%3A" + symbol + "&fstype=ii"
         return urlString
     }
     
