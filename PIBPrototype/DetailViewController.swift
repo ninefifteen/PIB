@@ -13,9 +13,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     // MARK: - Properties
     
-    @IBOutlet weak var companyNameLabel: UILabel!
-    @IBOutlet weak var companyLocationLabel: UILabel!
-    @IBOutlet weak var companyDescriptionTextView: UITextView!
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var descriptionTextView: UITextView!
+    @IBOutlet weak var revenueLabel: UILabel!
+    @IBOutlet weak var employeeCountLabel: UILabel!
+    @IBOutlet weak var marginLabel: UILabel!
+    
+    
     @IBOutlet weak var competitorScrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -48,28 +53,68 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if company != nil {
             
-            companyNameLabel.text = company.name
+            nameLabel.text = company.name
             
             if company.city != "" {
                 if company.country != "" {
-                    companyLocationLabel.text = company.city.uppercaseString + ", " + company.country.uppercaseString
+                    locationLabel.text = company.city.uppercaseString + ", " + company.country.uppercaseString
                 } else {
-                    companyLocationLabel.text = company.city.uppercaseString
+                    locationLabel.text = company.city.uppercaseString
                 }
             } else {
-                companyLocationLabel.text = ""
+                locationLabel.text = ""
             }
             
             if company.companyDescription != "" {
-                companyDescriptionTextView.text = company.companyDescription
-                companyDescriptionTextView.setContentOffset(CGPointMake(0.0, -20.0), animated: false)
+                descriptionTextView.text = company.companyDescription
+                descriptionTextView.setContentOffset(CGPointMake(0.0, -20.0), animated: false)
+            }
+            
+            if company.employeeCount > 0 {
+                
+                var employeeCount: Double = roundNumber(company.employeeCount.doubleValue, toSignificantFigures: 3)
+                
+                let formatter = NSNumberFormatter()
+                formatter.usesSignificantDigits = true
+                formatter.maximumSignificantDigits = 3
+                formatter.minimumSignificantDigits = 3
+                formatter.roundingMode = NSNumberFormatterRoundingMode.RoundHalfUp
+                
+                if employeeCount >= 1000000.0 {
+                    employeeCount /= 1000000.0
+                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)! + " M"
+                } else if employeeCount >= 1000.0 {
+                    employeeCount /= 1000.0
+                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)! + " K"
+                } else {
+                    employeeCountLabel.text = "\(employeeCount)"
+                }
+                
+            } else {
+                employeeCountLabel.text = "NA"
             }
             
         } else {
             
-            companyNameLabel.text = ""
-            companyLocationLabel.text = ""
+            nameLabel.text = ""
+            locationLabel.text = ""
         }
+    }
+    
+    
+    // MARK: - Formatting Methods
+    
+    func roundNumber(number: Double, toSignificantFigures significantFigures: Int) -> Double {
+        
+        if number == 0.0 { return 0.0 }
+        
+        let places: Double = ceil(log10(number < 0 ? -number : number))
+        let power: Int = significantFigures - Int(places)
+        let magnitude: Double = pow(10.0, Double(power))
+        
+        let shifted: Int = Int(round(number * magnitude))
+        
+        return Double(shifted)/magnitude
     }
     
     

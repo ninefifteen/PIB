@@ -94,8 +94,8 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="↑34.4 K" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dH4-Ea-PDj">
-                                        <rect key="frame" x="269" y="102" width="63" height="20"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="34.4 K" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dH4-Ea-PDj">
+                                        <rect key="frame" x="277" y="102" width="47" height="20"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" red="0.0" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
@@ -311,11 +311,14 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
                     <connections>
-                        <outlet property="companyDescriptionTextView" destination="h7J-8Y-C43" id="ZfD-39-03Z"/>
-                        <outlet property="companyLocationLabel" destination="H0N-W0-Kco" id="q9W-As-04h"/>
-                        <outlet property="companyNameLabel" destination="UPa-yy-aSe" id="8ag-2g-8pd"/>
                         <outlet property="competitorScrollView" destination="e9e-pq-149" id="rij-V6-eBg"/>
+                        <outlet property="descriptionTextView" destination="h7J-8Y-C43" id="Jrl-qH-5HF"/>
+                        <outlet property="employeeCountLabel" destination="dH4-Ea-PDj" id="FF0-GM-s1C"/>
+                        <outlet property="locationLabel" destination="H0N-W0-Kco" id="UdI-3b-Vc2"/>
+                        <outlet property="marginLabel" destination="l0x-Vp-H7b" id="dBc-wB-ahe"/>
+                        <outlet property="nameLabel" destination="UPa-yy-aSe" id="zMN-hE-qg1"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
+                        <outlet property="revenueLabel" destination="VYL-aS-74c" id="DYu-B7-NcX"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
