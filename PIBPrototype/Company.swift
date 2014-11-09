@@ -11,11 +11,17 @@ import CoreData
 
 class Company: NSManagedObject {
 
+    @NSManaged var street: String
+    @NSManaged var city: String
+    @NSManaged var state: String
+    @NSManaged var zipCode: String
+    @NSManaged var country: String
     @NSManaged var exchange: String
     @NSManaged var exchangeDisplayName: String
     @NSManaged var name: String
     @NSManaged var tickerSymbol: String
     @NSManaged var companyDescription: String
+    @NSManaged var employees: NSNumber
     @NSManaged var financialMetrics: NSSet
 
 }

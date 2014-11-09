@@ -326,31 +326,33 @@ class WebServicesManagerAPI: NSObject {
         println("\nDescription:")
         
         let descriptionPath = "//div[@class='companySummary']"
-        let companyDescription = parser.searchWithXPathQuery(descriptionPath)!
-        
-        for node in companyDescription {
-            
-            println(node.firstChild?.content?)
+        if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
+            for node in companyDescription {
+                if let rawCompanyDescriptionString: String = node.firstChild?.content {
+                    let cleanedCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    println(cleanedCompanyDescriptionString)
+                }
+            }
         }
         
         println("\nAddress:")
         
         let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
-        let address = parser.searchWithXPathQuery(addressPath)!
-        
-        for node in address {
-            for child in node.children! {
-                println(child.content?)
+        if let address = parser.searchWithXPathQuery(addressPath) {
+            for node in address {
+                for child in node.children! {
+                    println(child.content?)
+                }
             }
         }
         
         println("\nEmployees:")
         
         let employeesPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
-        let employees = parser.searchWithXPathQuery(employeesPath)!
-        
-        for node in employees {
-            println(node.firstChild?.content?)
+        if let employees = parser.searchWithXPathQuery(employeesPath) {
+            for node in employees {
+                println(node.firstChild?.content?)
+            }
         }
     }
     
