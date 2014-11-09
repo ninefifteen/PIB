@@ -102,22 +102,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     
-    // MARK: - Formatting Methods
-    
-    func roundNumber(number: Double, toSignificantFigures significantFigures: Int) -> Double {
-        
-        if number == 0.0 { return 0.0 }
-        
-        let places: Double = ceil(log10(number < 0 ? -number : number))
-        let power: Int = significantFigures - Int(places)
-        let magnitude: Double = pow(10.0, Double(power))
-        
-        let shifted: Int = Int(round(number * magnitude))
-        
-        return Double(shifted)/magnitude
-    }
-    
-    
     // MARK: - UIPageControl
     
     @IBAction func pageControlValueChanged(sender: UIPageControl) {
