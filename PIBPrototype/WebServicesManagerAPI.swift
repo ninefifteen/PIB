@@ -329,8 +329,8 @@ class WebServicesManagerAPI: NSObject {
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
             for node in companyDescription {
                 if let rawCompanyDescriptionString: String = node.firstChild?.content {
-                    let cleanedCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    println(cleanedCompanyDescriptionString)
+                    let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    println(companyDescriptionString)
                 }
             }
         }
@@ -340,18 +340,43 @@ class WebServicesManagerAPI: NSObject {
         let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
         if let address = parser.searchWithXPathQuery(addressPath) {
             for node in address {
-                for child in node.children! {
-                    println(child.content?)
+                
+                for (index, addressLine) in enumerate(node.children!) {
+                    
+                    switch index {
+                        
+                    case 0:
+                        if let rawStreetString: String = addressLine.content {
+                            println(rawStreetString)
+                        }
+                        
+                    case 2:
+                        if let rawCityStateZipString: String = addressLine.content {
+                            println(rawCityStateZipString)
+                        }
+                        
+                    case 4:
+                        if let rawCountryString: String = addressLine.content {
+                            let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            println(countryString)
+                        }
+                        
+                    default:
+                        break
+                    }
                 }
             }
         }
         
         println("\nEmployees:")
         
-        let employeesPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
-        if let employees = parser.searchWithXPathQuery(employeesPath) {
-            for node in employees {
-                println(node.firstChild?.content?)
+        let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
+        if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
+            for node in employeeCount {
+                if let rawEmployeeCountString: String = node.firstChild?.content {
+                    let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    println(employeeCountString)
+                }
             }
         }
     }
