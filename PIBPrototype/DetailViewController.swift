@@ -72,7 +72,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if company.employeeCount > 0 {
                 
-                var employeeCount: Double = roundNumber(company.employeeCount.doubleValue, toSignificantFigures: 3)
+                var employeeCount: Double = company.employeeCount.doubleValue
                 
                 let formatter = NSNumberFormatter()
                 formatter.usesSignificantDigits = true
@@ -87,7 +87,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                     employeeCount /= 1000.0
                     employeeCountLabel.text = formatter.stringFromNumber(employeeCount)! + " K"
                 } else {
-                    employeeCountLabel.text = "\(employeeCount)"
+                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)!
                 }
                 
             } else {
