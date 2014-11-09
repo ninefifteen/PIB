@@ -15,6 +15,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     @IBOutlet weak var companyNameLabel: UILabel!
     @IBOutlet weak var companyLocationLabel: UILabel!
+    @IBOutlet weak var companyDescriptionTextView: UITextView!
     @IBOutlet weak var competitorScrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -57,6 +58,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                 }
             } else {
                 companyLocationLabel.text = ""
+            }
+            
+            if company.companyDescription != "" {
+                companyDescriptionTextView.text = company.companyDescription
+                companyDescriptionTextView.setContentOffset(CGPointMake(0.0, -20.0), animated: false)
             }
             
         } else {

@@ -84,13 +84,12 @@
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h7J-8Y-C43">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="h7J-8Y-C43">
                                         <rect key="frame" x="8" y="68" width="584" height="26"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="26" id="w5N-78-RW0"/>
                                         </constraints>
-                                        <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -312,6 +311,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
                     <connections>
+                        <outlet property="companyDescriptionTextView" destination="h7J-8Y-C43" id="ZfD-39-03Z"/>
                         <outlet property="companyLocationLabel" destination="H0N-W0-Kco" id="q9W-As-04h"/>
                         <outlet property="companyNameLabel" destination="UPa-yy-aSe" id="8ag-2g-8pd"/>
                         <outlet property="competitorScrollView" destination="e9e-pq-149" id="rij-V6-eBg"/>
