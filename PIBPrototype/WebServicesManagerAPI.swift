@@ -347,18 +347,25 @@ class WebServicesManagerAPI: NSObject {
                         
                     case 0:
                         if let rawStreetString: String = addressLine.content {
-                            println(rawStreetString)
+                            println("Street: \(rawStreetString)")
                         }
                         
                     case 2:
                         if let rawCityStateZipString: String = addressLine.content {
-                            println(rawCityStateZipString)
+                            var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
+                            let cityString = commaSplit[0]
+                            println("City: \(cityString)")
+                            var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
+                            let stateString = spaceSplit[1]
+                            println("State: \(stateString)")
+                            let zipCodeString = spaceSplit[2]
+                            println("Zip Code: \(zipCodeString)")
                         }
                         
                     case 4:
                         if let rawCountryString: String = addressLine.content {
                             let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            println(countryString)
+                            println("Country: \(countryString)")
                         }
                         
                     default:
@@ -368,7 +375,7 @@ class WebServicesManagerAPI: NSObject {
             }
         }
         
-        println("\nEmployees:")
+        println("\nEmployeeCount:")
         
         let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
         if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
@@ -376,6 +383,18 @@ class WebServicesManagerAPI: NSObject {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
                     let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     println(employeeCountString)
+                }
+            }
+        }
+        
+        println("\nWebLink:")
+        
+        let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
+        if let webLink = parser.searchWithXPathQuery(webLinkPath) {
+            for node in webLink {
+                if let rawWebLinkString: String = node.firstChild?.content {
+                    let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    println(webLinkString)
                 }
             }
         }
