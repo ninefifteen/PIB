@@ -16,6 +16,7 @@ class Company: NSManagedObject {
     @NSManaged var state: String
     @NSManaged var zipCode: String
     @NSManaged var country: String
+    @NSManaged var webLink: String
     @NSManaged var exchange: String
     @NSManaged var exchangeDisplayName: String
     @NSManaged var name: String

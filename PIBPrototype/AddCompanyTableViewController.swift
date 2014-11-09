@@ -129,6 +129,14 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         company.exchange = newCompany.exchange
         company.exchangeDisplayName = newCompany.exchangeDisplayName
         company.tickerSymbol = newCompany.tickerSymbol
+        company.street = ""
+        company.city = ""
+        company.state = ""
+        company.zipCode = ""
+        company.country = ""
+        company.companyDescription = ""
+        company.webLink = ""
+        company.employeeCount = 0
         
         // Save the context.
         var error: NSError? = nil

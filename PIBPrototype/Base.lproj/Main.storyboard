@@ -312,6 +312,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
                     <connections>
+                        <outlet property="companyLocationLabel" destination="H0N-W0-Kco" id="q9W-As-04h"/>
                         <outlet property="companyNameLabel" destination="UPa-yy-aSe" id="8ag-2g-8pd"/>
                         <outlet property="competitorScrollView" destination="e9e-pq-149" id="rij-V6-eBg"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
@@ -404,7 +405,7 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SOMECITY, USA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kep-EY-nVQ">
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SOMECITY, USA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kep-EY-nVQ">
                                             <rect key="frame" x="56" y="40" width="86" height="14"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -440,6 +441,7 @@
                                         <constraint firstAttribute="bottomMargin" secondItem="Kep-EY-nVQ" secondAttribute="bottom" constant="5" id="s5Q-F7-rG0"/>
                                         <constraint firstItem="6p5-Kq-RPq" firstAttribute="centerX" secondItem="hdV-3O-JKP" secondAttribute="centerX" constant="2" id="uLN-fV-nVj"/>
                                         <constraint firstItem="krx-5q-zpT" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ynC-pV-KwQ" secondAttribute="trailing" constant="8" id="xgo-Ff-MQV"/>
+                                        <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="Kep-EY-nVQ" secondAttribute="trailing" constant="140" id="yfu-4P-vUX"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>

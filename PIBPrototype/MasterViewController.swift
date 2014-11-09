@@ -120,12 +120,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
-        //let object = self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject
-        //cell.textLabel?.text = object.valueForKey("name")!.description
         
         let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+        
         let nameLabel = cell.viewWithTag(101) as UILabel
         nameLabel.text = company.name
+        
+        let locationLabel = cell.viewWithTag(102) as UILabel
+        if company.city != "" {
+            if company.country != "" {
+                locationLabel.text = company.city.uppercaseString + ", " + company.country.uppercaseString
+            } else {
+                locationLabel.text = company.city.uppercaseString
+            }
+        } else {
+            locationLabel.text = " "
+        }
     }
 
     

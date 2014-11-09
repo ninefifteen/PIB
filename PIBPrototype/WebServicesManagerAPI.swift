@@ -330,7 +330,8 @@ class WebServicesManagerAPI: NSObject {
             for node in companyDescription {
                 if let rawCompanyDescriptionString: String = node.firstChild?.content {
                     let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    println(companyDescriptionString)
+                    company.companyDescription = companyDescriptionString
+                    println(company.companyDescription)
                 }
             }
         }
@@ -347,25 +348,27 @@ class WebServicesManagerAPI: NSObject {
                         
                     case 0:
                         if let rawStreetString: String = addressLine.content {
-                            println("Street: \(rawStreetString)")
+                            company.street = rawStreetString
+                            println("Street: \(company.street)")
                         }
                         
                     case 2:
                         if let rawCityStateZipString: String = addressLine.content {
                             var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
-                            let cityString = commaSplit[0]
-                            println("City: \(cityString)")
+                            company.city = commaSplit[0]
+                            println("City: \(company.city)")
                             var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
-                            let stateString = spaceSplit[1]
-                            println("State: \(stateString)")
-                            let zipCodeString = spaceSplit[2]
-                            println("Zip Code: \(zipCodeString)")
+                            company.state = spaceSplit[1]
+                            println("State: \(company.state)")
+                            company.zipCode = spaceSplit[2]
+                            println("Zip Code: \(company.zipCode)")
                         }
                         
                     case 4:
                         if let rawCountryString: String = addressLine.content {
                             let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            println("Country: \(countryString)")
+                            company.country = countryString
+                            println("Country: \(company.country)")
                         }
                         
                     default:
@@ -381,8 +384,10 @@ class WebServicesManagerAPI: NSObject {
         if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
             for node in employeeCount {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
-                    let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    println(employeeCountString)
+                    //let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
+                    company.employeeCount = employeeCountString.toInt()!
+                    println(company.employeeCount)
                 }
             }
         }
@@ -394,9 +399,19 @@ class WebServicesManagerAPI: NSObject {
             for node in webLink {
                 if let rawWebLinkString: String = node.firstChild?.content {
                     let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    println(webLinkString)
+                    company.webLink = webLinkString
+                    println(company.webLink)
                 }
             }
+        }
+        
+        // Save the context.
+        var error: NSError? = nil
+        if !managedObjectContext.save(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
         }
     }
     

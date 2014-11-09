@@ -14,6 +14,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     // MARK: - Properties
     
     @IBOutlet weak var companyNameLabel: UILabel!
+    @IBOutlet weak var companyLocationLabel: UILabel!
     @IBOutlet weak var competitorScrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -27,14 +28,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-                
-        if let companyName: String = company?.name {
-            title = companyName
-            companyNameLabel.text = companyName
-        } else {
-            title = ""
-            companyNameLabel.text = ""
-        }
+        
+        updateTopViewLabels()
         
         competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
     }
@@ -43,6 +38,32 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // MARK: - Populate Labels
+    
+    func updateTopViewLabels() {
+        
+        if company != nil {
+            
+            companyNameLabel.text = company.name
+            
+            if company.city != "" {
+                if company.country != "" {
+                    companyLocationLabel.text = company.city.uppercaseString + ", " + company.country.uppercaseString
+                } else {
+                    companyLocationLabel.text = company.city.uppercaseString
+                }
+            } else {
+                companyLocationLabel.text = ""
+            }
+            
+        } else {
+            
+            companyNameLabel.text = ""
+            companyLocationLabel.text = ""
+        }
     }
     
     
