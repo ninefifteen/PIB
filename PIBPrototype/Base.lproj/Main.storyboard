@@ -35,7 +35,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NPq-gS-bve">
                                 <rect key="frame" x="0.0" y="64" width="600" height="144"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo128" translatesAutoresizingMaskIntoConstraints="NO" id="KkM-3Q-sKY">
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoPlaceholder128" translatesAutoresizingMaskIntoConstraints="NO" id="KkM-3Q-sKY">
                                         <rect key="frame" x="8" y="8" width="52" height="52"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="52" id="DBg-cF-0k1"/>
@@ -420,7 +420,7 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo128" translatesAutoresizingMaskIntoConstraints="NO" id="01h-qA-LE6">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoPlaceholder128" translatesAutoresizingMaskIntoConstraints="NO" id="01h-qA-LE6">
                                             <rect key="frame" x="8" y="15" width="40" height="40"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="40" id="INm-qf-JkE"/>
@@ -459,7 +459,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Logo128" translatesAutoresizingMaskIntoConstraints="NO" id="a5W-g8-NwU">
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LogoPlaceholder128" translatesAutoresizingMaskIntoConstraints="NO" id="a5W-g8-NwU">
                                             <rect key="frame" x="8" y="14" width="40" height="40"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="40" id="uhZ-ls-E1M"/>
@@ -550,7 +550,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rux-fX-hf1" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="709" y="-636"/>
+            <point key="canvasLocation" x="709" y="-630"/>
         </scene>
         <!--Add Company-->
         <scene sceneID="CVF-Rs-d2h">
@@ -662,7 +662,7 @@
     <resources>
         <image name="AmazonLogo128" width="128" height="106"/>
         <image name="GeneralMotorsLogo128" width="128" height="128"/>
-        <image name="Logo128" width="105" height="128"/>
+        <image name="LogoPlaceholder128" width="128" height="128"/>
         <image name="ShellLogo128" width="108" height="128"/>
         <image name="StarbucksLogo128" width="128" height="128"/>
         <image name="TargetLogo128" width="101" height="128"/>
