@@ -24,7 +24,8 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         // Create the data model.
         //pages = [0, 1, 2, 3]
-        pages = []
+        //pages = []
+        pages = [0, 1]
         
         let graphContentViewController = self.viewControllerAtIndex(0, storyboard: storyboard!)
         

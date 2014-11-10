@@ -58,9 +58,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "TotalRevenue":
+                case "Revenue":
                     totalRevenueArray.append(financialMetric)
-                case "NetIncome":
+                case "Net Income":
                     netIncomeArray.append(financialMetric)
                 default:
                     break
@@ -84,7 +84,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "GrossProfit":
+                case "Gross Profit":
                     grossProfitArray.append(financialMetric)
                 default:
                     break
