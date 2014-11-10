@@ -96,7 +96,6 @@ class WebServicesManagerAPI: NSObject {
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        
                         self.parseAndAddGoogleSummaryData(data, forCompany: company)
                     })
                     
@@ -143,7 +142,7 @@ class WebServicesManagerAPI: NSObject {
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        //self.addFinancialDataToCompany(company, fromData: data)
+                        self.parseAndAddGoogleFinancialData(data, forCompany: company)
                     })
                     
                     if completion != nil {
@@ -317,6 +316,76 @@ class WebServicesManagerAPI: NSObject {
     
     
     // MARK: - HTML Parsing
+    
+    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) {
+        
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        
+        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+        let parser = NDHpple(HTMLData: html!)
+        
+        var yearsArray = Array<Int>()
+        
+        let yearsPath = "//div[@id='incannualdiv']/table/thead/tr/th"
+        if let years = parser.searchWithXPathQuery(yearsPath) {
+            for (thIndex, tableHeading) in enumerate(years) {
+                if thIndex > 0 {
+                    if var rawYearString: String = tableHeading.firstChild?.content {
+                        var spaceSplit = rawYearString.componentsSeparatedByString(" ")
+                        var dashSplit = spaceSplit[3].componentsSeparatedByString("-")
+                        let yearString = dashSplit[0]
+                        yearsArray.append(yearString.toInt()!)
+                    }
+                }
+            }
+        }
+        
+        let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
+        if let allValues = parser.searchWithXPathQuery(valuesPath) {
+            
+            for (trIndex, tableRow) in enumerate(allValues) {
+                
+                var tdIndex: Int = 0
+                var financialMetricType = String()
+                
+                for tableData in tableRow.children! {
+                    
+                    if tdIndex == 0 {
+                        if var rawValueString: String = tableData.firstChild?.content {
+                            financialMetricType = rawValueString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            tdIndex++
+                        }
+                    } else {
+                        if var rawValueString: String = tableData.firstChild?.content {
+                            if rawValueString == "-" {
+                                rawValueString = "0.0"
+                            }
+                            let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                            financialMetric.year = yearsArray[tdIndex - 1]
+                            financialMetric.type = financialMetricType
+                            financialMetric.value = NSString(string: valueString).doubleValue
+                            financialMetrics.addObject(financialMetric)
+                            println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
+                            tdIndex++
+                        }
+                    }
+                }
+            }
+            
+            company.financialMetrics = financialMetrics.copy() as NSSet
+            
+            // Save the context.
+            var error: NSError? = nil
+            if !managedObjectContext.save(&error) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(error), \(error.userInfo)")
+                abort()
+            }
+        }
+    }
     
     func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) {
         
