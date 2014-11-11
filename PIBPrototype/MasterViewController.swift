@@ -139,6 +139,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let revenueLabel = cell.viewWithTag(103) as UILabel
         revenueLabel.text = revenueLabelStringForCompany(company)
+        
+        let ebitdaLabel = cell.viewWithTag(104) as UILabel
+        ebitdaLabel.text = ebitdaLabelStringForCompany(company)
     }
     
     
@@ -158,6 +161,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
+        } else {
+            return "* NA *"
+        }
+    }
+    
+    func ebitdaLabelStringForCompany(company: Company) -> String {
+        
+        var ebitdaArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "EBITDA" {
+                ebitdaArray.append(financialMetric)
+            }
+        }
+        
+        ebitdaArray.sort({ $0.year < $1.year })
+        
+        if ebitdaArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
         } else {
             return "* NA *"
         }

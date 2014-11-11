@@ -18,7 +18,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
-    @IBOutlet weak var marginLabel: UILabel!
+    @IBOutlet weak var ebitdaLabel: UILabel!
     
     
     @IBOutlet weak var competitorScrollView: UIScrollView!
@@ -95,6 +95,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             }
             
             revenueLabel.text = revenueLabelStringForCompany(company)
+            ebitdaLabel.text = ebitdaLabelStringForCompany(company)
             
         } else {
             
@@ -120,6 +121,25 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
+        } else {
+            return "NA"
+        }
+    }
+    
+    func ebitdaLabelStringForCompany(company: Company) -> String {
+        
+        var ebitdaArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "EBITDA" {
+                ebitdaArray.append(financialMetric)
+            }
+        }
+        
+        ebitdaArray.sort({ $0.year < $1.year })
+        
+        if ebitdaArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
         } else {
             return "NA"
         }

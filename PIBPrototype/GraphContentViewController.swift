@@ -355,11 +355,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             var unitAdjustedValue = value
             var label: String = ""
-            if Double(abs(unitAdjustedValue)) >= 1000.0 {
-                unitAdjustedValue /= 1000.0
+            if Double(abs(unitAdjustedValue)) >= 1000000000.0 {
+                unitAdjustedValue /= 1000000000.0
                 label = "\(unitAdjustedValue)B"
-            } else if Double(abs(unitAdjustedValue)) != 0.0 {
+            } else if Double(abs(unitAdjustedValue)) >= 1000000.0 {
+                unitAdjustedValue /= 1000000.0
                 label = "\(unitAdjustedValue)M"
+            } else if Double(abs(unitAdjustedValue)) >= 1000.0 {
+                unitAdjustedValue /= 1000.0
+                label = "\(unitAdjustedValue)K"
             } else {
                 label = "\(unitAdjustedValue)"
             }

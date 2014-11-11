@@ -319,7 +319,16 @@ class WebServicesManagerAPI: NSObject {
     
     func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) {
         
-        let valueMultiplier: Double = 1000000.0
+        // Arrays for calculating data.
+        var operatingIncomeArray = Array<FinancialMetric>()
+        var interestExpenseArray = Array<FinancialMetric>()
+        var netOperatingIncomeArray = Array<FinancialMetric>()
+        var unusualExpenseArray = Array<FinancialMetric>()
+        var ebitArray = Array<FinancialMetric>()
+        var depreciationAmortizationArray = Array<FinancialMetric>()
+        var ebitdaArray = Array<FinancialMetric>()
+        
+        let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
         
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
         var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
@@ -327,8 +336,8 @@ class WebServicesManagerAPI: NSObject {
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
         
+        // Years for Google Finance metrics.
         var yearsArray = Array<Int>()
-        
         let yearsPath = "//div[@id='incannualdiv']/table/thead/tr/th"
         if let years = parser.searchWithXPathQuery(yearsPath) {
             for (thIndex, tableHeading) in enumerate(years) {
@@ -343,6 +352,7 @@ class WebServicesManagerAPI: NSObject {
             }
         }
         
+        // Metrics from Google Finance.
         let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
         if let allValues = parser.searchWithXPathQuery(valuesPath) {
             
@@ -360,7 +370,7 @@ class WebServicesManagerAPI: NSObject {
                         }
                     } else {
                         if var rawValueString: String = tableData.firstChild?.content {
-                            if rawValueString == "-" {
+                            if rawValueString == "-" || rawValueString == "" {
                                 rawValueString = "0.0"
                             }
                             let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
@@ -369,11 +379,59 @@ class WebServicesManagerAPI: NSObject {
                             financialMetric.type = financialMetricType
                             financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier
                             financialMetrics.addObject(financialMetric)
-                            println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
+                            //println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
+                            
+                            // Populate arrays for calculating metrics.
+                            switch financialMetric.type {
+                                
+                            case "Operating Income":
+                                operatingIncomeArray.append(financialMetric)
+                            case "Interest Expense(Income) - Net Operating":
+                                interestExpenseArray.append(financialMetric)
+                            case "Unusual Expense (Income)":
+                                unusualExpenseArray.append(financialMetric)
+                            case "Depreciation/Amortization":
+                                depreciationAmortizationArray.append(financialMetric)
+                            default:
+                                break
+                            }
                             tdIndex++
                         }
                     }
                 }
+            }
+            
+            // Sort arrays for calculations by year.
+            operatingIncomeArray.sort({ $0.year < $1.year })
+            interestExpenseArray.sort({ $0.year < $1.year })
+            unusualExpenseArray.sort({ $0.year < $1.year })
+            depreciationAmortizationArray.sort({ $0.year < $1.year })
+            
+            // Add calculated metrics.
+            for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
+                
+                let year = operatingIncomeMetric.year
+                
+                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                netOperatingIncomeMetric.type = "EBIT"
+                netOperatingIncomeMetric.year = year
+                netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
+                netOperatingIncomeArray.append(netOperatingIncomeMetric)
+                financialMetrics.addObject(netOperatingIncomeMetric)
+                
+                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                ebitMetric.type = "Normal Net Operating Income"
+                ebitMetric.year = year
+                ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
+                ebitArray.append(ebitMetric)
+                financialMetrics.addObject(ebitMetric)
+                
+                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                ebitdaMetric.type = "EBITDA"
+                ebitdaMetric.year = year
+                ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
+                ebitdaArray.append(ebitdaMetric)
+                financialMetrics.addObject(ebitdaMetric)
             }
             
             company.financialMetrics = financialMetrics.copy() as NSSet

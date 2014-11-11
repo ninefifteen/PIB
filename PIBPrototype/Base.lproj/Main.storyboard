@@ -60,7 +60,7 @@
                                         <color key="textColor" red="0.0" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9.99%" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l0x-Vp-H7b">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="99.9 B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l0x-Vp-H7b">
                                         <rect key="frame" x="544" y="102" width="48" height="20"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" red="0.0" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -72,8 +72,8 @@
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MARGIN" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zka-hk-sA9">
-                                        <rect key="frame" x="547" y="122" width="45" height="14"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EBITDA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zka-hk-sA9">
+                                        <rect key="frame" x="552" y="122" width="40" height="14"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -313,9 +313,9 @@
                     <connections>
                         <outlet property="competitorScrollView" destination="e9e-pq-149" id="rij-V6-eBg"/>
                         <outlet property="descriptionTextView" destination="h7J-8Y-C43" id="Jrl-qH-5HF"/>
+                        <outlet property="ebitdaLabel" destination="l0x-Vp-H7b" id="GBB-U7-PrU"/>
                         <outlet property="employeeCountLabel" destination="dH4-Ea-PDj" id="FF0-GM-s1C"/>
                         <outlet property="locationLabel" destination="H0N-W0-Kco" id="UdI-3b-Vc2"/>
-                        <outlet property="marginLabel" destination="l0x-Vp-H7b" id="dBc-wB-ahe"/>
                         <outlet property="nameLabel" destination="UPa-yy-aSe" id="zMN-hE-qg1"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
                         <outlet property="revenueLabel" destination="VYL-aS-74c" id="DYu-B7-NcX"/>
@@ -384,20 +384,20 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PROFIT" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6p5-Kq-RPq">
-                                            <rect key="frame" x="551" y="40" width="40" height="14"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EBITDA" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6p5-Kq-RPq">
+                                            <rect key="frame" x="552" y="40" width="40" height="14"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="14.8%" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdV-3O-JKP">
-                                            <rect key="frame" x="549" y="20" width="43" height="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="99.9 B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdV-3O-JKP">
+                                            <rect key="frame" x="550" y="20" width="42" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.0" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="74.45 B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="krx-5q-zpT">
-                                            <rect key="frame" x="483" y="20" width="50" height="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="99.9 B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="krx-5q-zpT">
+                                            <rect key="frame" x="492" y="20" width="42" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.0" green="0.5" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
@@ -415,7 +415,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2hY-jy-I5h">
-                                            <rect key="frame" x="482" y="40" width="52" height="14"/>
+                                            <rect key="frame" x="487" y="40" width="52" height="14"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -442,7 +442,7 @@
                                         <constraint firstItem="01h-qA-LE6" firstAttribute="leading" secondItem="37f-cq-3Eg" secondAttribute="leadingMargin" id="nh5-wI-xds"/>
                                         <constraint firstItem="Kep-EY-nVQ" firstAttribute="top" secondItem="ynC-pV-KwQ" secondAttribute="bottom" constant="2" id="nxG-Xa-KtQ"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="Kep-EY-nVQ" secondAttribute="bottom" constant="5" id="s5Q-F7-rG0"/>
-                                        <constraint firstItem="6p5-Kq-RPq" firstAttribute="centerX" secondItem="hdV-3O-JKP" secondAttribute="centerX" id="uLN-fV-nVj"/>
+                                        <constraint firstItem="6p5-Kq-RPq" firstAttribute="centerX" secondItem="hdV-3O-JKP" secondAttribute="centerX" constant="1" id="uLN-fV-nVj"/>
                                         <constraint firstItem="krx-5q-zpT" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="ynC-pV-KwQ" secondAttribute="trailing" constant="8" id="xgo-Ff-MQV"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="Kep-EY-nVQ" secondAttribute="trailing" constant="140" id="yfu-4P-vUX"/>
                                     </constraints>
