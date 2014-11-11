@@ -101,6 +101,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             nameLabel.text = ""
             locationLabel.text = ""
+            employeeCountLabel.text = ""
+            revenueLabel.text = ""
+            ebitdaLabel.text = ""
         }
     }
     
