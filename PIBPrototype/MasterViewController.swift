@@ -136,6 +136,31 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         } else {
             locationLabel.text = " "
         }
+        
+        let revenueLabel = cell.viewWithTag(103) as UILabel
+        revenueLabel.text = revenueLabelStringForCompany(company)
+    }
+    
+    
+    // MARK: - Helper Methods
+    
+    func revenueLabelStringForCompany(company: Company) -> String {
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Revenue" {
+                totalRevenueArray.append(financialMetric)
+            }
+        }
+        
+        totalRevenueArray.sort({ $0.year < $1.year })
+        
+        if totalRevenueArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
+        } else {
+            return "* NA *"
+        }
     }
 
     

@@ -182,7 +182,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
-        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 5.0)
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -199,7 +199,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         // Custom X-axis labels.
         x.labelingPolicy = .None
         
-        xAxisCustomTickLocations = [1.0, 2.0, 3.0]
+        xAxisCustomTickLocations = [1.0, 2.0, 3.0, 4.0]
         
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
@@ -241,11 +241,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             var unitAdjustedValue = value
             var label: String = ""
-            if Double(abs(unitAdjustedValue)) >= 1000.0 {
-                unitAdjustedValue /= 1000.0
+            if Double(abs(unitAdjustedValue)) >= 1000000000.0 {
+                unitAdjustedValue /= 1000000000.0
                 label = "\(unitAdjustedValue)B"
-            } else if Double(abs(unitAdjustedValue)) != 0.0 {
+            } else if Double(abs(unitAdjustedValue)) >= 1000000.0 {
+                unitAdjustedValue /= 1000000.0
                 label = "\(unitAdjustedValue)M"
+            } else if Double(abs(unitAdjustedValue)) >= 1000.0 {
+                unitAdjustedValue /= 1000.0
+                label = "\(unitAdjustedValue)K"
             } else {
                 label = "\(unitAdjustedValue)"
             }
@@ -622,7 +626,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     // MARK: - CPTPlotDataSource
     
     func numberOfRecordsForPlot(plot: CPTPlot!) -> UInt {
-        return 3
+        return 4
     }
     
     func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {

@@ -319,6 +319,8 @@ class WebServicesManagerAPI: NSObject {
     
     func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) {
         
+        let valueMultiplier: Double = 1000000.0
+        
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
         var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
         
@@ -365,7 +367,7 @@ class WebServicesManagerAPI: NSObject {
                             let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                             financialMetric.year = yearsArray[tdIndex - 1]
                             financialMetric.type = financialMetricType
-                            financialMetric.value = NSString(string: valueString).doubleValue
+                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier
                             financialMetrics.addObject(financialMetric)
                             println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
                             tdIndex++
@@ -392,20 +394,15 @@ class WebServicesManagerAPI: NSObject {
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
         
-        println("\nDescription:")
-        
         let descriptionPath = "//div[@class='companySummary']"
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
             for node in companyDescription {
                 if let rawCompanyDescriptionString: String = node.firstChild?.content {
                     let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     company.companyDescription = companyDescriptionString
-                    println(company.companyDescription)
                 }
             }
         }
-        
-        println("\nAddress:")
         
         let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
         if let address = parser.searchWithXPathQuery(addressPath) {
@@ -418,26 +415,21 @@ class WebServicesManagerAPI: NSObject {
                     case 0:
                         if let rawStreetString: String = addressLine.content {
                             company.street = rawStreetString
-                            println("Street: \(company.street)")
                         }
                         
                     case 2:
                         if let rawCityStateZipString: String = addressLine.content {
                             var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
                             company.city = commaSplit[0]
-                            println("City: \(company.city)")
                             var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
                             company.state = spaceSplit[1]
-                            println("State: \(company.state)")
                             company.zipCode = spaceSplit[2]
-                            println("Zip Code: \(company.zipCode)")
                         }
                         
                     case 4:
                         if let rawCountryString: String = addressLine.content {
                             let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                             company.country = countryString
-                            println("Country: \(company.country)")
                         }
                         
                     default:
@@ -447,21 +439,15 @@ class WebServicesManagerAPI: NSObject {
             }
         }
         
-        println("\nEmployeeCount:")
-        
         let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
         if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
             for node in employeeCount {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
-                    //let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
                     company.employeeCount = employeeCountString.toInt()!
-                    println(company.employeeCount)
                 }
             }
         }
-        
-        println("\nWebLink:")
         
         let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
         if let webLink = parser.searchWithXPathQuery(webLinkPath) {
@@ -469,7 +455,6 @@ class WebServicesManagerAPI: NSObject {
                 if let rawWebLinkString: String = node.firstChild?.content {
                     let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     company.webLink = webLinkString
-                    println(company.webLink)
                 }
             }
         }
