@@ -228,45 +228,6 @@ class WebServicesManagerAPI: NSObject {
         return companies
     }
     
-    func addFinancialDataToCompany(company: Company, fromData data: NSData) {
-        
-        let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-        //println("rawStringData: \(rawStringData)")
-        
-        let json = JSON(data: data)["ReturnData"]
-        //println(json)
-        
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-        
-        for (index: String, subJson: JSON) in json {
-            
-            if let type = subJson["Type"].string {
-                
-                for (index: String, subJson: JSON) in subJson["Data"] {
-                    
-                    let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                    
-                    financialMetric.type = type
-                    financialMetric.year = subJson["Year"].intValue
-                    financialMetric.value = subJson["Value"].doubleValue
-                    
-                    financialMetrics.addObject(financialMetric)
-                }
-                
-                company.financialMetrics = financialMetrics.copy() as NSSet
-            }
-        }
-        
-        // Save the context.
-        var error: NSError? = nil
-        if !managedObjectContext.save(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-    }
     
     // MARK: - Network Activity Indicator
     
@@ -369,7 +330,18 @@ class WebServicesManagerAPI: NSObject {
                             tdIndex++
                         }
                     } else {
-                        if var rawValueString: String = tableData.firstChild?.content {
+                        var rawValueString = String()
+                        var rawValueStringSet: Bool = false
+                        
+                        if let contentString: String = tableData.firstChild?.content {
+                            rawValueString = contentString
+                            rawValueStringSet = true
+                        } else if let contentString: String = tableData.firstChild?.firstChild?.content {
+                            rawValueString = contentString
+                            rawValueStringSet = true
+                        }
+                        
+                        if rawValueStringSet {
                             if rawValueString == "-" || rawValueString == "" {
                                 rawValueString = "0.0"
                             }
@@ -383,7 +355,6 @@ class WebServicesManagerAPI: NSObject {
                             
                             // Populate arrays for calculating metrics.
                             switch financialMetric.type {
-                                
                             case "Operating Income":
                                 operatingIncomeArray.append(financialMetric)
                             case "Interest Expense(Income) - Net Operating":
@@ -418,6 +389,7 @@ class WebServicesManagerAPI: NSObject {
                 netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
                 netOperatingIncomeArray.append(netOperatingIncomeMetric)
                 financialMetrics.addObject(netOperatingIncomeMetric)
+                //println("Type: \(netOperatingIncomeMetric.type), Year: \(netOperatingIncomeMetric.year) Value: \(netOperatingIncomeMetric.value)")
                 
                 let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitMetric.type = "Normal Net Operating Income"
@@ -425,6 +397,7 @@ class WebServicesManagerAPI: NSObject {
                 ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
                 ebitArray.append(ebitMetric)
                 financialMetrics.addObject(ebitMetric)
+                //println("Type: \(ebitMetric.type), Year: \(ebitMetric.year) Value: \(ebitMetric.value)")
                 
                 let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMetric.type = "EBITDA"
@@ -432,6 +405,7 @@ class WebServicesManagerAPI: NSObject {
                 ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
                 ebitdaArray.append(ebitdaMetric)
                 financialMetrics.addObject(ebitdaMetric)
+                //println("Type: \(ebitdaMetric.type), Year: \(ebitdaMetric.year) Value: \(ebitdaMetric.value)")
             }
             
             company.financialMetrics = financialMetrics.copy() as NSSet
