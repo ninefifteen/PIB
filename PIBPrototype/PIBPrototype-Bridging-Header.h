@@ -7,6 +7,7 @@
 //
 
 #import "CorePlot-CocoaTouch.h"
+#import "MBProgressHUD.h"
 
 #import <libxml/tree.h>
 #import <libxml/parser.h>

@@ -120,6 +120,12 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     
     func insertNewCompany(newCompany: Company) {
         
+        var hud = MBProgressHUD(view: navigationController?.view)
+        navigationController?.view.addSubview(hud)
+        //hud.delegate = self
+        hud.labelText = "Loading"
+        hud.show(true)
+        
         // Create new company managed object.
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
         let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
@@ -151,6 +157,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
             self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    hud.hide(true)
+                    hud.removeFromSuperview()
                     self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
                 })
             })
