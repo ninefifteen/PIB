@@ -440,7 +440,8 @@ class WebServicesManagerAPI: NSObject {
         let descriptionPath = "//div[@class='companySummary']"
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
             for node in companyDescription {
-                if let rawCompanyDescriptionString: String = node.firstChild?.content {
+                if var rawCompanyDescriptionString: String = node.firstChild?.content {
+                    rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     company.companyDescription = companyDescriptionString
                 }
