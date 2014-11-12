@@ -351,7 +351,7 @@ class WebServicesManagerAPI: NSObject {
                             financialMetric.type = financialMetricType
                             financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier
                             financialMetrics.addObject(financialMetric)
-                            //println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
+                            println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)")
                             
                             // Populate arrays for calculating metrics.
                             switch financialMetric.type {
@@ -389,7 +389,7 @@ class WebServicesManagerAPI: NSObject {
                 netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
                 netOperatingIncomeArray.append(netOperatingIncomeMetric)
                 financialMetrics.addObject(netOperatingIncomeMetric)
-                //println("Type: \(netOperatingIncomeMetric.type), Year: \(netOperatingIncomeMetric.year) Value: \(netOperatingIncomeMetric.value)")
+                println("Type: \(netOperatingIncomeMetric.type), Year: \(netOperatingIncomeMetric.year) Value: \(netOperatingIncomeMetric.value)")
                 
                 let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitMetric.type = "Normal Net Operating Income"
@@ -397,7 +397,7 @@ class WebServicesManagerAPI: NSObject {
                 ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
                 ebitArray.append(ebitMetric)
                 financialMetrics.addObject(ebitMetric)
-                //println("Type: \(ebitMetric.type), Year: \(ebitMetric.year) Value: \(ebitMetric.value)")
+                println("Type: \(ebitMetric.type), Year: \(ebitMetric.year) Value: \(ebitMetric.value)")
                 
                 let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMetric.type = "EBITDA"
@@ -405,7 +405,7 @@ class WebServicesManagerAPI: NSObject {
                 ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
                 ebitdaArray.append(ebitdaMetric)
                 financialMetrics.addObject(ebitdaMetric)
-                //println("Type: \(ebitdaMetric.type), Year: \(ebitdaMetric.year) Value: \(ebitdaMetric.value)")
+                println("Type: \(ebitdaMetric.type), Year: \(ebitdaMetric.year) Value: \(ebitdaMetric.value)")
             }
             
             company.financialMetrics = financialMetrics.copy() as NSSet
