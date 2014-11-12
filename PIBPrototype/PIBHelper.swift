@@ -21,7 +21,10 @@ class PIBHelper: NSObject {
         formatter.minimumSignificantDigits = 3
         formatter.roundingMode = NSNumberFormatterRoundingMode.RoundHalfUp
         
-        if abs(modifiedValue) >= 1000000000.0 {
+        if abs(modifiedValue) >= 1000000000000.0 {
+            modifiedValue /= 1000000000000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + " T"
+        } else if abs(modifiedValue) >= 1000000000.0 {
             modifiedValue /= 1000000000.0
             returnString = formatter.stringFromNumber(modifiedValue)! + " B"
         } else if abs(modifiedValue) >= 1000000.0 {
@@ -48,7 +51,10 @@ class PIBHelper: NSObject {
         formatter.minimumSignificantDigits = 3
         formatter.roundingMode = NSNumberFormatterRoundingMode.RoundHalfUp
         
-        if abs(modifiedValue) >= 1000000000.0 {
+        if abs(modifiedValue) >= 1000000000000.0 {
+            modifiedValue /= 1000000000000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + "T"
+        } else if abs(modifiedValue) >= 1000000000.0 {
             modifiedValue /= 1000000000.0
             returnString = formatter.stringFromNumber(modifiedValue)! + "B"
         } else if abs(modifiedValue) >= 1000000.0 {
