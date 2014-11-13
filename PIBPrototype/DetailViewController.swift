@@ -18,7 +18,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
-    @IBOutlet weak var ebitdaLabel: UILabel!
+    @IBOutlet weak var ebitdaMarginLabel: UILabel!
     
     
     @IBOutlet weak var pageControl: UIPageControl!
@@ -77,7 +77,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             }
             
             revenueLabel.text = revenueLabelStringForCompany(company)
-            ebitdaLabel.text = ebitdaLabelStringForCompany(company)
+            ebitdaMarginLabel.text = ebitdaMarginLabelStringForCompany(company)
             
         } else {
             
@@ -85,7 +85,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             locationLabel.text = ""
             employeeCountLabel.text = ""
             revenueLabel.text = ""
-            ebitdaLabel.text = ""
+            ebitdaMarginLabel.text = ""
         }
     }
     
@@ -125,6 +125,25 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if ebitdaArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
+        } else {
+            return "NA"
+        }
+    }
+    
+    func ebitdaMarginLabelStringForCompany(company: Company) -> String {
+        
+        var ebitdaMarginArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "EBITDA Margin" {
+                ebitdaMarginArray.append(financialMetric)
+            }
+        }
+        
+        ebitdaMarginArray.sort({ $0.year < $1.year })
+        
+        if ebitdaMarginArray.count > 0 {
+            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
         } else {
             return "NA"
         }

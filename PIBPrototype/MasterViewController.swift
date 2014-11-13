@@ -137,8 +137,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             locationLabel.text = " "
         }
         
-        let revenueLabel = cell.viewWithTag(103) as UILabel
-        revenueLabel.text = revenueLabelStringForCompany(company)
+        let marginLabel = cell.viewWithTag(103) as UILabel
+        marginLabel.text = ebitdaMarginLabelStringForCompany(company)
     }
     
     
@@ -163,20 +163,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    func ebitdaLabelStringForCompany(company: Company) -> String {
+    func ebitdaMarginLabelStringForCompany(company: Company) -> String {
         
-        var ebitdaArray = Array<FinancialMetric>()
+        var ebitdaMarginArray = Array<FinancialMetric>()
         var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
-            if financialMetric.type == "EBITDA" {
-                ebitdaArray.append(financialMetric)
+            if financialMetric.type == "EBITDA Margin" {
+                ebitdaMarginArray.append(financialMetric)
             }
         }
         
-        ebitdaArray.sort({ $0.year < $1.year })
+        ebitdaMarginArray.sort({ $0.year < $1.year })
         
-        if ebitdaArray.count > 0 {
-            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
+        if ebitdaMarginArray.count > 0 {
+            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
         } else {
             return "* NA *"
         }
