@@ -139,9 +139,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let revenueLabel = cell.viewWithTag(103) as UILabel
         revenueLabel.text = revenueLabelStringForCompany(company)
-        
-        let ebitdaLabel = cell.viewWithTag(104) as UILabel
-        ebitdaLabel.text = ebitdaLabelStringForCompany(company)
     }
     
     

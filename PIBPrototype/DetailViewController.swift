@@ -21,7 +21,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var ebitdaLabel: UILabel!
     
     
-    @IBOutlet weak var competitorScrollView: UIScrollView!
     @IBOutlet weak var pageControl: UIPageControl!
     
     weak var graphPageViewController: GraphPageViewController!
@@ -37,7 +36,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         updateTopViewLabels()
         
-        competitorScrollView.contentSize = CGSizeMake(600.0, 71.0)
+        descriptionTextView.editable = false
+        descriptionTextView.selectable = false
     }
     
     
@@ -67,29 +67,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if company.companyDescription != "" {
                 descriptionTextView.text = company.companyDescription
-                descriptionTextView.setContentOffset(CGPointMake(0.0, -20.0), animated: false)
+                descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
             }
             
             if company.employeeCount > 0 {
-                
-                var employeeCount: Double = company.employeeCount.doubleValue
-                
-                let formatter = NSNumberFormatter()
-                formatter.usesSignificantDigits = true
-                formatter.maximumSignificantDigits = 3
-                formatter.minimumSignificantDigits = 3
-                formatter.roundingMode = NSNumberFormatterRoundingMode.RoundHalfUp
-                
-                if employeeCount >= 1000000.0 {
-                    employeeCount /= 1000000.0
-                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)! + " M"
-                } else if employeeCount >= 1000.0 {
-                    employeeCount /= 1000.0
-                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)! + " K"
-                } else {
-                    employeeCountLabel.text = formatter.stringFromNumber(employeeCount)!
-                }
-                
+                employeeCountLabel.text = PIBHelper.pibStandardStyleValueStringFromDoubleValue(company.employeeCount.doubleValue)
             } else {
                 employeeCountLabel.text = "NA"
             }
