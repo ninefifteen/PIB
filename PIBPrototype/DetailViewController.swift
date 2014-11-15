@@ -13,6 +13,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     // MARK: - Properties
     
+    @IBOutlet weak var topView: UIView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
@@ -79,13 +80,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             revenueLabel.text = "$" + revenueLabelStringForCompany(company)
             ebitdaMarginLabel.text = ebitdaMarginLabelStringForCompany(company)
             
+            pageControl.hidden = false
+            
         } else {
             
-            nameLabel.text = ""
-            locationLabel.text = ""
-            employeeCountLabel.text = ""
-            revenueLabel.text = ""
-            ebitdaMarginLabel.text = ""
+            topView.hidden = true
+            pageControl.hidden = true
         }
     }
     

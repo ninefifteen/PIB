@@ -66,19 +66,19 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kQ6-Yg-7M3">
-                                        <rect key="frame" x="8" y="178" width="52" height="14"/>
+                                        <rect key="frame" x="8" y="179" width="52" height="14"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="MARGIN" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zka-hk-sA9">
-                                        <rect key="frame" x="547" y="178" width="45" height="14"/>
+                                        <rect key="frame" x="547" y="179" width="45" height="14"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="EMPLOYEES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m9F-PF-5QO">
-                                        <rect key="frame" x="266" y="178" width="68" height="14"/>
+                                        <rect key="frame" x="266" y="179" width="68" height="14"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -123,6 +123,12 @@
                                     <constraint firstAttribute="bottom" secondItem="kQ6-Yg-7M3" secondAttribute="bottom" constant="8" id="zpU-0f-ygd"/>
                                 </constraints>
                             </view>
+                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M7v-Sz-UVP">
+                                <rect key="frame" x="0.0" y="264" width="600" height="336"/>
+                                <connections>
+                                    <segue destination="8O1-Nn-uAe" kind="embed" identifier="embedGraph" id="1bD-Mt-tkz"/>
+                                </connections>
+                            </containerView>
                             <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="4" translatesAutoresizingMaskIntoConstraints="NO" id="tZT-SE-RgZ">
                                 <rect key="frame" x="273" y="563" width="55" height="37"/>
                                 <color key="pageIndicatorTintColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
@@ -131,22 +137,17 @@
                                     <action selector="pageControlValueChanged:" destination="JEX-9P-axG" eventType="valueChanged" id="1ZA-iV-4bx"/>
                                 </connections>
                             </pageControl>
-                            <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M7v-Sz-UVP">
-                                <rect key="frame" x="0.0" y="264" width="600" height="336"/>
-                                <connections>
-                                    <segue destination="8O1-Nn-uAe" kind="embed" identifier="embedGraph" id="1bD-Mt-tkz"/>
-                                </connections>
-                            </containerView>
                         </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="M7v-Sz-UVP" secondAttribute="trailing" constant="-16" id="9it-aG-Grg"/>
+                            <constraint firstItem="NPq-gS-bve" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" id="0oq-AY-DAL"/>
                             <constraint firstItem="NPq-gS-bve" firstAttribute="top" secondItem="SYR-Wa-9uf" secondAttribute="bottom" id="FZY-bJ-KOg"/>
-                            <constraint firstItem="NPq-gS-bve" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leadingMargin" constant="-16" id="NCg-ZE-q9w"/>
-                            <constraint firstItem="M7v-Sz-UVP" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leadingMargin" constant="-16" id="RCf-F1-U0J"/>
+                            <constraint firstItem="M7v-Sz-UVP" firstAttribute="leading" secondItem="svH-Pt-448" secondAttribute="leading" id="WQt-8a-0vm"/>
+                            <constraint firstAttribute="trailing" secondItem="NPq-gS-bve" secondAttribute="trailing" id="c1b-aW-Bbe"/>
                             <constraint firstAttribute="centerX" secondItem="tZT-SE-RgZ" secondAttribute="centerX" id="iZg-7d-zCR"/>
                             <constraint firstItem="GAO-Cl-Wes" firstAttribute="top" secondItem="tZT-SE-RgZ" secondAttribute="bottom" id="lvq-jn-iHv"/>
                             <constraint firstItem="GAO-Cl-Wes" firstAttribute="top" secondItem="M7v-Sz-UVP" secondAttribute="bottom" id="oiD-X0-8SL"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="NPq-gS-bve" secondAttribute="trailing" constant="-16" id="qCK-Ow-3Qs"/>
+                            <constraint firstAttribute="trailing" secondItem="M7v-Sz-UVP" secondAttribute="trailing" id="sdA-b9-Vcg"/>
                             <constraint firstItem="M7v-Sz-UVP" firstAttribute="top" secondItem="NPq-gS-bve" secondAttribute="bottom" id="tV7-Cj-nhh"/>
                         </constraints>
                     </view>
@@ -160,6 +161,7 @@
                         <outlet property="nameLabel" destination="UPa-yy-aSe" id="zMN-hE-qg1"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
                         <outlet property="revenueLabel" destination="VYL-aS-74c" id="DYu-B7-NcX"/>
+                        <outlet property="topView" destination="NPq-gS-bve" id="W9z-4b-fdO"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
