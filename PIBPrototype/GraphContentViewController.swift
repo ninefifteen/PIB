@@ -107,7 +107,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "RandD":
+                case "Research & Development":
                     rAndDArray.append(financialMetric)
                 default:
                     break
@@ -130,7 +130,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "SGandA":
+                case "Selling/General/Admin. Expenses, Total":
                     sgAndAArray.append(financialMetric)
                 default:
                     break
@@ -143,6 +143,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
             
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
             configureSGAndAGraph()
             
@@ -281,7 +283,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
-        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 5.0)
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -298,7 +300,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         // Custom X-axis labels.
         x.labelingPolicy = .None
         
-        xAxisCustomTickLocations = [1.0, 2.0, 3.0]
+        xAxisCustomTickLocations = [1.0, 2.0, 3.0, 4.0]
         
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
@@ -388,7 +390,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = barLineStyle
-        revenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+        revenueBarPlot.fill = CPTFill(color: CPTColor.blueColor())
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = -0.17
@@ -400,7 +402,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         let netIncomeBarPlot = CPTBarPlot()
         netIncomeBarPlot.barsAreHorizontal = false
         netIncomeBarPlot.lineStyle = barLineStyle
-        netIncomeBarPlot.fill = CPTFill(color: CPTColor.yellowColor())
+        netIncomeBarPlot.fill = CPTFill(color: CPTColor.redColor())
         netIncomeBarPlot.barWidth = 0.3
         netIncomeBarPlot.baseValue = 0.0
         netIncomeBarPlot.barOffset = 0.17
@@ -441,7 +443,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = barLineStyle
-        revenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+        revenueBarPlot.fill = CPTFill(color: CPTColor.blueColor())
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = -0.17
@@ -479,30 +481,96 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
         rAndDLinePlotLineStyle.lineWidth = 3.0
-        rAndDLinePlotLineStyle.lineColor = CPTColor.greenColor()
+        rAndDLinePlotLineStyle.lineColor = CPTColor.redColor()
         
         let rAndDLinePlot = CPTScatterPlot()
         rAndDLinePlot.dataSource = self
         rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
         rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
-        rAndDLinePlot.identifier = "RAndDLine"
+        rAndDLinePlot.identifier = "R&D"
         
         let symbolLineStyle = CPTMutableLineStyle()
-        symbolLineStyle.lineColor = CPTColor.blackColor()
+        symbolLineStyle.lineColor = CPTColor.redColor()
+        symbolLineStyle.lineWidth = 3.0
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: CPTColor.yellowColor())
+        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = CGSizeMake(10.0, 10.0)
         rAndDLinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
         
+        // Add legend.
+        let graphLegend = CPTLegend(graph: graph)
+        graphLegend.fill = CPTFill(color: CPTColor.whiteColor())
+        graphLegend.borderLineStyle = nil
+        graphLegend.cornerRadius = 10.0
+        graphLegend.swatchSize = CGSizeMake(14.0, 14.0)
+        let blackTextStyle = CPTMutableTextStyle()
+        blackTextStyle.color = CPTColor.blackColor()
+        blackTextStyle.fontSize = 12.0
+        graphLegend.textStyle = blackTextStyle
+        graphLegend.rowMargin = 10.0
+        graphLegend.numberOfRows = 1
+        graphLegend.paddingLeft = 8.0
+        graphLegend.paddingTop = 8.0
+        graphLegend.paddingRight = 8.0
+        graphLegend.paddingBottom = 8.0
+        
+        graph.legend = graphLegend
+        graph.legendAnchor = .Bottom
+        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        
         self.graphView.hostedGraph = graph
     }
     
     func configureSGAndAGraph() {
         
-        //
+        configureBaseCurvedLineGraph()
+        
+        let sgAndALinePlotLineStyle = CPTMutableLineStyle()
+        sgAndALinePlotLineStyle.lineWidth = 3.0
+        sgAndALinePlotLineStyle.lineColor = CPTColor.blueColor()
+        
+        let sgAndALinePlot = CPTScatterPlot()
+        sgAndALinePlot.dataSource = self
+        sgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        sgAndALinePlot.dataLineStyle = sgAndALinePlotLineStyle
+        sgAndALinePlot.identifier = "SG&A"
+        
+        let symbolLineStyle = CPTMutableLineStyle()
+        symbolLineStyle.lineColor = CPTColor.blueColor()
+        symbolLineStyle.lineWidth = 3.0
+        let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        plotSymbol.lineStyle = symbolLineStyle
+        plotSymbol.size = CGSizeMake(10.0, 10.0)
+        sgAndALinePlot.plotSymbol = plotSymbol
+        
+        graph.addPlot(sgAndALinePlot, toPlotSpace:plotSpace)
+        
+        // Add legend.
+        let graphLegend = CPTLegend(graph: graph)
+        graphLegend.fill = CPTFill(color: CPTColor.whiteColor())
+        graphLegend.borderLineStyle = nil
+        graphLegend.cornerRadius = 10.0
+        graphLegend.swatchSize = CGSizeMake(14.0, 14.0)
+        let blackTextStyle = CPTMutableTextStyle()
+        blackTextStyle.color = CPTColor.blackColor()
+        blackTextStyle.fontSize = 12.0
+        graphLegend.textStyle = blackTextStyle
+        graphLegend.rowMargin = 10.0
+        graphLegend.numberOfRows = 1
+        graphLegend.paddingLeft = 8.0
+        graphLegend.paddingTop = 8.0
+        graphLegend.paddingRight = 8.0
+        graphLegend.paddingBottom = 8.0
+        
+        graph.legend = graphLegend
+        graph.legendAnchor = .Bottom
+        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        
+        self.graphView.hostedGraph = graph
     }
     
     
@@ -661,8 +729,28 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
             case .Y:
                 let plotID = plot.identifier as String
                 
-                if plotID == "RAndDLine" {
+                if plotID == "R&D" {
                     return rAndDArray[Int(recordIndex)].value
+                } else {
+                    return nil
+                }
+                
+            default:
+                return nil
+            }
+            
+        case 3:
+            
+            switch CPTScatterPlotField(rawValue: Int(field))! {
+                
+            case .X:
+                return recordIndex + 1 as NSNumber
+                
+            case .Y:
+                let plotID = plot.identifier as String
+                
+                if plotID == "SG&A" {
+                    return sgAndAArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
