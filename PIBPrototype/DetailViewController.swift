@@ -57,7 +57,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if company.city != "" {
                 if company.country != "" {
-                    locationLabel.text = company.city.uppercaseString + ", " + company.country.uppercaseString
+                    locationLabel.text = company.city.uppercaseString + ", " + company.state + " " + company.country.uppercaseString
                 } else {
                     locationLabel.text = company.city.uppercaseString
                 }
@@ -76,7 +76,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                 employeeCountLabel.text = "NA"
             }
             
-            revenueLabel.text = revenueLabelStringForCompany(company)
+            revenueLabel.text = "$" + revenueLabelStringForCompany(company)
             ebitdaMarginLabel.text = ebitdaMarginLabelStringForCompany(company)
             
         } else {

@@ -138,7 +138,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         let marginLabel = cell.viewWithTag(103) as UILabel
-        marginLabel.text = ebitdaMarginLabelStringForCompany(company)
+        marginLabel.text = "$" + revenueLabelStringForCompany(company)
     }
     
     

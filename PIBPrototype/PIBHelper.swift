@@ -23,16 +23,16 @@ class PIBHelper: NSObject {
         
         if abs(modifiedValue) >= 1000000000000.0 {
             modifiedValue /= 1000000000000.0
-            returnString = formatter.stringFromNumber(modifiedValue)! + " T"
+            returnString = formatter.stringFromNumber(modifiedValue)! + "T"
         } else if abs(modifiedValue) >= 1000000000.0 {
             modifiedValue /= 1000000000.0
-            returnString = formatter.stringFromNumber(modifiedValue)! + " B"
+            returnString = formatter.stringFromNumber(modifiedValue)! + "B"
         } else if abs(modifiedValue) >= 1000000.0 {
             modifiedValue /= 1000000.0
-            returnString = formatter.stringFromNumber(modifiedValue)! + " M"
+            returnString = formatter.stringFromNumber(modifiedValue)! + "M"
         } else if abs(modifiedValue) >= 1000.0 {
             modifiedValue /= 1000.0
-            returnString = formatter.stringFromNumber(modifiedValue)! + " K"
+            returnString = formatter.stringFromNumber(modifiedValue)! + "K"
         } else {
             returnString = formatter.stringFromNumber(modifiedValue)!
         }
