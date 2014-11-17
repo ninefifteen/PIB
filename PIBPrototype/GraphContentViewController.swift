@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GraphContentViewController: UIViewController, CPTPlotDataSource {
+class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate {
 
     // MARK: - Properties
     
@@ -41,6 +41,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
     var yAxisCustomTickLocations = Array<Double>()
     var yMajorGridLineStyle = CPTMutableLineStyle()
     var barLineStyle = CPTMutableLineStyle()
+    
+    var symbolTextAnnotation: CPTPlotSpaceAnnotation?
     
     
     // MARK: - View Life Cycle
@@ -394,7 +396,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = -0.17
+        revenueBarPlot.barCornerRadius = 2.0
         revenueBarPlot.identifier = "Revenue"
+        revenueBarPlot.delegate = self
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
@@ -408,6 +412,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         netIncomeBarPlot.barOffset = 0.17
         netIncomeBarPlot.barCornerRadius = 2.0
         netIncomeBarPlot.identifier = "Net Income"
+        netIncomeBarPlot.delegate = self
         netIncomeBarPlot.dataSource = self
         graph.addPlot(netIncomeBarPlot, toPlotSpace:plotSpace)
         
@@ -444,9 +449,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = barLineStyle
         revenueBarPlot.fill = CPTFill(color: CPTColor.blueColor())
-        revenueBarPlot.barWidth = 0.3
+        revenueBarPlot.barWidth = 0.5
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = -0.17
+        revenueBarPlot.barOffset = 0.0
+        revenueBarPlot.barCornerRadius = 2.0
         revenueBarPlot.identifier = "Gross Profit"
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
@@ -762,6 +768,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource {
         default:
             return nil
         }
+    }
+    
+
+    // MARK: - CPTBarPlotDelegate
+    
+    func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt) {
+        
+        var value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
+        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        
+        if let annotation = symbolTextAnnotation {
+            graph.plotAreaFrame.plotArea.removeAnnotation(annotation)
+            symbolTextAnnotation = nil
+        }
+        
+        let x: NSNumber = idx + 1 as NSNumber
+        let y: NSNumber = value as NSNumber
+        
+        let annotationTextStyle = CPTMutableTextStyle()
+        annotationTextStyle.color = CPTColor.darkGrayColor()
+        annotationTextStyle.fontSize = 14.0
+        
+        let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
+        newAnnotation.contentLayer = textLayer
+        newAnnotation.displacement = CGPointMake(0.0, 0.0)
+        symbolTextAnnotation = newAnnotation
+        
+        graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
     
     
