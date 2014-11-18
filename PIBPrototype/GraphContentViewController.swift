@@ -159,6 +159,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         default:
             break
         }
+        
+        addAnnotationsToAllPlots()
     }
     
     override func didReceiveMemoryWarning() {
@@ -495,7 +497,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
-        rAndDLinePlotLineStyle.lineWidth = 3.0
+        rAndDLinePlotLineStyle.lineWidth = 4.0
         rAndDLinePlotLineStyle.lineColor = CPTColor.redColor()
         
         let rAndDLinePlot = CPTScatterPlot()
@@ -507,11 +509,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let symbolLineStyle = CPTMutableLineStyle()
         symbolLineStyle.lineColor = CPTColor.redColor()
-        symbolLineStyle.lineWidth = 3.0
+        symbolLineStyle.lineWidth = 4.0
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
         plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = CGSizeMake(10.0, 10.0)
+        plotSymbol.size = CGSizeMake(14.0, 14.0)
         rAndDLinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
@@ -545,7 +547,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         
         let sgAndALinePlotLineStyle = CPTMutableLineStyle()
-        sgAndALinePlotLineStyle.lineWidth = 3.0
+        sgAndALinePlotLineStyle.lineWidth = 4.0
         sgAndALinePlotLineStyle.lineColor = CPTColor.blueColor()
         
         let sgAndALinePlot = CPTScatterPlot()
@@ -557,11 +559,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let symbolLineStyle = CPTMutableLineStyle()
         symbolLineStyle.lineColor = CPTColor.blueColor()
-        symbolLineStyle.lineWidth = 3.0
+        symbolLineStyle.lineWidth = 4.0
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
         plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = CGSizeMake(10.0, 10.0)
+        plotSymbol.size = CGSizeMake(14.0, 14.0)
         sgAndALinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(sgAndALinePlot, toPlotSpace:plotSpace)
@@ -845,7 +847,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             allAnnotationsShowing = false
         } else {
             addAnnotationsToAllPlots()
-            allAnnotationsShowing = true
         }
     }
     
@@ -872,9 +873,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                         addAnnotationToScatterPlot(scatterPlot, atSelectedRecordIndex: UInt(index))
                     }
                 }
-                
             }
         }
+        allAnnotationsShowing = true
     }
     
     func addAnnotationToBarPlot(plot: CPTBarPlot!, atSelectedRecordIndex idx: UInt) {
@@ -887,7 +888,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let annotationTextStyle = CPTMutableTextStyle()
         annotationTextStyle.color = CPTColor.darkGrayColor()
-        annotationTextStyle.fontSize = 11.0
+        
+        annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 15.0 : 11.0
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
         textLayer.fill = CPTFill(color: CPTColor.whiteColor())
@@ -900,7 +902,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = CGPointMake(0.0, 12.0)
+        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 16.0) : CGPointMake(0.0, 12.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
@@ -915,7 +917,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let annotationTextStyle = CPTMutableTextStyle()
         annotationTextStyle.color = CPTColor.darkGrayColor()
-        annotationTextStyle.fontSize = 11.0
+        annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 15.0 : 11.0
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
         textLayer.fill = CPTFill(color: CPTColor.whiteColor())
@@ -928,7 +930,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = CGPointMake(0.0, 18.0)
+        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 24.0) : CGPointMake(0.0, 18.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
