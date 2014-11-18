@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate {
+class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate, CPTPlotAreaDelegate {
 
     // MARK: - Properties
     
@@ -42,7 +42,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var yMajorGridLineStyle = CPTMutableLineStyle()
     var barLineStyle = CPTMutableLineStyle()
     
-    var symbolTextAnnotation: CPTPlotSpaceAnnotation?
+    var scatterPlotOffset: Double = 0.0
+    
+    var allAnnotationsShowing: Bool = false
     
     
     // MARK: - View Life Cycle
@@ -125,6 +127,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
             
+            scatterPlotOffset = 0.2
+            
             configureRAndDGraph()
             
         case 3:
@@ -148,6 +152,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
+            scatterPlotOffset = 0.2
+
             configureSGAndAGraph()
             
         default:
@@ -166,6 +172,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureBaseBarGraph() {
         
         graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
+        graph.plotAreaFrame.plotArea.delegate = self
         
         // Graph border.
         graph.plotAreaFrame.borderLineStyle = nil
@@ -186,7 +193,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
-        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 5.0)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -203,7 +210,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         // Custom X-axis labels.
         x.labelingPolicy = .None
         
-        xAxisCustomTickLocations = [1.0, 2.0, 3.0, 4.0]
+        xAxisCustomTickLocations = [0.5, 1.5, 2.5, 3.5]
         
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
@@ -265,6 +272,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureBaseCurvedLineGraph() {
         
         graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
+        graph.plotAreaFrame.plotArea.delegate = self
         
         // Graph border.
         graph.plotAreaFrame.borderLineStyle = nil
@@ -273,19 +281,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Graph paddings.
         graph.paddingLeft = 0.0
-        graph.paddingRight = 0.0
+        graph.paddingRight = 20.0
         graph.paddingTop = 0.0
         graph.paddingBottom = 0.0
         
         graph.plotAreaFrame.paddingLeft   = 64.0
         graph.plotAreaFrame.paddingTop    = 24.0
-        graph.plotAreaFrame.paddingRight  = 20.0
+        graph.plotAreaFrame.paddingRight  = -40.0
         graph.plotAreaFrame.paddingBottom = 80.0
         
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
-        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 5.0)
+        plotSpace.xRange = CPTPlotRange(location: 0.0, length: 4.0)
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -302,13 +310,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         // Custom X-axis labels.
         x.labelingPolicy = .None
         
-        xAxisCustomTickLocations = [1.0, 2.0, 3.0, 4.0]
+        xAxisCustomTickLocations = [0.0, 1.0, 2.0, 3.0]
         
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
         for tickLocation in xAxisCustomTickLocations {
             let newLabel = CPTAxisLabel(text: xAxisLabels[xLabelLocation++], textStyle: x.labelTextStyle)
-            newLabel.tickLocation = tickLocation
+            newLabel.tickLocation = tickLocation + scatterPlotOffset
             newLabel.offset = x.labelOffset + x.majorTickLength
             //newLabel.rotation = CGFloat(M_PI_4)
             xAxisCustomLabels.addObject(newLabel)
@@ -395,7 +403,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.fill = CPTFill(color: CPTColor.blueColor())
         revenueBarPlot.barWidth = 0.3
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = -0.17
+        revenueBarPlot.barOffset = 0.30
         revenueBarPlot.barCornerRadius = 2.0
         revenueBarPlot.identifier = "Revenue"
         revenueBarPlot.delegate = self
@@ -409,7 +417,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         netIncomeBarPlot.fill = CPTFill(color: CPTColor.redColor())
         netIncomeBarPlot.barWidth = 0.3
         netIncomeBarPlot.baseValue = 0.0
-        netIncomeBarPlot.barOffset = 0.17
+        netIncomeBarPlot.barOffset = 0.70
         netIncomeBarPlot.barCornerRadius = 2.0
         netIncomeBarPlot.identifier = "Net Income"
         netIncomeBarPlot.delegate = self
@@ -451,9 +459,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.fill = CPTFill(color: CPTColor.blueColor())
         revenueBarPlot.barWidth = 0.5
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = 0.0
+        revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
         revenueBarPlot.identifier = "Gross Profit"
+        revenueBarPlot.delegate = self
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
@@ -490,6 +499,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         rAndDLinePlotLineStyle.lineColor = CPTColor.redColor()
         
         let rAndDLinePlot = CPTScatterPlot()
+        rAndDLinePlot.delegate = self
         rAndDLinePlot.dataSource = self
         rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
         rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
@@ -539,6 +549,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         sgAndALinePlotLineStyle.lineColor = CPTColor.blueColor()
         
         let sgAndALinePlot = CPTScatterPlot()
+        sgAndALinePlot.delegate = self
         sgAndALinePlot.dataSource = self
         sgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Curved
         sgAndALinePlot.dataLineStyle = sgAndALinePlotLineStyle
@@ -686,7 +697,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             switch CPTBarPlotField(rawValue: Int(field))! {
                 
             case .BarLocation:
-                return recordIndex + 1 as NSNumber
+                return recordIndex as NSNumber
                 
             case .BarTip:
                 
@@ -709,7 +720,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             switch CPTBarPlotField(rawValue: Int(field))! {
                 
             case .BarLocation:
-                return recordIndex + 1 as NSNumber
+                return recordIndex as NSNumber
                 
             case .BarTip:
                 
@@ -730,7 +741,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
             case .X:
-                return recordIndex + 1 as NSNumber
+                let x = Double(recordIndex) + scatterPlotOffset
+                return x as NSNumber
                 
             case .Y:
                 let plotID = plot.identifier as String
@@ -750,7 +762,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
             case .X:
-                return recordIndex + 1 as NSNumber
+                let x = Double(recordIndex) + scatterPlotOffset
+                return x as NSNumber
                 
             case .Y:
                 let plotID = plot.identifier as String
@@ -775,26 +788,147 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt) {
         
-        var value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
-        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        var removedAnnotation: Bool = false
         
-        if let annotation = symbolTextAnnotation {
-            graph.plotAreaFrame.plotArea.removeAnnotation(annotation)
-            symbolTextAnnotation = nil
+        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
+        let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
+        let y: NSNumber = value as NSNumber
+        
+        for annotation in graph.plotAreaFrame.plotArea.annotations {
+            if let annotationAnchorPlotPoint = annotation.anchorPlotPoint as? [NSNumber] {
+                if annotationAnchorPlotPoint[0] == x && annotationAnchorPlotPoint[1] == y {
+                    graph.plotAreaFrame.plotArea.removeAnnotation(annotation as CPTAnnotation)
+                    removedAnnotation = true
+                }
+            }
         }
         
-        let x: NSNumber = idx + 1 as NSNumber
+        if !removedAnnotation {
+            
+            addAnnotationToBarPlot(plot, atSelectedRecordIndex: idx)
+        }
+    }
+    
+    
+    // MARK: - CPTScatterPlotDelegate
+    
+    func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt) {
+        
+        var removedAnnotation: Bool = false
+        
+        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
+        let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
+        
+        for annotation in graph.plotAreaFrame.plotArea.annotations {
+            if let annotationAnchorPlotPoint = annotation.anchorPlotPoint as? [NSNumber] {
+                if annotationAnchorPlotPoint[0] == x && annotationAnchorPlotPoint[1] == y {
+                    graph.plotAreaFrame.plotArea.removeAnnotation(annotation as CPTAnnotation)
+                    removedAnnotation = true
+                }
+            }
+        }
+        
+        if !removedAnnotation {
+            
+            addAnnotationToScatterPlot(plot, atSelectedRecordIndex: idx)
+        }
+    }
+    
+    
+    // MARK: - Gesture Recognizer Methods
+    
+    @IBAction func handleDoubleTap(recognizer: UITapGestureRecognizer) {
+        
+        if allAnnotationsShowing {
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            allAnnotationsShowing = false
+        } else {
+            addAnnotationsToAllPlots()
+            allAnnotationsShowing = true
+        }
+    }
+    
+    
+    // MARK: - Plot Annotation Methods
+    
+    func addAnnotationsToAllPlots() {
+        
+        graph.plotAreaFrame.plotArea.removeAllAnnotations()
+        
+        if let plots = graph.allPlots() as? Array<CPTPlot> {
+            
+            for plot in plots {
+                
+                if let barPlot = plot as? CPTBarPlot {
+                    
+                    for index in 0...3 {
+                        addAnnotationToBarPlot(barPlot, atSelectedRecordIndex: UInt(index))
+                    }
+                    
+                } else if let scatterPlot = plot as? CPTScatterPlot {
+                    
+                    for index in 0...3 {
+                        addAnnotationToScatterPlot(scatterPlot, atSelectedRecordIndex: UInt(index))
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    func addAnnotationToBarPlot(plot: CPTBarPlot!, atSelectedRecordIndex idx: UInt) {
+        
+        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
+        let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
+        let y: NSNumber = value as NSNumber
+        
+        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
         
         let annotationTextStyle = CPTMutableTextStyle()
         annotationTextStyle.color = CPTColor.darkGrayColor()
-        annotationTextStyle.fontSize = 14.0
+        annotationTextStyle.fontSize = 11.0
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        textLayer.fill = CPTFill(color: CPTColor.whiteColor())
+        textLayer.cornerRadius = 5.0
+        
+        let annotationLineStyle = CPTMutableLineStyle()
+        annotationLineStyle.lineWidth = 1.0
+        annotationLineStyle.lineColor = CPTColor.blackColor()
+        textLayer.borderLineStyle = annotationLineStyle
+        
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = CGPointMake(0.0, 0.0)
-        symbolTextAnnotation = newAnnotation
+        newAnnotation.displacement = CGPointMake(0.0, 12.0)
+        
+        graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
+    }
+    
+    func addAnnotationToScatterPlot(plot: CPTScatterPlot!, atSelectedRecordIndex idx: UInt) {
+        
+        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
+        let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
+        let y: NSNumber = value as NSNumber
+        
+        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        
+        let annotationTextStyle = CPTMutableTextStyle()
+        annotationTextStyle.color = CPTColor.darkGrayColor()
+        annotationTextStyle.fontSize = 11.0
+        
+        let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        textLayer.fill = CPTFill(color: CPTColor.whiteColor())
+        textLayer.cornerRadius = 5.0
+        
+        let annotationLineStyle = CPTMutableLineStyle()
+        annotationLineStyle.lineWidth = 1.0
+        annotationLineStyle.lineColor = CPTColor.blackColor()
+        textLayer.borderLineStyle = annotationLineStyle
+        
+        let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
+        newAnnotation.contentLayer = textLayer
+        newAnnotation.displacement = CGPointMake(0.0, 18.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
