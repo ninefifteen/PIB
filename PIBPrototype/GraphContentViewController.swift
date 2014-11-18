@@ -49,8 +49,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let yAxisLabelTextStyle = CPTMutableTextStyle()
     let legendTextStyle = CPTMutableTextStyle()
     let annotationTextStyle = CPTMutableTextStyle()
+    let titleTextStyle = CPTMutableTextStyle()
     
     var scatterPlotOffset: Double = 0.0
+    let scatterPlotLineWidth: CGFloat = 3.5
+    let scatterPlotSymbolSize = CGSizeMake(14.0, 14.0)
     
     var allAnnotationsShowing: Bool = false
     
@@ -194,6 +197,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         annotationTextStyle.color = CPTColor.grayColor()
         annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 15.0 : 11.0
+        
+        titleTextStyle.color = CPTColor(componentRed: 120.0/255.0, green: 120.0/255.0, blue: 120.0/255.0, alpha: 1.0)
+        titleTextStyle.fontSize = 15.0
     }
     
     func legendForGraph() -> CPTLegend {
@@ -214,6 +220,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return legend
     }
     
+    func configureTitleForGraph(title: String) {
+        
+        graph.title = title.uppercaseString
+        graph.titleTextStyle = titleTextStyle
+        graph.titleDisplacement = CGPointMake(5.0, 0.0)
+        graph.titlePlotAreaFrameAnchor = CPTRectAnchor.TopLeft
+    }
+    
     func configureBaseGraph() {
         
         graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
@@ -227,12 +241,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         // Graph paddings.
         graph.paddingLeft = 0.0
         graph.paddingRight = 0.0
-        graph.paddingTop = 0.0
+        graph.paddingTop = 5.0
         graph.paddingBottom = 0.0
         
-        graph.plotAreaFrame.paddingLeft   = 64.0
-        graph.plotAreaFrame.paddingTop    = 24.0
-        graph.plotAreaFrame.paddingRight  = 20.0
+        graph.plotAreaFrame.paddingLeft   = 50.0
+        graph.plotAreaFrame.paddingTop    = 36.0
+        graph.plotAreaFrame.paddingRight  = 10.0
         graph.plotAreaFrame.paddingBottom = 80.0
     }
     
@@ -326,8 +340,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         configureBaseGraph()
         
-        graph.paddingRight = 20.0
-        graph.plotAreaFrame.paddingRight  = -40.0
+        graph.paddingRight = 10.0
+        graph.plotAreaFrame.paddingRight  = -44.0
         
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
@@ -411,32 +425,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRevenueIncomeMarginGraph() {
         
         configureBaseBarGraph()
-        
-        // Graph title.
-        /*let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .Center
-        
-        let lineOne = "Graph Title"
-        let lineTwo = "Subtitle"
-        
-        let line1Font = UIFont(name: "Helvetica-Bold", size: 16.0)
-        let line2Font = UIFont(name: "Helvetica", size: 12.0)
-        
-        let graphTitle = NSMutableAttributedString(string: lineOne + "\n" + lineTwo)
-        
-        let titleRange1 = NSRange(location: 0, length: lineOne.utf16Count)
-        let titleRange2 = NSRange(location: lineOne.utf16Count, length: lineTwo.utf16Count + 1)
-        
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: titleRange1)
-        graphTitle.addAttribute(NSForegroundColorAttributeName, value: UIColor.grayColor(), range: titleRange2)
-        graphTitle.addAttribute(NSParagraphStyleAttributeName, value: paragraphStyle, range: NSRange(location: 0, length: graphTitle.length))
-        graphTitle.addAttribute(NSFontAttributeName, value: line1Font!, range: titleRange1)
-        graphTitle.addAttribute(NSFontAttributeName, value: line2Font!, range: titleRange2)
-        
-        graph.attributedTitle = graphTitle
-        
-        graph.titleDisplacement = CGPoint(x: 0.0, y: -20.0)
-        graph.titlePlotAreaFrameAnchor = .Top*/
+        configureTitleForGraph("Revenue  Income")
         
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
@@ -477,6 +466,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureGrossMarginGraph() {
         
         configureBaseBarGraph()
+        configureTitleForGraph("Gross Margin")
         
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
@@ -503,11 +493,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRAndDGraph() {
         
         configureBaseCurvedLineGraph()
+        configureTitleForGraph("R & D")
         
         let raAndDLinePlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
-        rAndDLinePlotLineStyle.lineWidth = 4.0
+        rAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
         rAndDLinePlotLineStyle.lineColor = raAndDLinePlotColor
         
         let rAndDLinePlot = CPTScatterPlot()
@@ -519,11 +510,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let symbolLineStyle = CPTMutableLineStyle()
         symbolLineStyle.lineColor = raAndDLinePlotColor
-        symbolLineStyle.lineWidth = 4.0
+        symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
         plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = CGSizeMake(14.0, 14.0)
+        plotSymbol.size = scatterPlotSymbolSize
         rAndDLinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
@@ -539,11 +530,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureSGAndAGraph() {
         
         configureBaseCurvedLineGraph()
-        
+        configureTitleForGraph("SG & A")
+
         let sgAndALinePlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
         let sgAndALinePlotLineStyle = CPTMutableLineStyle()
-        sgAndALinePlotLineStyle.lineWidth = 4.0
+        sgAndALinePlotLineStyle.lineWidth = scatterPlotLineWidth
         sgAndALinePlotLineStyle.lineColor = sgAndALinePlotColor
         
         let sgAndALinePlot = CPTScatterPlot()
@@ -555,11 +547,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let symbolLineStyle = CPTMutableLineStyle()
         symbolLineStyle.lineColor = sgAndALinePlotColor
-        symbolLineStyle.lineWidth = 4.0
+        symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
         plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = CGSizeMake(14.0, 14.0)
+        plotSymbol.size = scatterPlotSymbolSize
         sgAndALinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(sgAndALinePlot, toPlotSpace:plotSpace)
