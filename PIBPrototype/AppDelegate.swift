@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var window: UIWindow?
     
     func customizeAppearance() {
-        UINavigationBar.appearance().barTintColor = UIColor.redColor()
+        UINavigationBar.appearance().barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
         UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent
         UIView.appearance().tintColor = UIColor.whiteColor()

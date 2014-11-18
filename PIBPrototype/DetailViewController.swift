@@ -58,9 +58,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if company.city != "" {
                 if company.country != "" {
-                    locationLabel.text = company.city.uppercaseString + ", " + company.state + " " + company.country.uppercaseString
+                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
                 } else {
-                    locationLabel.text = company.city.uppercaseString
+                    locationLabel.text = company.city.capitalizedString
                 }
             } else {
                 locationLabel.text = ""
