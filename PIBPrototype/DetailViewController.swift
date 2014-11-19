@@ -34,7 +34,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
         updateTopViewLabels()
         
         descriptionTextView.editable = false

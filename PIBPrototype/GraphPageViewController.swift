@@ -21,7 +21,6 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        
         // Create the data model.
         pages = [0, 1, 2, 3]
         //pages = []

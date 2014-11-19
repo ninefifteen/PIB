@@ -64,7 +64,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
         } else if segue.identifier == "addCompany" {
             
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as AddCompanyTableViewController
+            let navigationController = segue.destinationViewController as UINavigationController
+            navigationController.view.tintColor = UIColor.whiteColor()
+            let controller = navigationController.topViewController as AddCompanyTableViewController
             controller.managedObjectContext = managedObjectContext
         }
     }

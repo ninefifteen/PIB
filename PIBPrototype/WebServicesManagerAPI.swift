@@ -22,7 +22,10 @@ class WebServicesManagerAPI: NSObject {
     var activeDataTask: NSURLSessionDataTask?
     weak var delegate: WebServicesMangerAPIDelegate?
     
+    // Debugging properties.
     var logMetricsToConsole: Bool = false
+    var googleSummaryUrlString = String()
+    var googleFinancialMetricsUrlString = String()
     
     
     // MARK: - Main Methods
@@ -83,8 +86,9 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL(string: urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
-        println(url!)
+        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange)
+        let url = NSURL(string: googleSummaryUrlString)
+        //println(url!)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
@@ -128,8 +132,9 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        let url = NSURL(string: urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
-        println(url!)
+        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange)
+        let url = NSURL(string: googleFinancialMetricsUrlString)
+        //println(url!)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
@@ -271,6 +276,7 @@ class WebServicesManagerAPI: NSObject {
             let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
             let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
             alert.addAction(action)
+            alert.view.tintColor = UIColor.blueColor()
             self.delegate?.webServicesManagerAPI!(self, errorAlert: alert)
         })
     }
@@ -314,7 +320,7 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
         } else {
-            println("Financial metrics not found. Return false.")
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
             return false
         }
         
@@ -435,16 +441,15 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
             
-            println("financialMetrics.count: \(financialMetrics.count)")
             if financialMetrics.count < 1 {
-                println("Financial metrics not found. Return false.")
+                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
                 return false
             }
             
             company.financialMetrics = financialMetrics.copy() as NSSet
 
         } else {
-            println("Financial metrics not found. Return false.")
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
             return false
         }
         
@@ -467,11 +472,11 @@ class WebServicesManagerAPI: NSObject {
                     }
                 }
             } else {
-                println("Description data not found. Return false.")
+                println("\nDescription data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
                 return false
             }
         } else {
-            println("Description data not found. Return false.")
+            println("\nDescription data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
             return false
         }
         
@@ -520,7 +525,7 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
         } else {
-            println("Address data not found. Return false.")
+            println("\nAddress data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
             return false
         }
         

@@ -178,7 +178,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     }
     
     func showCompanyDataNotFoundAlert() {
-        let alert = UIAlertController(title: "Sorry. Unable to add selected company.", message: "Unable to find data for the selected company.", preferredStyle: UIAlertControllerStyle.Alert)
+        let alert = UIAlertController(title: "Sorry, we are unable to add the selected company.", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (action) -> Void in
             self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
         }
