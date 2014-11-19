@@ -478,11 +478,22 @@ class WebServicesManagerAPI: NSObject {
                         
                     case 2:
                         if let rawCityStateZipString: String = addressLine.content {
+                            
                             var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
-                            company.city = commaSplit[0]
-                            var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
-                            company.state = spaceSplit[1]
-                            company.zipCode = spaceSplit[2]
+                            
+                            if commaSplit.count > 0 {
+                                
+                                company.city = commaSplit[0]
+                                
+                                if commaSplit.count > 1 {
+                                    var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
+                                    company.state = spaceSplit.count > 1 ? spaceSplit[1] : ""
+                                    company.zipCode = spaceSplit.count > 2 ? spaceSplit[2] : ""
+                                }
+                                
+                            } else {
+                                company.city = "NA"
+                            }
                         }
                         
                     case 4:
