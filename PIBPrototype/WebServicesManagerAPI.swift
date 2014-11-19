@@ -84,7 +84,7 @@ class WebServicesManagerAPI: NSObject {
         incrementNetworkActivityCount()
         
         let url = NSURL(string: urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
-        //println(url)
+        println(url!)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
@@ -98,12 +98,11 @@ class WebServicesManagerAPI: NSObject {
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        self.parseAndAddGoogleSummaryData(data, forCompany: company)
+                        let parseSuccess = self.parseAndAddGoogleSummaryData(data, forCompany: company)
+                        if completion != nil {
+                            completion!(success: parseSuccess)
+                        }
                     })
-                    
-                    if completion != nil {
-                        completion!(success: true)
-                    }
                     
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
@@ -130,7 +129,7 @@ class WebServicesManagerAPI: NSObject {
         incrementNetworkActivityCount()
         
         let url = NSURL(string: urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange))
-        //println(url)
+        println(url!)
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
@@ -144,12 +143,11 @@ class WebServicesManagerAPI: NSObject {
                 if httpResponse.statusCode == 200 {
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        self.parseAndAddGoogleFinancialData(data, forCompany: company)
+                        let parseSuccess = self.parseAndAddGoogleFinancialData(data, forCompany: company)
+                        if completion != nil {
+                            completion!(success: parseSuccess)
+                        }
                     })
-                    
-                    if completion != nil {
-                        completion!(success: true)
-                    }
                     
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
@@ -280,7 +278,7 @@ class WebServicesManagerAPI: NSObject {
     
     // MARK: - HTML Parsing
     
-    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) {
+    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) -> Bool {
         
         // Arrays for calculating data.
         var revenueArray = Array<FinancialMetric>()
@@ -315,6 +313,9 @@ class WebServicesManagerAPI: NSObject {
                     }
                 }
             }
+        } else {
+            println("Financial metrics not found. Return false.")
+            return false
         }
         
         // Metrics from Google Finance.
@@ -434,33 +435,44 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
             
-            company.financialMetrics = financialMetrics.copy() as NSSet
-            
-            // Save the context.
-            var error: NSError? = nil
-            if !managedObjectContext.save(&error) {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                //println("Unresolved error \(error), \(error.userInfo)")
-                abort()
+            println("financialMetrics.count: \(financialMetrics.count)")
+            if financialMetrics.count < 1 {
+                println("Financial metrics not found. Return false.")
+                return false
             }
+            
+            company.financialMetrics = financialMetrics.copy() as NSSet
+
+        } else {
+            println("Financial metrics not found. Return false.")
+            return false
         }
+        
+        return true
     }
     
-    func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) {
+    func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) -> Bool {
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
         
         let descriptionPath = "//div[@class='companySummary']"
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
-            for node in companyDescription {
-                if var rawCompanyDescriptionString: String = node.firstChild?.content {
-                    rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    company.companyDescription = companyDescriptionString
+            if companyDescription.count > 0 {
+                for node in companyDescription {
+                    if var rawCompanyDescriptionString: String = node.firstChild?.content {
+                        rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        company.companyDescription = companyDescriptionString
+                    }
                 }
+            } else {
+                println("Description data not found. Return false.")
+                return false
             }
+        } else {
+            println("Description data not found. Return false.")
+            return false
         }
         
         let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
@@ -507,6 +519,9 @@ class WebServicesManagerAPI: NSObject {
                     }
                 }
             }
+        } else {
+            println("Address data not found. Return false.")
+            return false
         }
         
         let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
@@ -517,6 +532,8 @@ class WebServicesManagerAPI: NSObject {
                     company.employeeCount = employeeCountString.toInt()!
                 }
             }
+        } else {
+            println("Employee count data not found.")
         }
         
         let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
@@ -527,16 +544,11 @@ class WebServicesManagerAPI: NSObject {
                     company.webLink = webLinkString
                 }
             }
+        } else {
+            println("Web link not found.")
         }
         
-        // Save the context.
-        var error: NSError? = nil
-        if !managedObjectContext.save(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
+        return true
     }
     
 }

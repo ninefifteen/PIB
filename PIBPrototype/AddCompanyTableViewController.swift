@@ -118,6 +118,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         insertNewCompany(companyToAdd!)
     }
     
+    
+    // MARK: - General Class Methods
+    
     func insertNewCompany(newCompany: Company) {
         
         var hud = MBProgressHUD(view: navigationController?.view)
@@ -144,25 +147,43 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         company.webLink = ""
         company.employeeCount = 0
         
-        // Save the context.
-        var error: NSError? = nil
-        if !managedObjectContext.save(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-        
         // Download fundamentals for newly added company.
+        var scrapeSuccessful: Bool = false
         webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+            scrapeSuccessful = success
             self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                if scrapeSuccessful { scrapeSuccessful = success }
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    if !scrapeSuccessful {
+                        self.managedObjectContext.deleteObject(company)
+                    }
+                    // Save the context.
+                    var error: NSError? = nil
+                    if !self.managedObjectContext.save(&error) {
+                        // Replace this implementation with code to handle the error appropriately.
+                        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                        //println("Unresolved error \(error), \(error.userInfo)")
+                        abort()
+                    }
                     hud.hide(true)
                     hud.removeFromSuperview()
-                    self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+                    if scrapeSuccessful {
+                        self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+                    } else {
+                        self.showCompanyDataNotFoundAlert()
+                    }
                 })
             })
         })
+    }
+    
+    func showCompanyDataNotFoundAlert() {
+        let alert = UIAlertController(title: "Sorry. Unable to add selected company.", message: "Unable to find data for the selected company.", preferredStyle: UIAlertControllerStyle.Alert)
+        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (action) -> Void in
+            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+        }
+        alert.addAction(action)
+        presentViewController(alert, animated: true, completion: nil)
     }
 
     // MARK: - Web Services Manager API Delegate
