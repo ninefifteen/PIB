@@ -21,6 +21,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     var totalRevenueArray = Array<FinancialMetric>()
     var netIncomeArray = Array<FinancialMetric>()
+    var profitMarginArray = Array<FinancialMetric>()
     var grossProfitArray = Array<FinancialMetric>()
     var rAndDArray = Array<FinancialMetric>()
     var sgAndAArray = Array<FinancialMetric>()
@@ -31,22 +32,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var yAxisRange: Double = 0.0
     let numberOfYAxisIntervals: Double = 4.0
     
+    var y2AxisMin: Double = 0.0
+    var y2AxisMax: Double = 0.0
+    var y2AxisInterval: Double = 0.0
+    var y2AxisRange: Double = 0.0
+    let numberOfY2AxisIntervals: Double = 4.0
+    var requiredMajorIntervalsBelowZero: Int = 0
+    
     var xAxisLabels = Array<String>()
     var yAxisLabels = Array<String>()
+    var y2AxisLabels = Array<String>()
     var plotSpace = CPTXYPlotSpace()
+    var plotSpace2 = CPTXYPlotSpace()
     var axisSet = CPTXYAxisSet()
     var x = CPTXYAxis()
     var y = CPTXYAxis()
+    var y2 = CPTXYAxis()
     var xAxisCustomTickLocations = Array<Double>()
     var yAxisCustomTickLocations = Array<Double>()
+    var y2AxisCustomTickLocations = Array<Double>()
     var yMajorGridLineStyle = CPTMutableLineStyle()
     var barLineStyle = CPTMutableLineStyle()
     
     let xAxisLabelColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
     let yAxisLabelColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
+    let y2AxisLabelColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
     
     let xAxisLabelTextStyle = CPTMutableTextStyle()
     let yAxisLabelTextStyle = CPTMutableTextStyle()
+    let y2AxisLabelTextStyle = CPTMutableTextStyle()
     let legendTextStyle = CPTMutableTextStyle()
     let annotationTextStyle = CPTMutableTextStyle()
     let titleTextStyle = CPTMutableTextStyle()
@@ -78,6 +92,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     totalRevenueArray.append(financialMetric)
                 case "Net Income":
                     netIncomeArray.append(financialMetric)
+                case "Profit Margin":
+                    profitMarginArray.append(financialMetric)
                 default:
                     break
                 }
@@ -85,11 +101,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             totalRevenueArray.sort({ $0.year < $1.year })
             netIncomeArray.sort({ $0.year < $1.year })
+            profitMarginArray.sort({ $0.year < $1.year })
+            
+            var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
             
             var minValue = minimumValueInFinancialMetricArray(totalRevenueArray) < minimumValueInFinancialMetricArray(netIncomeArray) ? minimumValueInFinancialMetricArray(totalRevenueArray) : minimumValueInFinancialMetricArray(netIncomeArray)
             var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray) > maximumValueInFinancialMetricArray(netIncomeArray) ? maximumValueInFinancialMetricArray(totalRevenueArray) : maximumValueInFinancialMetricArray(netIncomeArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: minPercentageValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
             
@@ -112,7 +131,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(grossProfitArray)
             var maxValue = maximumValueInFinancialMetricArray(grossProfitArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(grossProfitArray)
             
@@ -135,7 +154,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(rAndDArray)
             var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
             
@@ -160,7 +179,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
             var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
@@ -190,6 +209,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         yAxisLabelTextStyle.color = yAxisLabelColor
         yAxisLabelTextStyle.fontSize = 14.0
+        
+        y2AxisLabelTextStyle.color = y2AxisLabelColor
+        y2AxisLabelTextStyle.fontSize = 14.0
+        y2AxisLabelTextStyle.textAlignment = CPTTextAlignment.Left
         
         legendTextStyle.color = CPTColor.darkGrayColor()
         legendTextStyle.fontSize = 12.0
@@ -315,7 +338,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Custom Y Axis Labels
         for (index, value) in enumerate(yAxisCustomTickLocations) {
-            var label:String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+            var label: String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
             yAxisLabels.append(label)
         }
         
@@ -426,6 +449,49 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseBarGraph()
         configureTitleForGraph("Revenue  Income")
         
+        // Change right padding for 2nd Y Axis labels.
+        graph.plotAreaFrame.paddingRight  = 46.0
+        
+        // Add 2nd plot space to graph for scatter plot.
+        plotSpace2 = CPTXYPlotSpace()
+        graph.addPlotSpace(plotSpace2)
+        plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
+        plotSpace2.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+        
+        // Configure 2nd Y Axis for scatter plot.
+        y2.coordinate = CPTCoordinate.Y
+        y2.plotSpace = plotSpace2
+        y2.axisLineStyle = nil
+        y2.majorTickLineStyle = nil
+        y2.minorTickLineStyle = nil
+        y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations)
+        y2.majorGridLineStyle = nil
+        y2.majorIntervalLength = y2AxisInterval
+        y2.orthogonalPosition = 4.0
+        y2.labelingPolicy = .None
+        y2.labelTextStyle = y2AxisLabelTextStyle
+        y2.tickDirection = CPTSign.Positive
+        
+        // Custom Labels for 2nd Y Axis.
+        for (index, value) in enumerate(y2AxisCustomTickLocations) {
+            var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
+            y2AxisLabels.append(label)
+        }
+        
+        var y2LabelLocation = 0
+        let y2AxisCustomLabels = NSMutableSet(capacity: y2AxisLabels.count)
+        for tickLocation in y2AxisCustomTickLocations {
+            let newLabel = CPTAxisLabel(text: y2AxisLabels[y2LabelLocation++], textStyle: y2.labelTextStyle)
+            newLabel.tickLocation = tickLocation
+            newLabel.offset = y2.labelOffset + y2.majorTickLength - 6.0
+            newLabel.alignment = CPTAlignment.Left
+            y2AxisCustomLabels.addObject(newLabel)
+        }
+        
+        y2.axisLabels = y2AxisCustomLabels
+        
+        graph.axisSet.axes = [x, y2, y]
+        
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
@@ -453,6 +519,31 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         netIncomeBarPlot.delegate = self
         netIncomeBarPlot.dataSource = self
         graph.addPlot(netIncomeBarPlot, toPlotSpace:plotSpace)
+        
+        // Profit Margin line plot.
+        let profitMarginPlotColor = CPTColor(componentRed: 223.0/255.0, green: 113.0/255.0, blue: 6.0/255.0, alpha: 1.0)
+        
+        let profitMarginPlotLineStyle = CPTMutableLineStyle()
+        profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+        profitMarginPlotLineStyle.lineColor = profitMarginPlotColor
+        
+        let profitMarginLinePlot = CPTScatterPlot()
+        profitMarginLinePlot.delegate = self
+        profitMarginLinePlot.dataSource = self
+        profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
+        profitMarginLinePlot.identifier = "Profit Margin"
+        
+        let symbolLineStyle = CPTMutableLineStyle()
+        symbolLineStyle.lineColor = profitMarginPlotColor
+        symbolLineStyle.lineWidth = scatterPlotLineWidth
+        let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        plotSymbol.lineStyle = symbolLineStyle
+        plotSymbol.size = scatterPlotSymbolSize
+        profitMarginLinePlot.plotSymbol = plotSymbol
+        
+        graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -611,11 +702,30 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return Double(shifted)/magnitude
     }
     
-    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double) {
+    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double, percentageDataMinimumValue percentageMinimumValue: Double) {
         
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
-        let range: Double = (maxY - minY) * 1.15
+        
+        var percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowForMinimumPercentage(percentageMinimumValue)
+        
+        if percentageIntervalsBelowZero == 1 && minY >= 0 {
+            minY = -1.0
+        } else if percentageIntervalsBelowZero == 2 {
+            if maxY >= fabs(minY) {
+                minY = -fabs(maxY)
+            } else {
+                maxY = fabs(minY)
+            }
+        } else if percentageIntervalsBelowZero == 3 {
+            if maxY >= fabs(minY) {
+                minY = -fabs(maxY) * 3.0
+            } else {
+                maxY = fabs(minY) * 3.0
+            }
+        }
+        
+        var range: Double = (maxY - minY) * 1.15
         
         var interval: Double = range / numberOfYAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
@@ -632,6 +742,30 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         yAxisMax = maxY
         yAxisInterval = interval
         yAxisRange = numberOfYAxisIntervals * interval
+        
+        // Calculate Y2 axis.
+        if minY + interval * 3.0 <= 0.0 {
+            y2AxisCustomTickLocations = [-300.0, -200.0, -100.0, 0.0, 100.0]
+            y2AxisMin = -300.0
+            y2AxisMax = 100.0
+            y2AxisInterval = 100.0
+        } else if minY + interval * 2.0 <= 0.0 {
+            y2AxisCustomTickLocations = [-100.0, -50.0, 0.0, 50.0, 100.0]
+            y2AxisMin = -100.0
+            y2AxisMax = 100.0
+            y2AxisInterval = 50.0
+        } else if minY + interval <= 0.0 {
+            y2AxisCustomTickLocations = [-33.3, 0.0, 33.3, 66.6, 100.0]
+            y2AxisMin = -100.0 / 3.0
+            y2AxisMax = 100.0
+            y2AxisInterval = 100.0 / 3.0
+        } else {
+            y2AxisCustomTickLocations = [0.0, 25.0, 50.0, 75.0, 100.0]
+            y2AxisMin = 0.0
+            y2AxisMax = 100.0
+            y2AxisInterval = 25.0
+        }
+        y2AxisRange = y2AxisMax - y2AxisMin
     }
     
     func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
@@ -656,6 +790,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         return maximumValue
+    }
+    
+    func calculateRequiredMajorIntervalsBelowForMinimumPercentage(minPercentage: Double) -> Int {
+        
+        if minPercentage < -100.0 {
+            return 3
+        } else if minPercentage < -100.0 / 3.0 {
+            return 2
+        } else if minPercentage < 0.0 {
+            return 1
+        } else {
+            return 0
+        }
     }
     
     func xAxisLabelsForFinancialMetrics(financialMetrics: Array<FinancialMetric>) -> Array<String> {
@@ -683,24 +830,55 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case 0:
             
-            switch CPTBarPlotField(rawValue: Int(field))! {
+            let plotID = plot.identifier as String
+            
+            if plotID == "Revenue" || plotID == "Net Income" {
                 
-            case .BarLocation:
-                return recordIndex as NSNumber
-                
-            case .BarTip:
-                
-                let plotID = plot.identifier as String
-                
-                if plotID == "Revenue" {
-                    return totalRevenueArray[Int(recordIndex)].value
-                } else if plotID == "Net Income" {
-                    return netIncomeArray[Int(recordIndex)].value
-                } else {
+                switch CPTBarPlotField(rawValue: Int(field))! {
+                    
+                case .BarLocation:
+                    return recordIndex as NSNumber
+                    
+                case .BarTip:
+                    
+                    let plotID = plot.identifier as String
+                    
+                    if plotID == "Revenue" {
+                        return totalRevenueArray[Int(recordIndex)].value
+                    } else if plotID == "Net Income" {
+                        return netIncomeArray[Int(recordIndex)].value
+                    } else if plotID == "Profit Margin" {
+                        return profitMarginArray[Int(recordIndex)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
                     return nil
                 }
                 
-            default:
+            } else if plotID == "Profit Margin" {
+                
+                switch CPTScatterPlotField(rawValue: Int(field))! {
+                    
+                case .X:
+                    let x = Double(recordIndex) + 0.50
+                    return x as NSNumber
+                    
+                case .Y:
+                    let plotID = plot.identifier as String
+                    
+                    if plotID == "Profit Margin" {
+                        return profitMarginArray[Int(recordIndex)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
+            } else {
                 return nil
             }
             

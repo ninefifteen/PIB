@@ -288,6 +288,7 @@ class WebServicesManagerAPI: NSObject {
         
         // Arrays for calculating data.
         var revenueArray = Array<FinancialMetric>()
+        var netIncomeArray = Array<FinancialMetric>()
         var operatingIncomeArray = Array<FinancialMetric>()
         var interestExpenseArray = Array<FinancialMetric>()
         var netOperatingIncomeArray = Array<FinancialMetric>()
@@ -296,6 +297,7 @@ class WebServicesManagerAPI: NSObject {
         var depreciationAmortizationArray = Array<FinancialMetric>()
         var ebitdaArray = Array<FinancialMetric>()
         var ebitdaMarginArray = Array<FinancialMetric>()
+        var profitMarginArray = Array<FinancialMetric>()
         
         let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
         
@@ -368,6 +370,8 @@ class WebServicesManagerAPI: NSObject {
                             switch financialMetric.type {
                             case "Revenue":
                                 revenueArray.append(financialMetric)
+                            case "Net Income":
+                                netIncomeArray.append(financialMetric)
                             case "Operating Income":
                                 operatingIncomeArray.append(financialMetric)
                             case "Interest Expense(Income) - Net Operating":
@@ -387,6 +391,7 @@ class WebServicesManagerAPI: NSObject {
             
             // Sort arrays for calculations by year.
             revenueArray.sort({ $0.year < $1.year })
+            netIncomeArray.sort({ $0.year < $1.year })
             operatingIncomeArray.sort({ $0.year < $1.year })
             interestExpenseArray.sort({ $0.year < $1.year })
             unusualExpenseArray.sort({ $0.year < $1.year })
@@ -424,6 +429,13 @@ class WebServicesManagerAPI: NSObject {
                 ebitdaMarginMetric.value = (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0
                 ebitdaMarginArray.append(ebitdaMarginMetric)
                 financialMetrics.addObject(ebitdaMarginMetric)
+                
+                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                profitMarginMetric.type = "Profit Margin"
+                profitMarginMetric.year = year
+                profitMarginMetric.value = (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                profitMarginArray.append(profitMarginMetric)
+                financialMetrics.addObject(profitMarginMetric)
             }
             
             if logMetricsToConsole {
@@ -437,6 +449,9 @@ class WebServicesManagerAPI: NSObject {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
                 for metric in ebitdaMarginArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in profitMarginArray {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
             }
