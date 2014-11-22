@@ -67,7 +67,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     var scatterPlotOffset: Double = 0.0
     let scatterPlotLineWidth: CGFloat = 3.5
-    let scatterPlotSymbolSize = CGSizeMake(14.0, 14.0)
+    let scatterPlotSymbolSize = CGSizeMake(13.0, 13.0)
     
     var allAnnotationsShowing: Bool = false
     
@@ -90,8 +90,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 switch financialMetric.type {
                 case "Revenue":
                     totalRevenueArray.append(financialMetric)
-                case "Net Income":
-                    netIncomeArray.append(financialMetric)
                 case "Profit Margin":
                     profitMarginArray.append(financialMetric)
                 default:
@@ -105,12 +103,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
             
-            var minValue = minimumValueInFinancialMetricArray(totalRevenueArray) < minimumValueInFinancialMetricArray(netIncomeArray) ? minimumValueInFinancialMetricArray(totalRevenueArray) : minimumValueInFinancialMetricArray(netIncomeArray)
-            var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray) > maximumValueInFinancialMetricArray(netIncomeArray) ? maximumValueInFinancialMetricArray(totalRevenueArray) : maximumValueInFinancialMetricArray(netIncomeArray)
+            var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
+            var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
             
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: minPercentageValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
+            
+            scatterPlotOffset = 0.5
             
             configureRevenueIncomeMarginGraph()
             
@@ -218,7 +218,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         legendTextStyle.fontSize = 12.0
         
         annotationTextStyle.color = CPTColor.grayColor()
-        annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 15.0 : 11.0
+        annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
         
         titleTextStyle.color = CPTColor(componentRed: 120.0/255.0, green: 120.0/255.0, blue: 120.0/255.0, alpha: 1.0)
         titleTextStyle.fontSize = 15.0
@@ -266,9 +266,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.paddingTop = 5.0
         graph.paddingBottom = 0.0
         
-        graph.plotAreaFrame.paddingLeft   = 50.0
-        graph.plotAreaFrame.paddingTop    = 36.0
-        graph.plotAreaFrame.paddingRight  = 10.0
+        graph.plotAreaFrame.paddingLeft = 50.0
+        graph.plotAreaFrame.paddingTop = 36.0
+        graph.plotAreaFrame.paddingRight = 10.0
         graph.plotAreaFrame.paddingBottom = 80.0
     }
     
@@ -497,31 +497,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0))
-        revenueBarPlot.barWidth = 0.3
+        revenueBarPlot.barWidth = 0.60
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = 0.30
+        revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
         revenueBarPlot.identifier = "Revenue"
         revenueBarPlot.delegate = self
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
-        // Second bar plot.
-        let netIncomeBarPlot = CPTBarPlot()
-        netIncomeBarPlot.barsAreHorizontal = false
-        netIncomeBarPlot.lineStyle = nil
-        netIncomeBarPlot.fill = CPTFill(color: CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0))
-        netIncomeBarPlot.barWidth = 0.3
-        netIncomeBarPlot.baseValue = 0.0
-        netIncomeBarPlot.barOffset = 0.70
-        netIncomeBarPlot.barCornerRadius = 2.0
-        netIncomeBarPlot.identifier = "Net Income"
-        netIncomeBarPlot.delegate = self
-        netIncomeBarPlot.dataSource = self
-        graph.addPlot(netIncomeBarPlot, toPlotSpace:plotSpace)
-        
         // Profit Margin line plot.
-        let profitMarginPlotColor = CPTColor(componentRed: 223.0/255.0, green: 113.0/255.0, blue: 6.0/255.0, alpha: 1.0)
+        let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
         let profitMarginPlotLineStyle = CPTMutableLineStyle()
         profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -538,7 +524,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = profitMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
         profitMarginLinePlot.plotSymbol = plotSymbol
@@ -563,7 +549,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0))
-        revenueBarPlot.barWidth = 0.5
+        revenueBarPlot.barWidth = 0.6
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
@@ -706,11 +692,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
+        maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
         
         var percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowForMinimumPercentage(percentageMinimumValue)
         
         if percentageIntervalsBelowZero == 1 && minY >= 0 {
-            minY = -1.0
+            minY = -((maxY - minY) / (numberOfYAxisIntervals * 2))
         } else if percentageIntervalsBelowZero == 2 {
             if maxY >= fabs(minY) {
                 minY = -fabs(maxY)
@@ -737,7 +724,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         maxY = minY + numberOfYAxisIntervals * interval
-        
+                
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
@@ -1062,7 +1049,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 16.0) : CGPointMake(0.0, 12.0)
+        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 17.0) : CGPointMake(0.0, 13.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
@@ -1073,7 +1060,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value)) + "%"
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
         textLayer.fill = CPTFill(color: CPTColor.whiteColor())
@@ -1086,7 +1073,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 24.0) : CGPointMake(0.0, 20.0)
+
+        let plotIdentifier = plot.identifier as String
+        
+        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 25.0) : CGPointMake(0.0, 21.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
