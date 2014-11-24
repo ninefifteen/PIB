@@ -298,6 +298,8 @@ class WebServicesManagerAPI: NSObject {
         var ebitdaArray = Array<FinancialMetric>()
         var ebitdaMarginArray = Array<FinancialMetric>()
         var profitMarginArray = Array<FinancialMetric>()
+        var revenueGrowthArray = Array<FinancialMetric>()
+        var netIncomeGrowthArray = Array<FinancialMetric>()
         
         let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
         
@@ -436,6 +438,24 @@ class WebServicesManagerAPI: NSObject {
                 profitMarginMetric.value = (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0
                 profitMarginArray.append(profitMarginMetric)
                 financialMetrics.addObject(profitMarginMetric)
+                
+                // Calculate and add growth metrics after first year has been iterated.
+                if index > 0 {
+                
+                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    revenueGrowthMetric.type = "Revenue Growth"
+                    revenueGrowthMetric.year = year
+                    revenueGrowthMetric.value = ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0
+                    revenueGrowthArray.append(revenueGrowthMetric)
+                    financialMetrics.addObject(revenueGrowthMetric)
+                    
+                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    netIncomeGrowthMetric.type = "Net Income Growth"
+                    netIncomeGrowthMetric.year = year
+                    netIncomeGrowthMetric.value = ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0
+                    netIncomeGrowthArray.append(netIncomeGrowthMetric)
+                    financialMetrics.addObject(netIncomeGrowthMetric)
+                }
             }
             
             if logMetricsToConsole {
@@ -452,6 +472,12 @@ class WebServicesManagerAPI: NSObject {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
                 for metric in profitMarginArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in revenueGrowthArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in netIncomeGrowthArray {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
             }
