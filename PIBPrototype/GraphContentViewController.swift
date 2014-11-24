@@ -135,8 +135,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             netIncomeGrowthArray.sort({ $0.year < $1.year })
             
             var minPercentageValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(netIncomeGrowthArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(netIncomeGrowthArray)
+            var maxPercentageValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(netIncomeGrowthArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(netIncomeGrowthArray)
             
-            calculateyPercentageOnlyYAxisMinMaxAndIntervalForDataMinimumValue(-14.0, dataMaximumValue: 100.0)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minPercentageValue, dataMaximumValue: maxPercentageValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
             
@@ -434,6 +435,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         x.axisLabels = xAxisCustomLabels
+        
+        // Create y-axis custom tick locations.
+        for index in 0...Int(numberOfYAxisIntervals) {
+            let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
+            yAxisCustomTickLocations.append(tickLocation)
+        }
         
         // Create y-axis major tick line style.
         yMajorGridLineStyle.lineWidth = 1.0
@@ -775,6 +782,31 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         shifted = fiveMultiple * 5
         
         return Double(shifted)/magnitude
+    }
+    
+    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double) {
+        
+        var minY: Double = minimumValue
+        var maxY: Double = maximumValue
+        //maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
+        
+        var range: Double = (maxY - minY) * 1.15
+        
+        var interval: Double = range / numberOfYAxisIntervals
+        interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
+        
+        if minY < 0.0 {
+            var intervalMultiple = (minY * 1.05) / interval
+            intervalMultiple = floor(intervalMultiple)
+            minY = intervalMultiple * interval
+        }
+        
+        maxY = minY + numberOfYAxisIntervals * interval
+        
+        yAxisMin = minY
+        yAxisMax = maxY
+        yAxisInterval = interval
+        yAxisRange = numberOfYAxisIntervals * interval
     }
     
     func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double, percentageDataMinimumValue percentageMinimumValue: Double) {
