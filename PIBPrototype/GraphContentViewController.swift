@@ -25,6 +25,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var netIncomeGrowthArray = Array<FinancialMetric>()
     var netIncomeArray = Array<FinancialMetric>()
     var grossProfitArray = Array<FinancialMetric>()
+    var grossMarginArray = Array<FinancialMetric>()
     var rAndDArray = Array<FinancialMetric>()
     var sgAndAArray = Array<FinancialMetric>()
     
@@ -134,10 +135,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthArray.sort({ $0.year < $1.year })
             netIncomeGrowthArray.sort({ $0.year < $1.year })
             
-            var minPercentageValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(netIncomeGrowthArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(netIncomeGrowthArray)
-            var maxPercentageValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(netIncomeGrowthArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(netIncomeGrowthArray)
+            var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(netIncomeGrowthArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(netIncomeGrowthArray)
+            var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(netIncomeGrowthArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(netIncomeGrowthArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minPercentageValue, dataMaximumValue: maxPercentageValue)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
             
@@ -154,21 +155,23 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "Gross Profit":
-                    grossProfitArray.append(financialMetric)
+                case "Gross Margin":
+                    grossMarginArray.append(financialMetric)
                 default:
                     break
                 }
             }
             
-            grossProfitArray.sort({ $0.year < $1.year })
+            grossMarginArray.sort({ $0.year < $1.year })
             
-            var minValue = minimumValueInFinancialMetricArray(grossProfitArray)
-            var maxValue = maximumValueInFinancialMetricArray(grossProfitArray)
+            var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
+            var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
-            xAxisLabels = xAxisLabelsForFinancialMetrics(grossProfitArray)
+            xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
+            
+            scatterPlotOffset = 0.2
             
             configureGrossMarginGraph()
             
@@ -177,7 +180,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "Selling/General/Admin. Expenses, Total":
+                case "SG&A As Percent Of Revenue":
                     sgAndAArray.append(financialMetric)
                 default:
                     break
@@ -202,7 +205,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             for (index, financialMetric) in enumerate(financialMetrics) {
                 switch financialMetric.type {
-                case "Research & Development":
+                case "R&D As Percent Of Revenue":
                     rAndDArray.append(financialMetric)
                 default:
                     break
@@ -221,8 +224,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             scatterPlotOffset = 0.2
             
             configureRAndDGraph()
-            
-        
             
         default:
             break
@@ -303,7 +304,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.paddingTop = 5.0
         graph.paddingBottom = 0.0
         
-        graph.plotAreaFrame.paddingLeft = 54.0
+        if pageIndex == 0 {
+            graph.plotAreaFrame.paddingLeft = 54.0
+        } else {
+            if yAxisMin <= -1000.0 {
+                graph.plotAreaFrame.paddingLeft = 70.0
+            } else if yAxisMax >= 1000.0 {
+                graph.plotAreaFrame.paddingLeft = 64.0
+            } else {
+                graph.plotAreaFrame.paddingLeft = 54.0
+            }
+        }
         graph.plotAreaFrame.paddingTop = 36.0
         graph.plotAreaFrame.paddingRight = 10.0
         graph.plotAreaFrame.paddingBottom = 80.0
@@ -637,22 +648,32 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func configureGrossMarginGraph() {
         
-        configureBaseBarGraph()
+        configureBaseCurvedLineGraph()
         configureTitleForGraph("Gross Margin")
         
-        // First bar plot.
-        let revenueBarPlot = CPTBarPlot()
-        revenueBarPlot.barsAreHorizontal = false
-        revenueBarPlot.lineStyle = nil
-        revenueBarPlot.fill = CPTFill(color: CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0))
-        revenueBarPlot.barWidth = 0.6
-        revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = 0.50
-        revenueBarPlot.barCornerRadius = 2.0
-        revenueBarPlot.identifier = "Gross Profit"
-        revenueBarPlot.delegate = self
-        revenueBarPlot.dataSource = self
-        graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
+        let grossMarginPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        
+        let grossMarginPlotLineStyle = CPTMutableLineStyle()
+        grossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+        grossMarginPlotLineStyle.lineColor = grossMarginPlotColor
+        
+        let grossMarginPlot = CPTScatterPlot()
+        grossMarginPlot.delegate = self
+        grossMarginPlot.dataSource = self
+        grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        grossMarginPlot.dataLineStyle = grossMarginPlotLineStyle
+        grossMarginPlot.identifier = "Gross Margin"
+        
+        let symbolLineStyle = CPTMutableLineStyle()
+        symbolLineStyle.lineColor = grossMarginPlotColor
+        symbolLineStyle.lineWidth = scatterPlotLineWidth
+        let grossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        grossMarginPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        grossMarginPlotSymbol.lineStyle = symbolLineStyle
+        grossMarginPlotSymbol.size = scatterPlotSymbolSize
+        grossMarginPlot.plotSymbol = grossMarginPlotSymbol
+        
+        graph.addPlot(grossMarginPlot, toPlotSpace:plotSpace)
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -667,7 +688,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         configureTitleForGraph("R & D")
         
-        let raAndDLinePlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        let raAndDLinePlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
         rAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -703,49 +724,33 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         configureBaseCurvedLineGraph()
         configureTitleForGraph("SG & A")
-
-        let sgAndALinePlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
-        let sgAndALinePlotLineStyle = CPTMutableLineStyle()
-        sgAndALinePlotLineStyle.lineWidth = scatterPlotLineWidth
-        sgAndALinePlotLineStyle.lineColor = sgAndALinePlotColor
+        let sgAndAPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
-        let sgAndALinePlot = CPTScatterPlot()
-        sgAndALinePlot.delegate = self
-        sgAndALinePlot.dataSource = self
-        sgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Curved
-        sgAndALinePlot.dataLineStyle = sgAndALinePlotLineStyle
-        sgAndALinePlot.identifier = "SG&A"
+        let sgAndAPlotLineStyle = CPTMutableLineStyle()
+        sgAndAPlotLineStyle.lineWidth = scatterPlotLineWidth
+        sgAndAPlotLineStyle.lineColor = sgAndAPlotColor
+        
+        let sgAndAPlot = CPTScatterPlot()
+        sgAndAPlot.delegate = self
+        sgAndAPlot.dataSource = self
+        sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        sgAndAPlot.dataLineStyle = sgAndAPlotLineStyle
+        sgAndAPlot.identifier = "SG&A"
         
         let symbolLineStyle = CPTMutableLineStyle()
-        symbolLineStyle.lineColor = sgAndALinePlotColor
+        symbolLineStyle.lineColor = sgAndAPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
-        let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-        plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = scatterPlotSymbolSize
-        sgAndALinePlot.plotSymbol = plotSymbol
+        let sgAndAPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        sgAndAPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        sgAndAPlotSymbol.lineStyle = symbolLineStyle
+        sgAndAPlotSymbol.size = scatterPlotSymbolSize
+        sgAndAPlot.plotSymbol = sgAndAPlotSymbol
         
-        graph.addPlot(sgAndALinePlot, toPlotSpace:plotSpace)
+        graph.addPlot(sgAndAPlot, toPlotSpace:plotSpace)
         
         // Add legend.
-        let graphLegend = CPTLegend(graph: graph)
-        graphLegend.fill = CPTFill(color: CPTColor.whiteColor())
-        graphLegend.borderLineStyle = nil
-        graphLegend.cornerRadius = 10.0
-        graphLegend.swatchSize = CGSizeMake(14.0, 14.0)
-        let blackTextStyle = CPTMutableTextStyle()
-        blackTextStyle.color = CPTColor.blackColor()
-        blackTextStyle.fontSize = 12.0
-        graphLegend.textStyle = blackTextStyle
-        graphLegend.rowMargin = 10.0
-        graphLegend.numberOfRows = 1
-        graphLegend.paddingLeft = 8.0
-        graphLegend.paddingTop = 8.0
-        graphLegend.paddingRight = 8.0
-        graphLegend.paddingBottom = 8.0
-        
-        graph.legend = graphLegend
+        graph.legend = legendForGraph()
         graph.legendAnchor = .Bottom
         graph.legendDisplacement = CGPointMake(0.0, 25.0)
         
@@ -1045,17 +1050,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case 2:
             
-            switch CPTBarPlotField(rawValue: Int(field))! {
+            switch CPTScatterPlotField(rawValue: Int(field))! {
                 
-            case .BarLocation:
-                return recordIndex as NSNumber
+            case .X:
+                let x = Double(recordIndex) + scatterPlotOffset
+                return x as NSNumber
                 
-            case .BarTip:
-                
+            case .Y:
                 let plotID = plot.identifier as String
                 
-                if plotID == "Gross Profit" {
-                    return grossProfitArray[Int(recordIndex)].value
+                if plotID == "Gross Margin" {
+                    return grossMarginArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
@@ -1105,8 +1110,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             default:
                 return nil
             }
-            
-        
             
         default:
             return nil

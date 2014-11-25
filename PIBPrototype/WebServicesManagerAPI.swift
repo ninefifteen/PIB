@@ -300,6 +300,12 @@ class WebServicesManagerAPI: NSObject {
         var profitMarginArray = Array<FinancialMetric>()
         var revenueGrowthArray = Array<FinancialMetric>()
         var netIncomeGrowthArray = Array<FinancialMetric>()
+        var grossProfitArray = Array<FinancialMetric>()
+        var grossMarginArray = Array<FinancialMetric>()
+        var sgAndAArray = Array<FinancialMetric>()
+        var sgAndAPercentOfRevenueArray = Array<FinancialMetric>()
+        var rAndDArray = Array<FinancialMetric>()
+        var rAndDPercentOfRevenueArray = Array<FinancialMetric>()
         
         let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
         
@@ -382,6 +388,12 @@ class WebServicesManagerAPI: NSObject {
                                 unusualExpenseArray.append(financialMetric)
                             case "Depreciation/Amortization":
                                 depreciationAmortizationArray.append(financialMetric)
+                            case "Gross Profit":
+                                grossProfitArray.append(financialMetric)
+                            case "Selling/General/Admin. Expenses, Total":
+                                sgAndAArray.append(financialMetric)
+                            case "Research & Development":
+                                rAndDArray.append(financialMetric)
                             default:
                                 break
                             }
@@ -398,6 +410,9 @@ class WebServicesManagerAPI: NSObject {
             interestExpenseArray.sort({ $0.year < $1.year })
             unusualExpenseArray.sort({ $0.year < $1.year })
             depreciationAmortizationArray.sort({ $0.year < $1.year })
+            grossProfitArray.sort({ $0.year < $1.year })
+            sgAndAArray.sort({ $0.year < $1.year })
+            rAndDArray.sort({ $0.year < $1.year })
             
             // Add calculated metrics.
             for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
@@ -439,6 +454,27 @@ class WebServicesManagerAPI: NSObject {
                 profitMarginArray.append(profitMarginMetric)
                 financialMetrics.addObject(profitMarginMetric)
                 
+                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                grossMarginMetric.type = "Gross Margin"
+                grossMarginMetric.year = year
+                grossMarginMetric.value = (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                grossMarginArray.append(grossMarginMetric)
+                financialMetrics.addObject(grossMarginMetric)
+                
+                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
+                sgAndAPercentOfRevenueMetric.year = year
+                sgAndAPercentOfRevenueMetric.value = (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
+                financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
+                
+                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
+                rAndDPercentOfRevenueMetric.year = year
+                rAndDPercentOfRevenueMetric.value = (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
+                financialMetrics.addObject(rAndDPercentOfRevenueMetric)
+                
                 // Calculate and add growth metrics after first year has been iterated.
                 if index > 0 {
                 
@@ -478,6 +514,18 @@ class WebServicesManagerAPI: NSObject {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
                 for metric in netIncomeGrowthArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in grossProfitArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in grossMarginArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in sgAndAPercentOfRevenueArray {
+                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                }
+                for metric in rAndDPercentOfRevenueArray {
                     println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
                 }
             }
