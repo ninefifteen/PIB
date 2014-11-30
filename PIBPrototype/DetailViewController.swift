@@ -59,7 +59,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
         
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 170.0
+            topView.hidden = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? true : false
+            topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 128.0
             view.layoutIfNeeded()
         }
     }
