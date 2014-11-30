@@ -14,6 +14,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     // MARK: - Properties
     
     @IBOutlet weak var topView: UIView!
+    @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
@@ -21,6 +22,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var employeeCountLabel: UILabel!
     @IBOutlet weak var ebitdaMarginLabel: UILabel!
     
+    @IBOutlet weak var topViewHeightContraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -32,8 +34,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
+        
         updateTopViewLabels()
         
         descriptionTextView.editable = false
@@ -44,6 +49,19 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    
+    // Handle device rotation.
+    
+    override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+        
+        super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+            topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 170.0
+            view.layoutIfNeeded()
+        }
     }
     
     
