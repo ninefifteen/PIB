@@ -30,6 +30,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     var company: Company!
     
+    var descriptionExpanded: Bool = false
+    
     
     // MARK: - View Life Cycle
     
@@ -52,16 +54,44 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     
-    // Handle device rotation.
+    // MARK: - Subview Size Modification
     
     override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
         
         super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
         
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+            
             topView.hidden = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? true : false
             topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 128.0
             view.layoutIfNeeded()
+            
+            pageControl.hidden = false
+            descriptionExpanded = false
+        }
+    }
+    
+    @IBAction func expandDescription(sender: AnyObject) {
+        
+        println("expandDescription")
+        
+        let orientation = UIApplication.sharedApplication().statusBarOrientation
+        
+        if !(UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation)) && !descriptionExpanded {
+            
+            topViewHeightContraint.constant = 10000.0
+            view.layoutIfNeeded()
+            
+            pageControl.hidden = true
+            descriptionExpanded = true
+            
+        } else if descriptionExpanded {
+            
+            topViewHeightContraint.constant = 128.0
+            view.layoutIfNeeded()
+            
+            pageControl.hidden = false
+            descriptionExpanded = false
         }
     }
     
@@ -102,6 +132,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
         } else {
             
+            nameLabel.hidden = true
             topView.hidden = true
             pageControl.hidden = true
         }

@@ -161,7 +161,13 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
+                    <navigationItem key="navigationItem" id="mOI-FS-AaM">
+                        <barButtonItem key="rightBarButtonItem" title="More" id="BQL-AE-42f">
+                            <connections>
+                                <action selector="expandDescription:" destination="JEX-9P-axG" id="eCj-X7-ZMX"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="containerView" destination="M7v-Sz-UVP" id="NmU-LL-pZL"/>
                         <outlet property="descriptionTextView" destination="h7J-8Y-C43" id="Jrl-qH-5HF"/>
