@@ -92,19 +92,45 @@
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="h7J-8Y-C43">
-                                        <rect key="frame" x="8" y="24" width="584" height="53"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                        <color key="textColor" red="0.50980392156862742" green="0.50980392156862742" blue="0.50980392156862742" alpha="1" colorSpace="calibratedRGB"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
-                                    </textView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9.99K" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dH4-Ea-PDj">
                                         <rect key="frame" x="279" y="85" width="43" height="20"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" red="0.14117647059999999" green="0.61568627450000002" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="h7J-8Y-C43">
+                                        <rect key="frame" x="4" y="16" width="592" height="69"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <color key="textColor" red="0.50980392156862742" green="0.50980392156862742" blue="0.50980392156862742" alpha="1" colorSpace="calibratedRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                    </textView>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vms-1t-gIa">
+                                        <rect key="frame" x="556" y="60" width="36" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="17" id="Xpj-4g-QkF"/>
+                                        </constraints>
+                                        <state key="normal" title="More">
+                                            <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="expandDescription:" destination="JEX-9P-axG" eventType="touchUpInside" id="vDb-89-b2d"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WpK-pA-8iV">
+                                        <rect key="frame" x="560" y="-1" width="32" height="17"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="17" id="a8j-kz-9Wi"/>
+                                        </constraints>
+                                        <state key="normal" title="Less">
+                                            <color key="titleColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="expandDescription:" destination="JEX-9P-axG" eventType="touchUpInside" id="9pq-If-5la"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
@@ -112,16 +138,20 @@
                                     <constraint firstAttribute="height" constant="128" id="3CW-x1-p1r"/>
                                     <constraint firstAttribute="centerX" secondItem="dH4-Ea-PDj" secondAttribute="centerX" id="57i-eT-3j8"/>
                                     <constraint firstItem="kQ6-Yg-7M3" firstAttribute="top" secondItem="VYL-aS-74c" secondAttribute="bottom" constant="1" id="7SV-ou-70j"/>
-                                    <constraint firstAttribute="trailing" secondItem="h7J-8Y-C43" secondAttribute="trailing" constant="8" id="8ef-tB-h4T"/>
+                                    <constraint firstAttribute="trailing" secondItem="h7J-8Y-C43" secondAttribute="trailing" constant="4" id="8ef-tB-h4T"/>
                                     <constraint firstItem="m9F-PF-5QO" firstAttribute="bottom" secondItem="kQ6-Yg-7M3" secondAttribute="bottom" id="9ya-Pf-LZ4"/>
                                     <constraint firstItem="kQ6-Yg-7M3" firstAttribute="leading" secondItem="NPq-gS-bve" secondAttribute="leading" constant="8" id="BQp-7h-TbH"/>
                                     <constraint firstAttribute="centerX" secondItem="m9F-PF-5QO" secondAttribute="centerX" id="Bmh-tp-k2S"/>
-                                    <constraint firstItem="dH4-Ea-PDj" firstAttribute="top" secondItem="h7J-8Y-C43" secondAttribute="bottom" constant="8" id="GGZ-AK-V8y"/>
+                                    <constraint firstAttribute="trailing" secondItem="WpK-pA-8iV" secondAttribute="trailing" constant="8" id="EVE-x0-YGg"/>
+                                    <constraint firstAttribute="trailing" secondItem="Vms-1t-gIa" secondAttribute="trailing" constant="8" id="F4Z-pn-to9"/>
+                                    <constraint firstItem="dH4-Ea-PDj" firstAttribute="top" secondItem="h7J-8Y-C43" secondAttribute="bottom" id="GGZ-AK-V8y"/>
                                     <constraint firstAttribute="trailing" secondItem="l0x-Vp-H7b" secondAttribute="trailing" constant="8" id="Gcl-1h-O51"/>
                                     <constraint firstItem="l0x-Vp-H7b" firstAttribute="bottom" secondItem="dH4-Ea-PDj" secondAttribute="bottom" id="ItL-kV-r9D"/>
                                     <constraint firstItem="H0N-W0-Kco" firstAttribute="leading" secondItem="NPq-gS-bve" secondAttribute="leading" constant="8" id="KbP-ig-Pyg"/>
-                                    <constraint firstItem="h7J-8Y-C43" firstAttribute="leading" secondItem="NPq-gS-bve" secondAttribute="leading" constant="8" id="MT8-an-fpB"/>
-                                    <constraint firstItem="h7J-8Y-C43" firstAttribute="top" secondItem="H0N-W0-Kco" secondAttribute="bottom" constant="8" id="WdC-cc-1u4"/>
+                                    <constraint firstItem="h7J-8Y-C43" firstAttribute="leading" secondItem="NPq-gS-bve" secondAttribute="leading" constant="4" id="MT8-an-fpB"/>
+                                    <constraint firstItem="l0x-Vp-H7b" firstAttribute="top" secondItem="Vms-1t-gIa" secondAttribute="bottom" constant="8" id="RGl-c4-3wJ"/>
+                                    <constraint firstItem="h7J-8Y-C43" firstAttribute="top" secondItem="H0N-W0-Kco" secondAttribute="bottom" id="WdC-cc-1u4"/>
+                                    <constraint firstItem="WpK-pA-8iV" firstAttribute="bottom" secondItem="H0N-W0-Kco" secondAttribute="bottom" id="Ws6-FN-1Pb"/>
                                     <constraint firstItem="VYL-aS-74c" firstAttribute="leading" secondItem="NPq-gS-bve" secondAttribute="leading" constant="8" id="eWS-rV-aHZ"/>
                                     <constraint firstItem="l0x-Vp-H7b" firstAttribute="bottom" secondItem="VYL-aS-74c" secondAttribute="bottom" id="gAD-8l-8a9"/>
                                     <constraint firstItem="H0N-W0-Kco" firstAttribute="top" secondItem="NPq-gS-bve" secondAttribute="top" constant="1" id="lqU-Ou-Zif"/>
@@ -161,19 +191,15 @@
                         </constraints>
                     </view>
                     <toolbarItems/>
-                    <navigationItem key="navigationItem" id="mOI-FS-AaM">
-                        <barButtonItem key="rightBarButtonItem" title="More" id="BQL-AE-42f">
-                            <connections>
-                                <action selector="expandDescription:" destination="JEX-9P-axG" id="eCj-X7-ZMX"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="mOI-FS-AaM"/>
                     <connections>
                         <outlet property="containerView" destination="M7v-Sz-UVP" id="NmU-LL-pZL"/>
                         <outlet property="descriptionTextView" destination="h7J-8Y-C43" id="Jrl-qH-5HF"/>
                         <outlet property="ebitdaMarginLabel" destination="l0x-Vp-H7b" id="pYs-fa-SYn"/>
                         <outlet property="employeeCountLabel" destination="dH4-Ea-PDj" id="FF0-GM-s1C"/>
+                        <outlet property="lessButton" destination="WpK-pA-8iV" id="U6g-Q5-cX0"/>
                         <outlet property="locationLabel" destination="H0N-W0-Kco" id="UdI-3b-Vc2"/>
+                        <outlet property="moreButton" destination="Vms-1t-gIa" id="kMo-tX-xYV"/>
                         <outlet property="nameLabel" destination="kjD-Pj-nIj" id="RBw-Z6-8aw"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
                         <outlet property="revenueLabel" destination="VYL-aS-74c" id="DYu-B7-NcX"/>

@@ -23,13 +23,15 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var ebitdaMarginLabel: UILabel!
     
     @IBOutlet weak var topViewHeightContraint: NSLayoutConstraint!
-    
     @IBOutlet weak var pageControl: UIPageControl!
+    @IBOutlet weak var moreButton: UIButton!
+    @IBOutlet weak var lessButton: UIButton!
     
     weak var graphPageViewController: GraphPageViewController!
     
     var company: Company!
     
+    var fullDescription: String = ""
     var descriptionExpanded: Bool = false
     
     
@@ -43,10 +45,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         updateTopViewLabels()
         
+        lessButton.hidden = true
         descriptionTextView.editable = false
         descriptionTextView.selectable = false
     }
-    
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -60,7 +62,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
         
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && !descriptionExpanded {
             
             topView.hidden = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? true : false
             topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 128.0
@@ -73,25 +75,53 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     @IBAction func expandDescription(sender: AnyObject) {
         
-        println("expandDescription")
-        
         let orientation = UIApplication.sharedApplication().statusBarOrientation
         
         if !(UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation)) && !descriptionExpanded {
             
+            pageControl.hidden = true
+            descriptionExpanded = true
+            moreButton.hidden = true
+            lessButton.hidden = false
+            descriptionTextView.scrollEnabled = true
+            
             topViewHeightContraint.constant = 10000.0
             view.layoutIfNeeded()
             
-            pageControl.hidden = true
-            descriptionExpanded = true
-            
         } else if descriptionExpanded {
             
-            topViewHeightContraint.constant = 128.0
-            view.layoutIfNeeded()
+            descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
             
             pageControl.hidden = false
             descriptionExpanded = false
+            moreButton.hidden = false
+            lessButton.hidden = true
+            descriptionTextView.scrollEnabled = false
+            
+            topViewHeightContraint.constant = 128.0
+            view.layoutIfNeeded()
+        }
+    }
+    
+    override func viewWillLayoutSubviews() {
+        
+        if topViewHeightContraint.constant > 0 && company != nil {
+            
+            let fullDescription: String = company.companyDescription
+            let fullDescriptionCharacterCount = countElements(fullDescription)
+            
+            descriptionTextView.text = fullDescription
+            descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
+            
+            let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
+            //println("visibleRange: \(visibleRange.location), \(visibleRange.length)")
+            let trimLength = visibleRange.length - 8
+            
+            if trimLength < fullDescriptionCharacterCount - 8 && !descriptionExpanded {
+                let index: String.Index = advance(fullDescription.startIndex, trimLength)
+                let shortDescription: String = fullDescription.substringToIndex(index) + "..."
+                descriptionTextView.text = shortDescription
+            }
         }
     }
     
@@ -195,6 +225,17 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
         } else {
             return "NA"
+        }
+    }
+    
+    func visibleRangeOfTextView(textView: UITextView) -> NSRange {
+        let bounds: CGRect = textView.bounds
+        let start: UITextPosition = textView.beginningOfDocument
+        if let textRange: UITextRange = textView.characterRangeAtPoint(CGPointMake(CGRectGetMaxX(bounds), CGRectGetMaxY(bounds))) {
+            let end: UITextPosition = textRange.end
+            return NSMakeRange(0, textView.offsetFromPosition(start, toPosition: end))
+        } else {
+            return NSMakeRange(0, 0)
         }
     }
     
