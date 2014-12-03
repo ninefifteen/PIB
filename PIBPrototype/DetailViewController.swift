@@ -24,8 +24,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var ebitdaMarginLabel: UILabel!
     
     @IBOutlet weak var descriptionViewHeightContraint: NSLayoutConstraint!
-    @IBOutlet weak var descriptionTextViewTopVerticalConstraint: NSLayoutConstraint!
-    @IBOutlet weak var titleViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     @IBOutlet weak var moreButton: UIButton!
@@ -60,21 +58,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     // MARK: - Subview Size Modification
     
-    /*override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
-        
-        super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
-        
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && !descriptionExpanded {
-            
-            topView.hidden = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? true : false
-            topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(toInterfaceOrientation) ? 0.0 : 128.0
-            view.layoutIfNeeded()
-            
-            pageControl.hidden = false
-            descriptionExpanded = false
-        }
-    }*/
-    
     @IBAction func expandDescription(sender: AnyObject) {
         
         let orientation = UIApplication.sharedApplication().statusBarOrientation
@@ -93,7 +76,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         } else if descriptionExpanded {
             
             descriptionTextView.setContentOffset(CGPointZero, animated: false)
-            //descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
             
             pageControl.hidden = false
             descriptionExpanded = false
@@ -108,7 +90,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     override func viewWillLayoutSubviews() {
         
-        //println("viewWillLayoutSubviews")
         super.viewWillLayoutSubviews()
         
         if descriptionViewHeightContraint.constant > 0 && company != nil {
@@ -118,7 +99,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             descriptionTextView.text = fullDescription
             descriptionTextView.setContentOffset(CGPointZero, animated: false)
-            //descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
             
             let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
             let trimLength = visibleRange.length - 8
@@ -141,9 +121,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             pageControl.hidden = false
             descriptionExpanded = false
         }
-        
-        //println("descriptionTextView.frame origin.x: \(descriptionTextView.frame.origin.x), origin.y: \(descriptionTextView.frame.origin.y), width: \(descriptionTextView.frame.width), height: \(descriptionTextView.frame.height)")
-        //println("nameView.frame origin.x: \(nameView.frame.origin.x), origin.y: \(nameView.frame.origin.y), width: \(nameView.frame.width), height: \(nameView.frame.height)")
     }
     
     
@@ -168,7 +145,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             if company.companyDescription != "" {
                 descriptionTextView.text = company.companyDescription
                 descriptionTextView.setContentOffset(CGPointZero, animated: false)
-                //descriptionTextView.scrollRangeToVisible(NSMakeRange(0, 1))
             }
             
             if company.employeeCount > 0 {

@@ -195,7 +195,6 @@
                     <connections>
                         <outlet property="containerView" destination="M7v-Sz-UVP" id="NmU-LL-pZL"/>
                         <outlet property="descriptionTextView" destination="h7J-8Y-C43" id="Jrl-qH-5HF"/>
-                        <outlet property="descriptionTextViewTopVerticalConstraint" destination="TpR-Yi-1zO" id="CLy-TS-e6k"/>
                         <outlet property="descriptionView" destination="NPq-gS-bve" id="n1r-I7-LFa"/>
                         <outlet property="descriptionViewHeightContraint" destination="3CW-x1-p1r" id="0vO-aW-rNw"/>
                         <outlet property="ebitdaMarginLabel" destination="l0x-Vp-H7b" id="pYs-fa-SYn"/>
@@ -207,7 +206,6 @@
                         <outlet property="nameView" destination="ntd-jB-eSc" id="ANe-m6-q4H"/>
                         <outlet property="pageControl" destination="tZT-SE-RgZ" id="Ycq-pd-Nav"/>
                         <outlet property="revenueLabel" destination="VYL-aS-74c" id="DYu-B7-NcX"/>
-                        <outlet property="titleViewHeightConstraint" destination="Odh-uS-RGg" id="Oi4-hp-HXn"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
