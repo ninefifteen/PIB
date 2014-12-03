@@ -48,6 +48,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         lessButton.hidden = true
         descriptionTextView.editable = false
         descriptionTextView.selectable = false
+        
+        println("viewDidLoad")
     }
     
     override func didReceiveMemoryWarning() {
@@ -58,7 +60,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     // MARK: - Subview Size Modification
     
-    override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
+    /*override func willAnimateRotationToInterfaceOrientation(toInterfaceOrientation: UIInterfaceOrientation, duration: NSTimeInterval) {
         
         super.willAnimateRotationToInterfaceOrientation(toInterfaceOrientation, duration: duration)
         
@@ -71,7 +73,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             pageControl.hidden = false
             descriptionExpanded = false
         }
-    }
+    }*/
     
     @IBAction func expandDescription(sender: AnyObject) {
         
@@ -105,6 +107,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     override func viewWillLayoutSubviews() {
         
+        println("viewWillLayoutSubviews")
+        
         if topViewHeightContraint.constant > 0 && company != nil {
             
             let fullDescription: String = company.companyDescription
@@ -122,6 +126,18 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                 let shortDescription: String = fullDescription.substringToIndex(index) + "..."
                 descriptionTextView.text = shortDescription
             }
+        }
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && !descriptionExpanded {
+            
+            let orientation = UIApplication.sharedApplication().statusBarOrientation
+            
+            topView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
+            topViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 128.0
+            view.layoutIfNeeded()
+            
+            pageControl.hidden = false
+            descriptionExpanded = false
         }
     }
     
