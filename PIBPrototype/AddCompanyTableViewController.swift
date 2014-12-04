@@ -129,52 +129,75 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         hud.labelText = "Loading"
         hud.show(true)
         
-        // Create new company managed object.
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-        
-        // Set attributes.
-        company.name = newCompany.name
-        company.exchange = newCompany.exchange
-        company.exchangeDisplayName = newCompany.exchangeDisplayName
-        company.tickerSymbol = newCompany.tickerSymbol
-        company.street = ""
-        company.city = ""
-        company.state = ""
-        company.zipCode = ""
-        company.country = ""
-        company.companyDescription = ""
-        company.webLink = ""
-        company.employeeCount = 0
-        
-        // Download fundamentals for newly added company.
-        var scrapeSuccessful: Bool = false
-        webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                if scrapeSuccessful { scrapeSuccessful = success }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    if !scrapeSuccessful {
-                        self.managedObjectContext.deleteObject(company)
-                    }
-                    // Save the context.
-                    var error: NSError? = nil
-                    if !self.managedObjectContext.save(&error) {
-                        // Replace this implementation with code to handle the error appropriately.
-                        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                        //println("Unresolved error \(error), \(error.userInfo)")
-                        abort()
-                    }
-                    hud.hide(true)
-                    hud.removeFromSuperview()
-                    if scrapeSuccessful {
-                        self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
-                    } else {
-                        self.showCompanyDataNotFoundAlert()
-                    }
+        if !persistentStorageContainsCompany(newCompany) {
+            
+            // Create new company managed object.
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+            
+            // Set attributes.
+            company.name = newCompany.name
+            company.exchange = newCompany.exchange
+            company.exchangeDisplayName = newCompany.exchangeDisplayName
+            company.tickerSymbol = newCompany.tickerSymbol
+            company.street = ""
+            company.city = ""
+            company.state = ""
+            company.zipCode = ""
+            company.country = ""
+            company.companyDescription = ""
+            company.webLink = ""
+            company.employeeCount = 0
+            
+            // Download fundamentals for newly added company.
+            var scrapeSuccessful: Bool = false
+            webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+                scrapeSuccessful = success
+                self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                    if scrapeSuccessful { scrapeSuccessful = success }
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        if !scrapeSuccessful {
+                            self.managedObjectContext.deleteObject(company)
+                        }
+                        // Save the context.
+                        var error: NSError? = nil
+                        if !self.managedObjectContext.save(&error) {
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                        hud.hide(true)
+                        hud.removeFromSuperview()
+                        if scrapeSuccessful {
+                            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+                        } else {
+                            self.showCompanyDataNotFoundAlert()
+                        }
+                    })
                 })
             })
-        })
+            
+        } else {
+            
+            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+        }
+    }
+    
+    func persistentStorageContainsCompany(company: Company) -> Bool {
+        
+        let fetchRequest = NSFetchRequest()
+        // Edit the entity name as appropriate.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entity
+        
+        let predicate = NSPredicate(format: "name == %@ AND exchange == %@", company.name, company.exchange)
+        fetchRequest.predicate = predicate
+        
+        var error: NSError? = nil
+        let result: [AnyObject]? = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: &error)
+        
+        return result!.count == 0 ? false : true
     }
     
     func showCompanyDataNotFoundAlert() {

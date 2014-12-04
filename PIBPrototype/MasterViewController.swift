@@ -74,11 +74,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
-        
-        if let newCompany = controller.companyToAdd {
-            //insertNewCompany(newCompany)
-        }
-        
         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
     }
 
@@ -201,7 +196,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         fetchRequest.fetchBatchSize = 20
         
         // Edit the sort key as appropriate.
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: false)
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true)
         let sortDescriptors = [sortDescriptor]
         
         fetchRequest.sortDescriptors = [sortDescriptor]
