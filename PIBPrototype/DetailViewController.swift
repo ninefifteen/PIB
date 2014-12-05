@@ -21,7 +21,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
-    @IBOutlet weak var ebitdaMarginLabel: UILabel!
+    @IBOutlet weak var profitMarginLabel: UILabel!
     
     @IBOutlet weak var descriptionViewHeightContraint: NSLayoutConstraint!
     
@@ -152,7 +152,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             }
             
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
-            ebitdaMarginLabel.text = ebitdaMarginLabelStringForCompany(company)
+            profitMarginLabel.text = profitMarginLabelStringForCompany(company)
             
             pageControl.hidden = false
             
@@ -219,6 +219,25 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if ebitdaMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
+        } else {
+            return "NA"
+        }
+    }
+    
+    func profitMarginLabelStringForCompany(company: Company) -> String {
+        
+        var profitMarginArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Profit Margin" {
+                profitMarginArray.append(financialMetric)
+            }
+        }
+        
+        profitMarginArray.sort({ $0.year < $1.year })
+        
+        if profitMarginArray.count > 0 {
+            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))
         } else {
             return "NA"
         }
