@@ -147,6 +147,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             company.country = ""
             company.companyDescription = ""
             company.webLink = ""
+            company.currencySymbol = ""
+            //company.currencyCode = ""
             company.employeeCount = 0
             
             // Download fundamentals for newly added company.

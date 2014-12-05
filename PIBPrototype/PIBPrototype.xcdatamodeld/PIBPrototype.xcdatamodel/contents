@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14A389" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Company" representedClassName="PIBPrototype.Company">
         <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="companyDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="country" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="currencyCode" optional="YES" attributeType="String" defaultValueString="NA" syncable="YES"/>
+        <attribute name="currencySymbol" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="employeeCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchangeDisplayName" optional="YES" attributeType="String" syncable="YES"/>
@@ -23,7 +25,7 @@
         <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="financialMetrics" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Company" positionX="261" positionY="189" width="128" height="240"/>
+        <element name="Company" positionX="261" positionY="189" width="128" height="270"/>
         <element name="FinancialMetric" positionX="306" positionY="270" width="128" height="103"/>
     </elements>
 </model>

@@ -36,7 +36,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     var fullDescription: String = ""
     var descriptionExpanded: Bool = false
     
-    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -46,7 +45,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         
         updateTopViewLabels()
-        
         lessButton.hidden = true
     }
     
@@ -153,7 +151,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                 employeeCountLabel.text = "NA"
             }
             
-            revenueLabel.text = "$" + revenueLabelStringForCompany(company)
+            revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
             ebitdaMarginLabel.text = ebitdaMarginLabelStringForCompany(company)
             
             pageControl.hidden = false
@@ -168,7 +166,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     
     // MARK: - Helper Methods
-    
+        
     func revenueLabelStringForCompany(company: Company) -> String {
         
         var totalRevenueArray = Array<FinancialMetric>()

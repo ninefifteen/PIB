@@ -494,7 +494,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRevenueIncomeMarginGraph() {
         
         configureBaseBarGraph()
-        configureTitleForGraph("Revenue")
+        let graphTitle = "Revenue (" + company.currencyCode + ")"
+        configureTitleForGraph(graphTitle)
         
         // Change right padding for 2nd Y Axis labels.
         graph.plotAreaFrame.paddingRight  = 46.0

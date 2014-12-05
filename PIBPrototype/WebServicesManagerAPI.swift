@@ -233,6 +233,48 @@ class WebServicesManagerAPI: NSObject {
         return companies
     }
     
+    func currencySymbolForCurrencyCode(currencyCode: String) -> String {
+        
+        switch currencyCode {
+        case "AUD":
+            return "$"
+        case "CAD":
+            return "$"
+        case "CNY":
+            return "¥"
+        case "EGP":
+            return "£"
+        case "EUR":
+            return "€"
+        case "GBP":
+            return "£"
+        case "HKD":
+            return "$"
+        case "INR":
+            return "₹"
+        case "IRR":
+            return "﷼"
+        case "JPY":
+            return "¥"
+        case "KPW":
+            return "₩"
+        case "KRW":
+            return "₩"
+        case "MXN":
+            return "$"
+        case "RUB":
+            return "₽"
+        case "SAR":
+            return "﷼"
+        case "SGD":
+            return "$"
+        case "USD":
+            return "$"
+        default:
+            return "(" + currencyCode + ")"
+        }
+    }
+    
     
     // MARK: - Network Activity Indicator
     
@@ -314,6 +356,16 @@ class WebServicesManagerAPI: NSObject {
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
+        
+        // Currency type and symbol.
+        let currencyTypePath = "//th[@class='lm lft nwp']"
+        if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
+            if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
+                var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
+                company.currencyCode = spaceSplit[3]
+                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+            }
+        }
         
         // Years for Google Finance metrics.
         var yearsArray = Array<Int>()

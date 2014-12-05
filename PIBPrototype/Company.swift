@@ -22,6 +22,8 @@ class Company: NSManagedObject {
     @NSManaged var name: String
     @NSManaged var tickerSymbol: String
     @NSManaged var companyDescription: String
+    @NSManaged var currencyCode: String
+    @NSManaged var currencySymbol: String
     @NSManaged var employeeCount: NSNumber
     @NSManaged var financialMetrics: NSSet
 
