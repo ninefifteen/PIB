@@ -151,6 +151,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             //company.currencyCode = ""
             company.employeeCount = 0
             
+            let companyName = newCompany.name   // Used for error message in the event financial data is not found.
+            
             // Download fundamentals for newly added company.
             var scrapeSuccessful: Bool = false
             webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
@@ -174,7 +176,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
                         if scrapeSuccessful {
                             self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
                         } else {
-                            self.showCompanyDataNotFoundAlert()
+                            self.showCompanyDataNotFoundAlert(companyName)
                         }
                     })
                 })
@@ -202,8 +204,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         return result!.count == 0 ? false : true
     }
     
-    func showCompanyDataNotFoundAlert() {
-        let alert = UIAlertController(title: "Sorry, we are unable to add the selected company.", message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+    func showCompanyDataNotFoundAlert(companyName: String) {
+        let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (action) -> Void in
             self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
         }

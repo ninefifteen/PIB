@@ -360,11 +360,19 @@ class WebServicesManagerAPI: NSObject {
         // Currency type and symbol.
         let currencyTypePath = "//th[@class='lm lft nwp']"
         if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
-            if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
-                var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
-                company.currencyCode = spaceSplit[3]
-                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+            if currencyTypeArray.count > 0 {
+                if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
+                    var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
+                    company.currencyCode = spaceSplit[3]
+                    company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                }
+            } else {
+                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                return false
             }
+        } else {
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            return false
         }
         
         // Years for Google Finance metrics.
