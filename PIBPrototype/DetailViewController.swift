@@ -33,6 +33,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     var fullDescription: String = ""
     
+    
     // MARK: - View Life Cycle
     
     override func viewDidLoad() {
@@ -41,7 +42,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         // Do any additional setup after loading the view, typically from a nib.
         
-        updateTopViewLabels()
+        updateLabels()
     }
     
     override func didReceiveMemoryWarning() {
@@ -62,7 +63,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             let fullDescriptionCharacterCount = countElements(fullDescription)
             
             descriptionTextView.text = fullDescription
-            descriptionTextView.setContentOffset(CGPointZero, animated: false)
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
+            })
             
             /*let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
             let trimLength = visibleRange.length - 8
@@ -89,7 +93,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     // MARK: - Populate Labels
     
-    func updateTopViewLabels() {
+    func updateLabels() {
         
         if company != nil {
             
@@ -107,7 +111,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if company.companyDescription != "" {
                 descriptionTextView.text = company.companyDescription
-                descriptionTextView.setContentOffset(CGPointZero, animated: false)
             }
             
             if company.employeeCount > 0 {
@@ -245,6 +248,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             graphPageViewController = segue.destinationViewController as GraphPageViewController
             graphPageViewController.company = company
             graphPageViewController.delegate = self
+        } else if segue.identifier == "showExpandedDescription" {
+            let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
+            expandedDescriptionViewController.company = company
         }
     }
 }
