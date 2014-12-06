@@ -26,15 +26,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var descriptionViewHeightContraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
-    @IBOutlet weak var moreButton: UIButton!
-    @IBOutlet weak var lessButton: UIButton!
     
     weak var graphPageViewController: GraphPageViewController!
     
     var company: Company!
     
     var fullDescription: String = ""
-    var descriptionExpanded: Bool = false
     
     // MARK: - View Life Cycle
     
@@ -45,7 +42,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         
         updateTopViewLabels()
-        lessButton.hidden = true
     }
     
     override func didReceiveMemoryWarning() {
@@ -55,36 +51,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     
     // MARK: - Subview Size Modification
-    
-    @IBAction func expandDescription(sender: AnyObject) {
-        
-        let orientation = UIApplication.sharedApplication().statusBarOrientation
-        
-        if !(UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation)) && !descriptionExpanded {
-            
-            pageControl.hidden = true
-            descriptionExpanded = true
-            moreButton.hidden = true
-            lessButton.hidden = false
-            descriptionTextView.scrollEnabled = true
-            
-            descriptionViewHeightContraint.constant = 10000.0
-            view.layoutIfNeeded()
-            
-        } else if descriptionExpanded {
-            
-            descriptionTextView.setContentOffset(CGPointZero, animated: false)
-            
-            pageControl.hidden = false
-            descriptionExpanded = false
-            moreButton.hidden = false
-            lessButton.hidden = true
-            descriptionTextView.scrollEnabled = false
-            
-            descriptionViewHeightContraint.constant = 128.0
-            view.layoutIfNeeded()
-        }
-    }
     
     override func viewWillLayoutSubviews() {
         
@@ -98,17 +64,17 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             descriptionTextView.text = fullDescription
             descriptionTextView.setContentOffset(CGPointZero, animated: false)
             
-            let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
+            /*let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
             let trimLength = visibleRange.length - 8
 
-            if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 8 && !descriptionExpanded {
+            if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 8 {
                 let index: String.Index = advance(fullDescription.startIndex, trimLength)
                 let shortDescription: String = fullDescription.substringToIndex(index) + "..."
                 descriptionTextView.text = shortDescription
-            }
+            }*/
         }
         
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && !descriptionExpanded {
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             
             let orientation = UIApplication.sharedApplication().statusBarOrientation
             
@@ -117,7 +83,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             view.layoutIfNeeded()
             
             pageControl.hidden = false
-            descriptionExpanded = false
         }
     }
     
