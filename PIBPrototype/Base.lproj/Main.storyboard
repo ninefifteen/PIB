@@ -123,9 +123,7 @@
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                         </state>
                                         <connections>
-                                            <segue destination="2xG-r1-IjS" kind="popoverPresentation" identifier="showExpandedDescription" popoverAnchorView="luG-xi-rO1" id="f3v-C9-Ah1">
-                                                <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                            </segue>
+                                            <segue destination="2xG-r1-IjS" kind="presentation" identifier="showExpandedDescription" id="f3v-C9-Ah1"/>
                                         </connections>
                                     </button>
                                 </subviews>
