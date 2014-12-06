@@ -16,6 +16,8 @@ class ExpandedDescriptionViewController: UIViewController {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
+    @IBOutlet weak var dismissButton: UIBarButtonItem!
+    
     
     var company: Company!
     
@@ -26,6 +28,11 @@ class ExpandedDescriptionViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        
+        /*if UIDevice.currentDevice().userInterfaceIdiom == .Pad {
+            dismissButton.title = ""
+            dismissButton.enabled = false
+        }*/
         
         updateLabels()
     }

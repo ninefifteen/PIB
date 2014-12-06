@@ -68,14 +68,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
                 self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
             })
             
-            /*let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
-            let trimLength = visibleRange.length - 8
+            let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
+            let trimLength = visibleRange.length - 11
 
-            if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 8 {
+            if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 11 {
                 let index: String.Index = advance(fullDescription.startIndex, trimLength)
                 let shortDescription: String = fullDescription.substringToIndex(index) + "..."
                 descriptionTextView.text = shortDescription
-            }*/
+            }
         }
         
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
@@ -249,9 +249,17 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             graphPageViewController.company = company
             graphPageViewController.delegate = self
         } else if segue.identifier == "showExpandedDescription" {
-            let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
+            let navigationController = segue.destinationViewController as UINavigationController
+            navigationController.view.tintColor = UIColor.whiteColor()
+            let expandedDescriptionViewController = navigationController.topViewController as ExpandedDescriptionViewController
             expandedDescriptionViewController.company = company
         }
+    }
+    
+    @IBAction func unwindFromExpandDescriptionSegue(segue: UIStoryboardSegue) {
+        
+        let controller = segue.sourceViewController as ExpandedDescriptionViewController
+        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
     }
 }
 
