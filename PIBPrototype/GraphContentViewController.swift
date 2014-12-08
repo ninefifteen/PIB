@@ -258,7 +258,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         annotationTextStyle.color = CPTColor.grayColor()
         annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
         
-        titleTextStyle.color = CPTColor(componentRed: 120.0/255.0, green: 120.0/255.0, blue: 120.0/255.0, alpha: 1.0)
+        //titleTextStyle.color = CPTColor(componentRed: 120.0/255.0, green: 120.0/255.0, blue: 120.0/255.0, alpha: 1.0)
+        titleTextStyle.fontName = "Helvetica-Bold"
+        titleTextStyle.color = yAxisLabelColor
         titleTextStyle.fontSize = 15.0
     }
     
