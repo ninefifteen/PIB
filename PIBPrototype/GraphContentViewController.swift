@@ -3,7 +3,7 @@
 //  PIBPrototype
 //
 //  Created by Shawn Seals on 11/1/14.
-//  Copyright (c) 2014 Shawn Seals. All rights reserved.
+//  Copyright (c) 2014 Scoutly. All rights reserved.
 //
 
 import UIKit
@@ -315,9 +315,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 graph.plotAreaFrame.paddingLeft = 54.0
             }
         }
-        graph.plotAreaFrame.paddingTop = 36.0
+        graph.plotAreaFrame.paddingTop = 56.0
         graph.plotAreaFrame.paddingRight = 10.0
-        graph.plotAreaFrame.paddingBottom = 80.0
+        graph.plotAreaFrame.paddingBottom = 60.0
     }
     
     func configureBaseBarGraph() {
@@ -554,6 +554,32 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
+        // Profit Margin background line plot.
+        let profitMarginPlotBackgroundColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        
+        let profitMarginPlotBackgroundLineStyle = CPTMutableLineStyle()
+        profitMarginPlotBackgroundLineStyle.lineWidth = scatterPlotLineWidth + 2.0
+        profitMarginPlotBackgroundLineStyle.lineColor = CPTColor.whiteColor()
+        
+        let profitMarginBackgroundLinePlot = CPTScatterPlot()
+        profitMarginBackgroundLinePlot.delegate = self
+        profitMarginBackgroundLinePlot.dataSource = self
+        profitMarginBackgroundLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        profitMarginBackgroundLinePlot.dataLineStyle = profitMarginPlotBackgroundLineStyle
+        profitMarginBackgroundLinePlot.identifier = "Profit Margin Background"
+        
+        let backgroundSymbolLineStyle = CPTMutableLineStyle()
+        backgroundSymbolLineStyle.lineColor = CPTColor.whiteColor()
+        backgroundSymbolLineStyle.lineWidth = scatterPlotLineWidth
+        let backgroundPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+        backgroundPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        backgroundPlotSymbol.lineStyle = backgroundSymbolLineStyle
+        backgroundPlotSymbol.size = CGSizeMake(scatterPlotSymbolSize.width + 2.0, scatterPlotSymbolSize.height + 2.0)
+        profitMarginBackgroundLinePlot.plotSymbol = backgroundPlotSymbol
+        
+        graph.addPlot(profitMarginBackgroundLinePlot, toPlotSpace:plotSpace2)
+        
         // Profit Margin line plot.
         let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
@@ -572,7 +598,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = profitMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+        //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
         profitMarginLinePlot.plotSymbol = plotSymbol
@@ -581,8 +608,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        graph.legendAnchor = .Top
+        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legend.removePlot(profitMarginBackgroundLinePlot)
         
         self.graphView.hostedGraph = graph
     }
@@ -592,7 +620,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         configureTitleForGraph("Growth Dynamics")
         
-        let revenueGrowthPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        let revenueGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
         let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
         revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -616,7 +644,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         graph.addPlot(revenueGrowthPlot, toPlotSpace:plotSpace)
         
-        let netIncomeGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        let netIncomeGrowthPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
         let netIncomeGrowthPlotLineStyle = CPTMutableLineStyle()
         netIncomeGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -641,8 +669,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        graph.legendAnchor = .Top
+        graph.legendDisplacement = CGPointMake(0.0, -25.0)
         
         self.graphView.hostedGraph = graph
     }
@@ -652,7 +680,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         configureTitleForGraph("Gross Margin")
         
-        let grossMarginPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        let grossMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
         let grossMarginPlotLineStyle = CPTMutableLineStyle()
         grossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -678,8 +706,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        graph.legendAnchor = .Top
+        graph.legendDisplacement = CGPointMake(0.0, -25.0)
         
         self.graphView.hostedGraph = graph
     }
@@ -715,8 +743,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        graph.legendAnchor = .Top
+        graph.legendDisplacement = CGPointMake(0.0, -25.0)
         
         self.graphView.hostedGraph = graph
     }
@@ -752,8 +780,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Bottom
-        graph.legendDisplacement = CGPointMake(0.0, 25.0)
+        graph.legendAnchor = .Top
+        graph.legendDisplacement = CGPointMake(0.0, -25.0)
         
         self.graphView.hostedGraph = graph
     }
@@ -1022,6 +1050,27 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     return nil
                 }
                 
+            } else if plotID == "Profit Margin Background" {
+                
+                switch CPTScatterPlotField(rawValue: Int(field))! {
+                    
+                case .X:
+                    let x = Double(recordIndex) + 0.50
+                    return x as NSNumber
+                    
+                case .Y:
+                    let plotID = plot.identifier as String
+                    
+                    if plotID == "Profit Margin Background" {
+                        return profitMarginArray[Int(recordIndex)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
             } else {
                 return nil
             }
@@ -1221,6 +1270,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        //let textStyle = textLayer.textStyle.mutableCopy() as CPTMutableTextStyle
+        //textStyle.color = CPTColor.blackColor()
+        //textLayer.textStyle = textStyle
         textLayer.fill = CPTFill(color: CPTColor.whiteColor())
         textLayer.cornerRadius = 5.0
         
@@ -1245,6 +1297,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value)) + "%"
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        //let textStyle = textLayer.textStyle.mutableCopy() as CPTMutableTextStyle
+        //textStyle.color = CPTColor.blackColor()
+        //textLayer.textStyle = textStyle
         textLayer.fill = CPTFill(color: CPTColor.whiteColor())
         textLayer.cornerRadius = 5.0
         
