@@ -284,25 +284,25 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$99.9B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="krx-5q-zpT">
-                                            <rect key="frame" x="546" y="11" width="46" height="17"/>
+                                            <rect key="frame" x="538" y="11" width="46" height="17"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <color key="textColor" red="0.14117647058823529" green="0.61568627450980395" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ynC-pV-KwQ">
-                                            <rect key="frame" x="8" y="7" width="46" height="21"/>
+                                            <rect key="frame" x="16" y="7" width="46" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some City, ST United States" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kep-EY-nVQ">
-                                            <rect key="frame" x="8" y="31" width="147" height="14"/>
+                                            <rect key="frame" x="16" y="31" width="147" height="14"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2hY-jy-I5h">
-                                            <rect key="frame" x="540" y="31" width="52" height="14"/>
+                                            <rect key="frame" x="532" y="31" width="52" height="14"/>
                                             <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
@@ -310,11 +310,11 @@
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="ynC-pV-KwQ" secondAttribute="trailing" constant="70" id="43j-Qb-jFe"/>
-                                        <constraint firstItem="Kep-EY-nVQ" firstAttribute="leading" secondItem="37f-cq-3Eg" secondAttribute="leadingMargin" id="6XP-yE-cvu"/>
-                                        <constraint firstItem="2hY-jy-I5h" firstAttribute="trailing" secondItem="37f-cq-3Eg" secondAttribute="trailingMargin" id="7LE-tZ-e5H"/>
-                                        <constraint firstItem="krx-5q-zpT" firstAttribute="trailing" secondItem="37f-cq-3Eg" secondAttribute="trailingMargin" id="Dpz-tU-A8O"/>
+                                        <constraint firstItem="Kep-EY-nVQ" firstAttribute="leading" secondItem="37f-cq-3Eg" secondAttribute="leadingMargin" constant="8" id="6XP-yE-cvu"/>
+                                        <constraint firstItem="2hY-jy-I5h" firstAttribute="trailing" secondItem="37f-cq-3Eg" secondAttribute="trailingMargin" constant="-8" id="7LE-tZ-e5H"/>
+                                        <constraint firstItem="krx-5q-zpT" firstAttribute="trailing" secondItem="37f-cq-3Eg" secondAttribute="trailingMargin" constant="-8" id="Dpz-tU-A8O"/>
                                         <constraint firstItem="ynC-pV-KwQ" firstAttribute="top" secondItem="37f-cq-3Eg" secondAttribute="topMargin" constant="-1" id="ELD-dh-zOR"/>
-                                        <constraint firstItem="ynC-pV-KwQ" firstAttribute="leading" secondItem="37f-cq-3Eg" secondAttribute="leadingMargin" id="GXQ-sF-WqM"/>
+                                        <constraint firstItem="ynC-pV-KwQ" firstAttribute="leading" secondItem="37f-cq-3Eg" secondAttribute="leadingMargin" constant="8" id="GXQ-sF-WqM"/>
                                         <constraint firstItem="ynC-pV-KwQ" firstAttribute="bottom" secondItem="krx-5q-zpT" secondAttribute="bottom" id="SLK-WM-d0R"/>
                                         <constraint firstItem="Kep-EY-nVQ" firstAttribute="bottom" secondItem="2hY-jy-I5h" secondAttribute="bottom" id="n9u-YO-Clg"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="Kep-EY-nVQ" secondAttribute="trailing" constant="70" id="wyO-KJ-ak0"/>
