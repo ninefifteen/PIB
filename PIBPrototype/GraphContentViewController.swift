@@ -69,6 +69,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let annotationTextStyle = CPTMutableTextStyle()
     let titleTextStyle = CPTMutableTextStyle()
     
+    let graphLegendAnchor = CPTRectAnchor.Top
+    let graphLegendDisplacement = CGPointMake(0.0, 0.0)
+    
     var scatterPlotOffset: Double = 0.0
     let scatterPlotLineWidth: CGFloat = 3.5
     let scatterPlotSymbolSize = CGSizeMake(13.0, 13.0)
@@ -317,7 +320,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 graph.plotAreaFrame.paddingLeft = 54.0
             }
         }
-        graph.plotAreaFrame.paddingTop = 56.0
+        graph.plotAreaFrame.paddingTop = 36.0
         graph.plotAreaFrame.paddingRight = 10.0
         graph.plotAreaFrame.paddingBottom = 60.0
     }
@@ -496,8 +499,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRevenueIncomeMarginGraph() {
         
         configureBaseBarGraph()
-        let graphTitle = "Revenue (" + company.currencyCode + ")"
-        configureTitleForGraph(graphTitle)
+        //let graphTitle = "Revenue (" + company.currencyCode + ")"
+        //configureTitleForGraph(graphTitle)
         
         // Change right padding for 2nd Y Axis labels.
         graph.plotAreaFrame.paddingRight  = 46.0
@@ -551,7 +554,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
-        revenueBarPlot.identifier = "Revenue"
+        let revenueBarPlotIdentifier = "Revenue (" + company.currencyCode + ")"
+        revenueBarPlot.identifier = revenueBarPlotIdentifier
         revenueBarPlot.delegate = self
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
@@ -610,8 +614,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Top
-        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legendAnchor = graphLegendAnchor
+        graph.legendDisplacement = graphLegendDisplacement
         //graph.legend.removePlot(profitMarginBackgroundLinePlot)
         
         self.graphView.hostedGraph = graph
@@ -620,7 +624,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRevenueGrowthNetIncomeGrowthGraph() {
         
         configureBaseCurvedLineGraph()
-        configureTitleForGraph("Growth Dynamics")
+        //configureTitleForGraph("Growth Dynamics")
         
         let revenueGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
@@ -633,7 +637,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueGrowthPlot.dataSource = self
         revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
         revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
-        revenueGrowthPlot.identifier = "Revenue"
+        revenueGrowthPlot.identifier = "Revenue Growth"
         
         let symbolLineStyle = CPTMutableLineStyle()
         symbolLineStyle.lineColor = revenueGrowthPlotColor
@@ -657,7 +661,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         netIncomeGrowthPlot.dataSource = self
         netIncomeGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
         netIncomeGrowthPlot.dataLineStyle = netIncomeGrowthPlotLineStyle
-        netIncomeGrowthPlot.identifier = "Net Income"
+        netIncomeGrowthPlot.identifier = "Profit Growth"
         
         symbolLineStyle.lineColor = netIncomeGrowthPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
@@ -671,8 +675,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Top
-        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legendAnchor = graphLegendAnchor
+        graph.legendDisplacement = graphLegendDisplacement
         
         self.graphView.hostedGraph = graph
     }
@@ -680,7 +684,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureGrossMarginGraph() {
         
         configureBaseCurvedLineGraph()
-        configureTitleForGraph("Gross Margin")
+        //configureTitleForGraph("Gross Margin")
         
         let grossMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
@@ -708,8 +712,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Top
-        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legendAnchor = graphLegendAnchor
+        graph.legendDisplacement = graphLegendDisplacement
         
         self.graphView.hostedGraph = graph
     }
@@ -717,7 +721,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureRAndDGraph() {
         
         configureBaseCurvedLineGraph()
-        configureTitleForGraph("R & D")
+        //configureTitleForGraph("R & D")
         
         let raAndDLinePlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
@@ -745,8 +749,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Top
-        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legendAnchor = graphLegendAnchor
+        graph.legendDisplacement = graphLegendDisplacement
         
         self.graphView.hostedGraph = graph
     }
@@ -754,7 +758,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func configureSGAndAGraph() {
         
         configureBaseCurvedLineGraph()
-        configureTitleForGraph("SG & A")
+        //configureTitleForGraph("SG & A")
         
         let sgAndAPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
         
@@ -782,8 +786,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
-        graph.legendAnchor = .Top
-        graph.legendDisplacement = CGPointMake(0.0, -25.0)
+        graph.legendAnchor = graphLegendAnchor
+        graph.legendDisplacement = graphLegendDisplacement
         
         self.graphView.hostedGraph = graph
     }
@@ -1005,8 +1009,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         case 0:
             
             let plotID = plot.identifier as String
+            let revenuePlotIdentifier = "Revenue (" + company.currencyCode + ")"
             
-            if plotID == "Revenue" || plotID == "Net Income" {
+            if plotID == revenuePlotIdentifier || plotID == "Net Income" {
                 
                 switch CPTBarPlotField(rawValue: Int(field))! {
                     
@@ -1015,9 +1020,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     
                 case .BarTip:
                     
-                    let plotID = plot.identifier as String
-                    
-                    if plotID == "Revenue" {
+                    if plotID == revenuePlotIdentifier {
                         return totalRevenueArray[Int(recordIndex)].value
                     } else if plotID == "Net Income" {
                         return netIncomeArray[Int(recordIndex)].value
@@ -1088,9 +1091,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             case .Y:
                 let plotID = plot.identifier as String
                 
-                if plotID == "Revenue" {
+                if plotID == "Revenue Growth" {
                     return revenueGrowthArray[Int(recordIndex)].value
-                } else if plotID == "Net Income" {
+                } else if plotID == "Profit Growth" {
                     return netIncomeGrowthArray[Int(recordIndex)].value
                 } else {
                     return nil
