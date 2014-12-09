@@ -557,7 +557,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
         // Profit Margin background line plot.
-        let profitMarginPlotBackgroundColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        /*let profitMarginPlotBackgroundColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
         
         let profitMarginPlotBackgroundLineStyle = CPTMutableLineStyle()
         profitMarginPlotBackgroundLineStyle.lineWidth = scatterPlotLineWidth + 2.0
@@ -580,7 +580,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         backgroundPlotSymbol.size = CGSizeMake(scatterPlotSymbolSize.width + 2.0, scatterPlotSymbolSize.height + 2.0)
         profitMarginBackgroundLinePlot.plotSymbol = backgroundPlotSymbol
         
-        graph.addPlot(profitMarginBackgroundLinePlot, toPlotSpace:plotSpace2)
+        graph.addPlot(profitMarginBackgroundLinePlot, toPlotSpace:plotSpace2)*/
         
         // Profit Margin line plot.
         let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
@@ -612,7 +612,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.legend = legendForGraph()
         graph.legendAnchor = .Top
         graph.legendDisplacement = CGPointMake(0.0, -25.0)
-        graph.legend.removePlot(profitMarginBackgroundLinePlot)
+        //graph.legend.removePlot(profitMarginBackgroundLinePlot)
         
         self.graphView.hostedGraph = graph
     }
