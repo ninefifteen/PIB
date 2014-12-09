@@ -12,7 +12,8 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     // MARK: - Properties
     
-    var pages = NSArray()
+    var pageIndices = Array<Int>()
+    var pageIdentifiers = Array<String>()
     var company: Company!
     
     
@@ -21,8 +22,6 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        // Create the data model.
-        pages = [0, 1, 2, 3, 4]
         
         let graphContentViewController = self.viewControllerAtIndex(0, storyboard: storyboard!)
         
@@ -35,15 +34,17 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     // MARK: - General Methods
     
+    
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> GraphContentViewController? {
 
-        if pages.count == 0 || index >= pages.count {
+        if pageIndices.count == 0 || index >= pageIndices.count {
             return nil
         }
         
         // Create a new view controller and pass suitable data.
         if  company != nil {
             let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as GraphContentViewController
+            graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
             graphContentViewController.company = company
             return graphContentViewController
@@ -81,7 +82,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         }
         
         index++
-        if index == self.pages.count {
+        if index == self.pageIndices.count {
             return nil
         }
         return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)

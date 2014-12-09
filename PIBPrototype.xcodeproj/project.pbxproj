@@ -367,9 +367,9 @@
 				457FB83E19DDA0BC00A58B6E /* AppDelegate.swift */,
 				457FB84319DDA0BC00A58B6E /* MasterViewController.swift */,
 				457FB84519DDA0BC00A58B6E /* DetailViewController.swift */,
-				452CA7FA1A3387C5002ADD96 /* ExpandedDescriptionViewController.swift */,
 				45E8F43E1A04517A008DBF74 /* GraphPageViewController.swift */,
 				45E8F4401A053181008DBF74 /* GraphContentViewController.swift */,
+				452CA7FA1A3387C5002ADD96 /* ExpandedDescriptionViewController.swift */,
 				45939C4A19E84457009AD108 /* AddCompanyTableViewController.swift */,
 			);
 			name = Controller;

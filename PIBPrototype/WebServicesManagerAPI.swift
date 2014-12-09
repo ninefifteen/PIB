@@ -23,7 +23,7 @@ class WebServicesManagerAPI: NSObject {
     weak var delegate: WebServicesMangerAPIDelegate?
     
     // Debugging properties.
-    var logMetricsToConsole: Bool = false
+    var logMetricsToConsole: Bool = true
     var googleSummaryUrlString = String()
     var googleFinancialMetricsUrlString = String()
     
@@ -503,35 +503,35 @@ class WebServicesManagerAPI: NSObject {
                 let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMarginMetric.type = "EBITDA Margin"
                 ebitdaMarginMetric.year = year
-                ebitdaMarginMetric.value = (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0
+                ebitdaMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 ebitdaMarginArray.append(ebitdaMarginMetric)
                 financialMetrics.addObject(ebitdaMarginMetric)
                 
                 let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 profitMarginMetric.type = "Profit Margin"
                 profitMarginMetric.year = year
-                profitMarginMetric.value = (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                profitMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 profitMarginArray.append(profitMarginMetric)
                 financialMetrics.addObject(profitMarginMetric)
                 
                 let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 grossMarginMetric.type = "Gross Margin"
                 grossMarginMetric.year = year
-                grossMarginMetric.value = (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                grossMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 grossMarginArray.append(grossMarginMetric)
                 financialMetrics.addObject(grossMarginMetric)
                 
                 let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
                 sgAndAPercentOfRevenueMetric.year = year
-                sgAndAPercentOfRevenueMetric.value = (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                sgAndAPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
                 financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
                 
                 let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
                 rAndDPercentOfRevenueMetric.year = year
-                rAndDPercentOfRevenueMetric.value = (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0
+                rAndDPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
                 financialMetrics.addObject(rAndDPercentOfRevenueMetric)
                 
@@ -541,14 +541,14 @@ class WebServicesManagerAPI: NSObject {
                     let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     revenueGrowthMetric.type = "Revenue Growth"
                     revenueGrowthMetric.year = year
-                    revenueGrowthMetric.value = ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0
+                    revenueGrowthMetric.value = Double(revenueArray[index - 1].value) != 0.0 ? ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0 : 0.0
                     revenueGrowthArray.append(revenueGrowthMetric)
                     financialMetrics.addObject(revenueGrowthMetric)
                     
                     let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     netIncomeGrowthMetric.type = "Net Income Growth"
                     netIncomeGrowthMetric.year = year
-                    netIncomeGrowthMetric.value = ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0
+                    netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
                     netIncomeGrowthArray.append(netIncomeGrowthMetric)
                     financialMetrics.addObject(netIncomeGrowthMetric)
                 }

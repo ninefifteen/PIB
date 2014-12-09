@@ -18,12 +18,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     let graph = CPTXYGraph()
     var pageIndex: Int = 0
+    var pageIdentifier: String = ""
     
     var totalRevenueArray = Array<FinancialMetric>()
     var profitMarginArray = Array<FinancialMetric>()
     var revenueGrowthArray = Array<FinancialMetric>()
     var netIncomeGrowthArray = Array<FinancialMetric>()
-    var netIncomeArray = Array<FinancialMetric>()
     var grossProfitArray = Array<FinancialMetric>()
     var grossMarginArray = Array<FinancialMetric>()
     var rAndDArray = Array<FinancialMetric>()
@@ -88,9 +88,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         // Do any additional setup after loading the view.
         configureTextStyles()
         
-        switch pageIndex {
+        switch pageIdentifier {
             
-        case 0:
+        case "Revenue":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
             for (index, financialMetric) in enumerate(financialMetrics) {
@@ -105,7 +105,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             }
             
             totalRevenueArray.sort({ $0.year < $1.year })
-            netIncomeArray.sort({ $0.year < $1.year })
             profitMarginArray.sort({ $0.year < $1.year })
             
             var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
@@ -121,7 +120,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             configureRevenueIncomeMarginGraph()
             
-        case 1:
+        case "Growth":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
             for (index, financialMetric) in enumerate(financialMetrics) {
@@ -153,7 +152,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             configureRevenueGrowthNetIncomeGrowthGraph()
             
-        case 2:
+        case "GrossMargin":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
             for (index, financialMetric) in enumerate(financialMetrics) {
@@ -178,7 +177,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             configureGrossMarginGraph()
             
-        case 3:
+        case "SG&A":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
             for (index, financialMetric) in enumerate(financialMetrics) {
@@ -203,7 +202,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             configureSGAndAGraph()
             
-        case 4:
+        case "R&D":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
             for (index, financialMetric) in enumerate(financialMetrics) {
@@ -309,7 +308,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.paddingTop = 5.0
         graph.paddingBottom = 0.0
         
-        if pageIndex == 0 {
+        if pageIdentifier == "Revenue" {
             graph.plotAreaFrame.paddingLeft = 54.0
         } else {
             if yAxisMin <= -1000.0 {
@@ -502,48 +501,57 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //let graphTitle = "Revenue (" + company.currencyCode + ")"
         //configureTitleForGraph(graphTitle)
         
-        // Change right padding for 2nd Y Axis labels.
-        graph.plotAreaFrame.paddingRight  = 46.0
+        let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
         
-        // Add 2nd plot space to graph for scatter plot.
-        plotSpace2 = CPTXYPlotSpace()
-        graph.addPlotSpace(plotSpace2)
-        plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
-        plotSpace2.xRange = CPTPlotRange(location: 0.0, length: 4.0)
-        
-        // Configure 2nd Y Axis for scatter plot.
-        y2.coordinate = CPTCoordinate.Y
-        y2.plotSpace = plotSpace2
-        y2.axisLineStyle = nil
-        y2.majorTickLineStyle = nil
-        y2.minorTickLineStyle = nil
-        y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations)
-        y2.majorGridLineStyle = nil
-        y2.majorIntervalLength = y2AxisInterval
-        y2.orthogonalPosition = 4.0
-        y2.labelingPolicy = .None
-        y2.labelTextStyle = y2AxisLabelTextStyle
-        y2.tickDirection = CPTSign.Positive
-        
-        // Custom Labels for 2nd Y Axis.
-        for (index, value) in enumerate(y2AxisCustomTickLocations) {
-            var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
-            y2AxisLabels.append(label)
+        if isDataForProfitMarginPlot {
+            
+            // Change right padding for 2nd Y Axis labels.
+            graph.plotAreaFrame.paddingRight = 46.0
+            
+            // Add 2nd plot space to graph for scatter plot.
+            plotSpace2 = CPTXYPlotSpace()
+            graph.addPlotSpace(plotSpace2)
+            plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
+            plotSpace2.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+            
+            // Configure 2nd Y Axis for scatter plot.
+            y2.coordinate = CPTCoordinate.Y
+            y2.plotSpace = plotSpace2
+            y2.axisLineStyle = nil
+            y2.majorTickLineStyle = nil
+            y2.minorTickLineStyle = nil
+            y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations)
+            y2.majorGridLineStyle = nil
+            y2.majorIntervalLength = y2AxisInterval
+            y2.orthogonalPosition = 4.0
+            y2.labelingPolicy = .None
+            y2.labelTextStyle = y2AxisLabelTextStyle
+            y2.tickDirection = CPTSign.Positive
+            
+            // Custom Labels for 2nd Y Axis.
+            for (index, value) in enumerate(y2AxisCustomTickLocations) {
+                var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
+                y2AxisLabels.append(label)
+            }
+            
+            var y2LabelLocation = 0
+            let y2AxisCustomLabels = NSMutableSet(capacity: y2AxisLabels.count)
+            for tickLocation in y2AxisCustomTickLocations {
+                let newLabel = CPTAxisLabel(text: y2AxisLabels[y2LabelLocation++], textStyle: y2.labelTextStyle)
+                newLabel.tickLocation = tickLocation
+                newLabel.offset = y2.labelOffset + y2.majorTickLength - 6.0
+                newLabel.alignment = CPTAlignment.Left
+                y2AxisCustomLabels.addObject(newLabel)
+            }
+            
+            y2.axisLabels = y2AxisCustomLabels
+            
+            graph.axisSet.axes = [x, y2, y]
+            
+        } else {
+            
+            graph.axisSet.axes = [x, y]
         }
-        
-        var y2LabelLocation = 0
-        let y2AxisCustomLabels = NSMutableSet(capacity: y2AxisLabels.count)
-        for tickLocation in y2AxisCustomTickLocations {
-            let newLabel = CPTAxisLabel(text: y2AxisLabels[y2LabelLocation++], textStyle: y2.labelTextStyle)
-            newLabel.tickLocation = tickLocation
-            newLabel.offset = y2.labelOffset + y2.majorTickLength - 6.0
-            newLabel.alignment = CPTAlignment.Left
-            y2AxisCustomLabels.addObject(newLabel)
-        }
-        
-        y2.axisLabels = y2AxisCustomLabels
-        
-        graph.axisSet.axes = [x, y2, y]
         
         // First bar plot.
         let revenueBarPlot = CPTBarPlot()
@@ -560,57 +568,60 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
-        // Profit Margin background line plot.
-        /*let profitMarginPlotBackgroundColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        if isDataForProfitMarginPlot {
         
-        let profitMarginPlotBackgroundLineStyle = CPTMutableLineStyle()
-        profitMarginPlotBackgroundLineStyle.lineWidth = scatterPlotLineWidth + 2.0
-        profitMarginPlotBackgroundLineStyle.lineColor = CPTColor.whiteColor()
-        
-        let profitMarginBackgroundLinePlot = CPTScatterPlot()
-        profitMarginBackgroundLinePlot.delegate = self
-        profitMarginBackgroundLinePlot.dataSource = self
-        profitMarginBackgroundLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
-        profitMarginBackgroundLinePlot.dataLineStyle = profitMarginPlotBackgroundLineStyle
-        profitMarginBackgroundLinePlot.identifier = "Profit Margin Background"
-        
-        let backgroundSymbolLineStyle = CPTMutableLineStyle()
-        backgroundSymbolLineStyle.lineColor = CPTColor.whiteColor()
-        backgroundSymbolLineStyle.lineWidth = scatterPlotLineWidth
-        let backgroundPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-        backgroundPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-        backgroundPlotSymbol.lineStyle = backgroundSymbolLineStyle
-        backgroundPlotSymbol.size = CGSizeMake(scatterPlotSymbolSize.width + 2.0, scatterPlotSymbolSize.height + 2.0)
-        profitMarginBackgroundLinePlot.plotSymbol = backgroundPlotSymbol
-        
-        graph.addPlot(profitMarginBackgroundLinePlot, toPlotSpace:plotSpace2)*/
-        
-        // Profit Margin line plot.
-        let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
-        
-        let profitMarginPlotLineStyle = CPTMutableLineStyle()
-        profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
-        profitMarginPlotLineStyle.lineColor = profitMarginPlotColor
-        
-        let profitMarginLinePlot = CPTScatterPlot()
-        profitMarginLinePlot.delegate = self
-        profitMarginLinePlot.dataSource = self
-        profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
-        profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
-        profitMarginLinePlot.identifier = "Profit Margin"
-        
-        let symbolLineStyle = CPTMutableLineStyle()
-        symbolLineStyle.lineColor = profitMarginPlotColor
-        symbolLineStyle.lineWidth = scatterPlotLineWidth
-        let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-        plotSymbol.lineStyle = symbolLineStyle
-        plotSymbol.size = scatterPlotSymbolSize
-        profitMarginLinePlot.plotSymbol = plotSymbol
-        
-        graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
+            // Profit Margin background line plot.
+            /*let profitMarginPlotBackgroundColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            
+            let profitMarginPlotBackgroundLineStyle = CPTMutableLineStyle()
+            profitMarginPlotBackgroundLineStyle.lineWidth = scatterPlotLineWidth + 2.0
+            profitMarginPlotBackgroundLineStyle.lineColor = CPTColor.whiteColor()
+            
+            let profitMarginBackgroundLinePlot = CPTScatterPlot()
+            profitMarginBackgroundLinePlot.delegate = self
+            profitMarginBackgroundLinePlot.dataSource = self
+            profitMarginBackgroundLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            profitMarginBackgroundLinePlot.dataLineStyle = profitMarginPlotBackgroundLineStyle
+            profitMarginBackgroundLinePlot.identifier = "Profit Margin Background"
+            
+            let backgroundSymbolLineStyle = CPTMutableLineStyle()
+            backgroundSymbolLineStyle.lineColor = CPTColor.whiteColor()
+            backgroundSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let backgroundPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+            backgroundPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            backgroundPlotSymbol.lineStyle = backgroundSymbolLineStyle
+            backgroundPlotSymbol.size = CGSizeMake(scatterPlotSymbolSize.width + 2.0, scatterPlotSymbolSize.height + 2.0)
+            profitMarginBackgroundLinePlot.plotSymbol = backgroundPlotSymbol
+            
+            graph.addPlot(profitMarginBackgroundLinePlot, toPlotSpace:plotSpace2)*/
+            
+            // Profit Margin line plot.
+            let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            
+            let profitMarginPlotLineStyle = CPTMutableLineStyle()
+            profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+            profitMarginPlotLineStyle.lineColor = profitMarginPlotColor
+            
+            let profitMarginLinePlot = CPTScatterPlot()
+            profitMarginLinePlot.delegate = self
+            profitMarginLinePlot.dataSource = self
+            profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
+            profitMarginLinePlot.identifier = "Profit Margin"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = profitMarginPlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+            plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            plotSymbol.lineStyle = symbolLineStyle
+            plotSymbol.size = scatterPlotSymbolSize
+            profitMarginLinePlot.plotSymbol = plotSymbol
+            
+            graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -626,52 +637,62 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("Growth Dynamics")
         
-        let revenueGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        let isDataForRevenueGrowthPlot: Bool = minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0
+        let isDataForProfitGrowthPlot: Bool = minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0
         
-        let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
-        revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
-        revenueGrowthPlotLineStyle.lineColor = revenueGrowthPlotColor
+        if isDataForRevenueGrowthPlot {
+            
+            let revenueGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+            
+            let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
+            revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
+            revenueGrowthPlotLineStyle.lineColor = revenueGrowthPlotColor
+            
+            let revenueGrowthPlot = CPTScatterPlot()
+            revenueGrowthPlot.delegate = self
+            revenueGrowthPlot.dataSource = self
+            revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
+            revenueGrowthPlot.identifier = "Revenue Growth"
+            
+            let revenueGrowthSymbolLineStyle = CPTMutableLineStyle()
+            revenueGrowthSymbolLineStyle.lineColor = revenueGrowthPlotColor
+            revenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            revenueGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            revenueGrowthPlotSymbol.lineStyle = revenueGrowthSymbolLineStyle
+            revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
+            revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
+            
+            graph.addPlot(revenueGrowthPlot, toPlotSpace:plotSpace)
+        }
         
-        let revenueGrowthPlot = CPTScatterPlot()
-        revenueGrowthPlot.delegate = self
-        revenueGrowthPlot.dataSource = self
-        revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
-        revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
-        revenueGrowthPlot.identifier = "Revenue Growth"
-        
-        let symbolLineStyle = CPTMutableLineStyle()
-        symbolLineStyle.lineColor = revenueGrowthPlotColor
-        symbolLineStyle.lineWidth = scatterPlotLineWidth
-        let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        revenueGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-        revenueGrowthPlotSymbol.lineStyle = symbolLineStyle
-        revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
-        revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
-        
-        graph.addPlot(revenueGrowthPlot, toPlotSpace:plotSpace)
-        
-        let netIncomeGrowthPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
-        
-        let netIncomeGrowthPlotLineStyle = CPTMutableLineStyle()
-        netIncomeGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
-        netIncomeGrowthPlotLineStyle.lineColor = netIncomeGrowthPlotColor
-        
-        let netIncomeGrowthPlot = CPTScatterPlot()
-        netIncomeGrowthPlot.delegate = self
-        netIncomeGrowthPlot.dataSource = self
-        netIncomeGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
-        netIncomeGrowthPlot.dataLineStyle = netIncomeGrowthPlotLineStyle
-        netIncomeGrowthPlot.identifier = "Profit Growth"
-        
-        symbolLineStyle.lineColor = netIncomeGrowthPlotColor
-        symbolLineStyle.lineWidth = scatterPlotLineWidth
-        let netIncomeGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        netIncomeGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-        netIncomeGrowthPlotSymbol.lineStyle = symbolLineStyle
-        netIncomeGrowthPlotSymbol.size = scatterPlotSymbolSize
-        netIncomeGrowthPlot.plotSymbol = netIncomeGrowthPlotSymbol
-        
-        graph.addPlot(netIncomeGrowthPlot, toPlotSpace:plotSpace)
+        if isDataForProfitGrowthPlot {
+            
+            let netIncomeGrowthPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            
+            let netIncomeGrowthPlotLineStyle = CPTMutableLineStyle()
+            netIncomeGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
+            netIncomeGrowthPlotLineStyle.lineColor = netIncomeGrowthPlotColor
+            
+            let netIncomeGrowthPlot = CPTScatterPlot()
+            netIncomeGrowthPlot.delegate = self
+            netIncomeGrowthPlot.dataSource = self
+            netIncomeGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            netIncomeGrowthPlot.dataLineStyle = netIncomeGrowthPlotLineStyle
+            netIncomeGrowthPlot.identifier = "Profit Growth"
+            
+            let netIncomeGrowthSymbolLineStyle = CPTMutableLineStyle()
+            netIncomeGrowthSymbolLineStyle.lineColor = netIncomeGrowthPlotColor
+            netIncomeGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let netIncomeGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            netIncomeGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            netIncomeGrowthPlotSymbol.lineStyle = netIncomeGrowthSymbolLineStyle
+            netIncomeGrowthPlotSymbol.size = scatterPlotSymbolSize
+            netIncomeGrowthPlot.plotSymbol = netIncomeGrowthPlotSymbol
+            
+            graph.addPlot(netIncomeGrowthPlot, toPlotSpace:plotSpace)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -855,7 +876,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         var maxY: Double = maximumValue
         maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
         
-        var percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowForMinimumPercentage(percentageMinimumValue)
+        var percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(percentageMinimumValue)
         
         if percentageIntervalsBelowZero == 1 && minY >= 0 {
             minY = -((maxY - minY) / (numberOfYAxisIntervals * 2))
@@ -874,7 +895,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         var range: Double = (maxY - minY) * 1.15
-        
         var interval: Double = range / numberOfYAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
@@ -885,7 +905,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         maxY = minY + numberOfYAxisIntervals * interval
-                
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
@@ -967,7 +986,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return maximumValue
     }
     
-    func calculateRequiredMajorIntervalsBelowForMinimumPercentage(minPercentage: Double) -> Int {
+    func calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(minPercentage: Double) -> Int {
         
         if minPercentage < -100.0 {
             return 3
@@ -1004,14 +1023,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {
         
-        switch pageIndex {
+        switch pageIdentifier {
             
-        case 0:
+        case "Revenue":
             
             let plotID = plot.identifier as String
             let revenuePlotIdentifier = "Revenue (" + company.currencyCode + ")"
             
-            if plotID == revenuePlotIdentifier || plotID == "Net Income" {
+            if plotID == revenuePlotIdentifier {
                 
                 switch CPTBarPlotField(rawValue: Int(field))! {
                     
@@ -1022,10 +1041,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     
                     if plotID == revenuePlotIdentifier {
                         return totalRevenueArray[Int(recordIndex)].value
-                    } else if plotID == "Net Income" {
-                        return netIncomeArray[Int(recordIndex)].value
-                    } else if plotID == "Profit Margin" {
-                        return profitMarginArray[Int(recordIndex)].value
                     } else {
                         return nil
                     }
@@ -1080,7 +1095,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 return nil
             }
             
-        case 1:
+        case "Growth":
             
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
@@ -1103,7 +1118,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 return nil
             }
             
-        case 2:
+        case "GrossMargin":
             
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
@@ -1124,7 +1139,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 return nil
             }
             
-        case 3:
+        case "SG&A":
             
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 
@@ -1145,7 +1160,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 return nil
             }
             
-        case 4:
+        case "R&D":
             
             switch CPTScatterPlotField(rawValue: Int(field))! {
                 

@@ -29,6 +29,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     weak var graphPageViewController: GraphPageViewController!
     
+    var pageIndices = Array<Int>()
+    var pageIdentifiers = Array<String>()
+    
     var company: Company!
     
     var fullDescription: String = ""
@@ -41,7 +44,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view, typically from a nib.
-        
         updateLabels()
     }
     
@@ -91,7 +93,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     
-    // MARK: - Populate Labels
+    // MARK: - Display Data Methods
     
     func updateLabels() {
         
@@ -130,6 +132,70 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             descriptionView.hidden = true
             pageControl.hidden = true
         }
+    }
+    
+    
+    func determineGraphsToBeDisplayed() {
+        
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var profitMarginArray = Array<FinancialMetric>()
+        var revenueGrowthArray = Array<FinancialMetric>()
+        var netIncomeGrowthArray = Array<FinancialMetric>()
+        var grossProfitArray = Array<FinancialMetric>()
+        var grossMarginArray = Array<FinancialMetric>()
+        var rAndDArray = Array<FinancialMetric>()
+        var sgAndAArray = Array<FinancialMetric>()
+        
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            switch financialMetric.type {
+            case "Revenue":
+                totalRevenueArray.append(financialMetric)
+            case "Profit Margin":
+                profitMarginArray.append(financialMetric)
+            case "Revenue Growth":
+                revenueGrowthArray.append(financialMetric)
+            case "Net Income Growth":
+                netIncomeGrowthArray.append(financialMetric)
+            case "Gross Margin":
+                grossMarginArray.append(financialMetric)
+            case "SG&A As Percent Of Revenue":
+                sgAndAArray.append(financialMetric)
+            case "R&D As Percent Of Revenue":
+                rAndDArray.append(financialMetric)
+            default:
+                break
+            }
+        }
+        
+        if minimumValueInFinancialMetricArray(totalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(totalRevenueArray) != 0.0 {
+            pageIdentifiers.append("Revenue")
+        }
+        
+        if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
+            pageIdentifiers.append("Growth")
+        } else if minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 {
+            pageIdentifiers.append("Growth")
+        }
+        
+        if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
+            pageIdentifiers.append("GrossMargin")
+        }
+        
+        if minimumValueInFinancialMetricArray(sgAndAArray) != 0.0 || maximumValueInFinancialMetricArray(sgAndAArray) != 0.0 {
+            pageIdentifiers.append("SG&A")
+        }
+        
+        if minimumValueInFinancialMetricArray(rAndDArray) != 0.0 || maximumValueInFinancialMetricArray(rAndDArray) != 0.0 {
+            pageIdentifiers.append("R&D")
+        }
+        
+        for (index, pageIdentifier) in enumerate(pageIdentifiers) {
+            pageIndices.append(index)
+        }
+        
+        pageControl.numberOfPages = pageIndices.count
     }
     
     
@@ -221,6 +287,30 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             return NSMakeRange(0, 0)
         }
     }
+        
+    func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
+        
+        var minimumValue: Double = 0.0
+        
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let currentValue: Double = Double(financialMetric.value)
+            if currentValue < minimumValue { minimumValue = currentValue }
+        }
+        
+        return minimumValue
+    }
+    
+    func maximumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
+        
+        var maximumValue: Double = 0.0
+        
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let currentValue: Double = Double(financialMetric.value)
+            if currentValue > maximumValue { maximumValue = currentValue }
+        }
+        
+        return maximumValue
+    }
     
     
     // MARK: - UIPageControl
@@ -245,8 +335,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == "embedGraph" {
+            determineGraphsToBeDisplayed()
             graphPageViewController = segue.destinationViewController as GraphPageViewController
             graphPageViewController.company = company
+            graphPageViewController.pageIndices = pageIndices
+            graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self
         } else if segue.identifier == "showExpandedDescription" {
             let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
