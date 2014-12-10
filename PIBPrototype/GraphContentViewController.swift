@@ -847,6 +847,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
+        
+        // Compensate for curved interpolation line possibly going below zero.
+        if minY >= 0.0 {
+            minY = minY < maxY * 0.10 ? -0.001 : 0.0
+        }
+        
         maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
         
         var range: Double = 0.0
@@ -877,9 +883,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
+        
+        // Compensate for curved interpolation line possibly going below zero.
+        if minY >= 0.0 {
+            minY = minY < maxY * 0.10 ? -0.001 : 0.0
+        }
+        
         maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
         
-        var percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(percentageMinimumValue)
+        // Compensate for plot symbols near zero being partially cut off.
+        let adjustedPercentageMinimumValue = percentageMinimumValue < 3.0 && percentageMinimumValue >= 0.0 ? -0.001 : percentageMinimumValue
+        let percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(adjustedPercentageMinimumValue)
         
         if percentageIntervalsBelowZero == 1 && minY >= 0 {
             minY = -((maxY - minY) / (numberOfYAxisIntervals * 2))
@@ -971,13 +985,29 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         yAxisRange = yAxisMax - yAxisMin
     }
     
-    func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
+    func minimumOrZeroValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
         
         var minimumValue: Double = 0.0
         
         for (index, financialMetric) in enumerate(financialMetrics) {
             let currentValue: Double = Double(financialMetric.value)
             if currentValue < minimumValue { minimumValue = currentValue }
+        }
+        
+        return minimumValue
+    }
+    
+    func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
+        
+        var minimumValue: Double = 0.0
+        
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            let currentValue: Double = Double(financialMetric.value)
+            if index == 0 {
+                minimumValue = currentValue
+            } else if currentValue < minimumValue {
+                minimumValue = currentValue
+            }
         }
         
         return minimumValue
