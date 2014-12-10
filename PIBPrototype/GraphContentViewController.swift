@@ -534,7 +534,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations)
             y2.majorGridLineStyle = nil
             y2.majorIntervalLength = y2AxisInterval
-            y2.orthogonalPosition = 4.0
+            y2.orthogonalPosition = plotSpaceLength
             y2.labelingPolicy = .None
             y2.labelTextStyle = y2AxisLabelTextStyle
             y2.tickDirection = CPTSign.Positive
@@ -554,7 +554,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 newLabel.alignment = CPTAlignment.Left
                 y2AxisCustomLabels.addObject(newLabel)
             }
-            
             y2.axisLabels = y2AxisCustomLabels
             
             graph.axisSet.axes = [x, y2, y]
