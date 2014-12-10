@@ -74,7 +74,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let graphLegendAnchor = CPTRectAnchor.Top
     let graphLegendDisplacement = CGPointMake(0.0, 0.0)
     
-    var scatterPlotOffset: Double = 0.0
+    var scatterPlotOffset: Double = 0.5
     let scatterPlotLineWidth: CGFloat = 3.5
     let scatterPlotSymbolSize = CGSizeMake(13.0, 13.0)
     
@@ -120,8 +120,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
             
-            scatterPlotOffset = 0.5
-            
             configureRevenueIncomeMarginGraph()
             
         case "Growth":
@@ -150,8 +148,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
             
-            scatterPlotOffset = 0.2
-            
             configureRevenueGrowthNetIncomeGrowthGraph()
             
         case "GrossMargin":
@@ -176,8 +172,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
-            
-            scatterPlotOffset = 0.2
             
             configureGrossMarginGraph()
             
@@ -204,8 +198,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
-            scatterPlotOffset = 0.2
-            
             configureSGAndAGraph()
             
         case "R&D":
@@ -230,8 +222,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
-            
-            scatterPlotOffset = 0.2
             
             configureRAndDGraph()
             
@@ -357,12 +347,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.labelingPolicy = .None
         x.labelTextStyle = xAxisLabelTextStyle
         
-        // Overwrite tick locations.
-        xAxisCustomTickLocations.removeAll(keepCapacity: false)
-        for index in 0...(numberOfDataPointPerPlot - 1) {
-            xAxisCustomTickLocations.append(Double(index) + 0.5)
-        }
-        
         var xLabelLocation = 0
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
         for tickLocation in xAxisCustomTickLocations {
@@ -426,9 +410,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         configureBaseGraph()
         
-        graph.paddingRight = 10.0
-        graph.plotAreaFrame.paddingRight  = -44.0
-        
         // Plot space.
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
@@ -454,7 +435,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let xAxisCustomLabels = NSMutableSet(capacity: xAxisLabels.count)
         for tickLocation in xAxisCustomTickLocations {
             let newLabel = CPTAxisLabel(text: xAxisLabels[xLabelLocation++], textStyle: x.labelTextStyle)
-            newLabel.tickLocation = tickLocation + scatterPlotOffset
+            newLabel.tickLocation = tickLocation
             newLabel.offset = x.labelOffset + x.majorTickLength
             //newLabel.rotation = CGFloat(M_PI_4)
             xAxisCustomLabels.addObject(newLabel)
@@ -863,7 +844,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var range: Double = 0.0
         if minY < 0.0 {
-            range = (maxY - minY) * 1.25
+            range = (maxY - minY) * 1.40
         } else {
             range = (maxY - minY) * 1.05
         }
@@ -911,7 +892,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var range: Double = 0.0
         if minY < 0.0 {
-            range = (maxY - minY) * 1.25
+            range = (maxY - minY) * 1.40
         } else {
             range = (maxY - minY) * 1.05
         }
@@ -1030,7 +1011,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         for index in 0...(numberOfDataPointPerPlot - 1) {
-            xAxisCustomTickLocations.append(Double(index))
+            xAxisCustomTickLocations.append(Double(index) + 0.5)
         }
         
         plotSpaceLength = Double(numberOfDataPointPerPlot)
