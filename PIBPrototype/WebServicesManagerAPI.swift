@@ -629,7 +629,26 @@ class WebServicesManagerAPI: NSObject {
             return false
         }
         
-        let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[8]"
+        // Determine Address div index.
+        var addressHeadingFound: Bool = false
+        var addressDivIndex: Int = 0
+        
+        while !addressHeadingFound {
+            
+            addressDivIndex++
+            let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]/h3"
+            
+            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+                for node in potentialHeadingArray {
+                    if let potentialHeading: String = node.firstChild?.content {
+                        if potentialHeading == "Address" { addressHeadingFound = true }
+                    }
+                }
+            }
+        }
+        addressDivIndex++
+        
+        let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]"
         if let address = parser.searchWithXPathQuery(addressPath) {
             for node in address {
                 
@@ -678,7 +697,26 @@ class WebServicesManagerAPI: NSObject {
             return false
         }
         
-        let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[6]/table/tr[6]/td[2]"
+        // Determine Key Stats and Ratios div index.
+        var keyStatsAndRatiosHeadingFound: Bool = false
+        var keyStatsAndRatiosDivIndex: Int = 0
+        
+        while !keyStatsAndRatiosHeadingFound {
+            
+            keyStatsAndRatiosDivIndex++
+            let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/h3"
+            
+            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+                for node in potentialHeadingArray {
+                    if let potentialHeading: String = node.firstChild?.content {
+                        if potentialHeading == "Key stats and ratios" { keyStatsAndRatiosHeadingFound = true }
+                    }
+                }
+            }
+        }
+        keyStatsAndRatiosDivIndex++
+        
+        let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/table/tr[6]/td[2]"
         if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
             for node in employeeCount {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
