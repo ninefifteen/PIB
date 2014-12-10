@@ -23,7 +23,7 @@ class WebServicesManagerAPI: NSObject {
     weak var delegate: WebServicesMangerAPIDelegate?
     
     // Debugging properties.
-    var logMetricsToConsole: Bool = true
+    var logMetricsToConsole: Bool = false
     var googleSummaryUrlString = String()
     var googleFinancialMetricsUrlString = String()
     
