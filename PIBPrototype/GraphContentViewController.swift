@@ -77,6 +77,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var scatterPlotOffset: Double = 0.5
     let scatterPlotLineWidth: CGFloat = 3.5
     let scatterPlotSymbolSize = CGSizeMake(13.0, 13.0)
+    let plotSymbolMarginForHitDetection: CGFloat = 30.0
     
     var allAnnotationsShowing: Bool = false
     
@@ -599,6 +600,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             profitMarginLinePlot.dataSource = self
             profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
             profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
+            profitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             profitMarginLinePlot.identifier = "Profit Margin"
             
             let symbolLineStyle = CPTMutableLineStyle()
@@ -644,6 +646,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthPlot.dataSource = self
             revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
             revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
+            revenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             revenueGrowthPlot.identifier = "Revenue Growth"
             
             let revenueGrowthSymbolLineStyle = CPTMutableLineStyle()
@@ -671,6 +674,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             netIncomeGrowthPlot.dataSource = self
             netIncomeGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
             netIncomeGrowthPlot.dataLineStyle = netIncomeGrowthPlotLineStyle
+            netIncomeGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             netIncomeGrowthPlot.identifier = "Profit Growth"
             
             let netIncomeGrowthSymbolLineStyle = CPTMutableLineStyle()
@@ -709,6 +713,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         grossMarginPlot.dataSource = self
         grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
         grossMarginPlot.dataLineStyle = grossMarginPlotLineStyle
+        grossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         grossMarginPlot.identifier = "Gross Margin"
         
         let symbolLineStyle = CPTMutableLineStyle()
@@ -746,6 +751,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         rAndDLinePlot.dataSource = self
         rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
         rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
+        rAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         rAndDLinePlot.identifier = "R&D"
         
         let symbolLineStyle = CPTMutableLineStyle()
@@ -783,6 +789,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         sgAndAPlot.dataSource = self
         sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Curved
         sgAndAPlot.dataLineStyle = sgAndAPlotLineStyle
+        sgAndAPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         sgAndAPlot.identifier = "SG&A"
         
         let symbolLineStyle = CPTMutableLineStyle()
