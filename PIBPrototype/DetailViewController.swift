@@ -137,65 +137,68 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     func determineGraphsToBeDisplayed() {
         
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
-        
-        var totalRevenueArray = Array<FinancialMetric>()
-        var profitMarginArray = Array<FinancialMetric>()
-        var revenueGrowthArray = Array<FinancialMetric>()
-        var netIncomeGrowthArray = Array<FinancialMetric>()
-        var grossProfitArray = Array<FinancialMetric>()
-        var grossMarginArray = Array<FinancialMetric>()
-        var rAndDArray = Array<FinancialMetric>()
-        var sgAndAArray = Array<FinancialMetric>()
-        
-        for (index, financialMetric) in enumerate(financialMetrics) {
-            switch financialMetric.type {
-            case "Revenue":
-                totalRevenueArray.append(financialMetric)
-            case "Profit Margin":
-                profitMarginArray.append(financialMetric)
-            case "Revenue Growth":
-                revenueGrowthArray.append(financialMetric)
-            case "Net Income Growth":
-                netIncomeGrowthArray.append(financialMetric)
-            case "Gross Margin":
-                grossMarginArray.append(financialMetric)
-            case "SG&A As Percent Of Revenue":
-                sgAndAArray.append(financialMetric)
-            case "R&D As Percent Of Revenue":
-                rAndDArray.append(financialMetric)
-            default:
-                break
+        if company != nil {
+            
+            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+            
+            var totalRevenueArray = Array<FinancialMetric>()
+            var profitMarginArray = Array<FinancialMetric>()
+            var revenueGrowthArray = Array<FinancialMetric>()
+            var netIncomeGrowthArray = Array<FinancialMetric>()
+            var grossProfitArray = Array<FinancialMetric>()
+            var grossMarginArray = Array<FinancialMetric>()
+            var rAndDArray = Array<FinancialMetric>()
+            var sgAndAArray = Array<FinancialMetric>()
+            
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                switch financialMetric.type {
+                case "Revenue":
+                    totalRevenueArray.append(financialMetric)
+                case "Profit Margin":
+                    profitMarginArray.append(financialMetric)
+                case "Revenue Growth":
+                    revenueGrowthArray.append(financialMetric)
+                case "Net Income Growth":
+                    netIncomeGrowthArray.append(financialMetric)
+                case "Gross Margin":
+                    grossMarginArray.append(financialMetric)
+                case "SG&A As Percent Of Revenue":
+                    sgAndAArray.append(financialMetric)
+                case "R&D As Percent Of Revenue":
+                    rAndDArray.append(financialMetric)
+                default:
+                    break
+                }
             }
+            
+            if minimumValueInFinancialMetricArray(totalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(totalRevenueArray) != 0.0 {
+                pageIdentifiers.append("Revenue")
+            }
+            
+            if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
+                pageIdentifiers.append("Growth")
+            } else if minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 {
+                pageIdentifiers.append("Growth")
+            }
+            
+            if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
+                pageIdentifiers.append("GrossMargin")
+            }
+            
+            if minimumValueInFinancialMetricArray(sgAndAArray) != 0.0 || maximumValueInFinancialMetricArray(sgAndAArray) != 0.0 {
+                pageIdentifiers.append("SG&A")
+            }
+            
+            if minimumValueInFinancialMetricArray(rAndDArray) != 0.0 || maximumValueInFinancialMetricArray(rAndDArray) != 0.0 {
+                pageIdentifiers.append("R&D")
+            }
+            
+            for (index, pageIdentifier) in enumerate(pageIdentifiers) {
+                pageIndices.append(index)
+            }
+            
+            pageControl.numberOfPages = pageIndices.count
         }
-        
-        if minimumValueInFinancialMetricArray(totalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(totalRevenueArray) != 0.0 {
-            pageIdentifiers.append("Revenue")
-        }
-        
-        if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
-            pageIdentifiers.append("Growth")
-        } else if minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 {
-            pageIdentifiers.append("Growth")
-        }
-        
-        if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
-            pageIdentifiers.append("GrossMargin")
-        }
-        
-        if minimumValueInFinancialMetricArray(sgAndAArray) != 0.0 || maximumValueInFinancialMetricArray(sgAndAArray) != 0.0 {
-            pageIdentifiers.append("SG&A")
-        }
-        
-        if minimumValueInFinancialMetricArray(rAndDArray) != 0.0 || maximumValueInFinancialMetricArray(rAndDArray) != 0.0 {
-            pageIdentifiers.append("R&D")
-        }
-        
-        for (index, pageIdentifier) in enumerate(pageIdentifiers) {
-            pageIndices.append(index)
-        }
-        
-        pageControl.numberOfPages = pageIndices.count
     }
     
     
