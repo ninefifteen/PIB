@@ -194,7 +194,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
             var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
@@ -219,7 +219,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(rAndDArray)
             var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: 0.0)
+            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
             
@@ -849,9 +849,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
-        //maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
+        maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
         
-        var range: Double = (maxY - minY) * 1.15
+        var range: Double = 0.0
+        if minY < 0.0 {
+            range = (maxY - minY) * 1.25
+        } else {
+            range = (maxY - minY) * 1.05
+        }
         
         var interval: Double = range / numberOfYAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
@@ -894,7 +899,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             }
         }
         
-        var range: Double = (maxY - minY) * 1.15
+        var range: Double = 0.0
+        if minY < 0.0 {
+            range = (maxY - minY) * 1.25
+        } else {
+            range = (maxY - minY) * 1.05
+        }
+        
         var interval: Double = range / numberOfYAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
