@@ -523,7 +523,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             plotSpace2 = CPTXYPlotSpace()
             graph.addPlotSpace(plotSpace2)
             plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
-            plotSpace2.xRange = CPTPlotRange(location: 0.0, length: 4.0)
+            plotSpace2.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
             
             // Configure 2nd Y Axis for scatter plot.
             y2.coordinate = CPTCoordinate.Y
