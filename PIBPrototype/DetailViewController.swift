@@ -44,6 +44,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = backButtonItem
+        
         updateLabels()
     }
     
@@ -102,8 +106,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             nameLabel.text = company.name
             
             if company.city != "" {
-                if company.country != "" {
+                if company.country != "" && company.state != "" {
                     locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
                 } else {
                     locationLabel.text = company.city.capitalizedString
                 }

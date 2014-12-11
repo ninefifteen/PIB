@@ -672,8 +672,13 @@ class WebServicesManagerAPI: NSObject {
                                 
                                 if commaSplit.count > 1 {
                                     var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
-                                    company.state = spaceSplit.count > 1 ? spaceSplit[1] : ""
-                                    company.zipCode = spaceSplit.count > 2 ? spaceSplit[2] : ""
+                                    if spaceSplit.count > 2 {
+                                        company.state = spaceSplit[1]
+                                        company.zipCode = spaceSplit[2]
+                                    } else if spaceSplit.count > 1 {
+                                        company.state = ""
+                                        company.zipCode = spaceSplit[1]
+                                    }
                                 }
                                 
                             } else {

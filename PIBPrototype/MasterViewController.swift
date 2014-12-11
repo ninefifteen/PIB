@@ -125,8 +125,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let locationLabel = cell.viewWithTag(102) as UILabel
         if company.city != "" {
-            if company.country != "" {
+            if company.country != "" && company.state != "" {
                 locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+            } else if company.country != "" {
+                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
             } else {
                 locationLabel.text = company.city.capitalizedString
             }
