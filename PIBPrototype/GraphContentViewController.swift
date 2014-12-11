@@ -849,18 +849,18 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         var minY: Double = minimumValue
         var maxY: Double = maximumValue
         
-        // Compensate for curved interpolation line possibly going below zero.
-        if minY >= 0.0 {
-            minY = minY < maxY * 0.10 ? -0.001 : 0.0
-        }
+        // Add room for labels.
+        let labelSpaceFactor = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? ((1 / numberOfYAxisIntervals) * 0.70) : ((1 / numberOfYAxisIntervals) * 0.50)
+        maxY += minY > 0 ? maxY * labelSpaceFactor : (maxY - minY) * labelSpaceFactor
         
-        maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
-        
-        var range: Double = 0.0
-        if minY < 0.0 {
-            range = (maxY - minY) * 1.40
+        var range: Double = maxY - minY
+        if minY < maxY * 0.10 {
+            maxY += range * 0.20
+            minY -= range * 0.10
+            range = maxY - minY
         } else {
-            range = (maxY - minY) * 1.05
+            minY = 0.0
+            range = (maxY - minY) * 1.10
         }
         
         var interval: Double = range / numberOfYAxisIntervals
