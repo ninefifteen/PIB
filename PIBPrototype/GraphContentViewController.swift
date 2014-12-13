@@ -560,7 +560,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         
-        let profitMarginBackgroundLinePlot = CPTScatterPlot()
+        //let profitMarginBackgroundLinePlot = CPTScatterPlot()
         
         if isDataForProfitMarginPlot {
         

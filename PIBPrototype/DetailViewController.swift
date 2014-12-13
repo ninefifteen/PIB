@@ -130,6 +130,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
             
+            let marketCapLabelText = company.currencySymbol + marketCapLabelStringForCompany(company)
+            println("market cap: \(marketCapLabelText)")
+            
             pageControl.hidden = false
             
         } else {
@@ -281,6 +284,23 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if profitMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))
+        } else {
+            return "NA"
+        }
+    }
+    
+    func marketCapLabelStringForCompany(company: Company) -> String {
+        
+        var marketCapArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Market Cap" {
+                marketCapArray.append(financialMetric)
+            }
+        }
+        
+        if marketCapArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(marketCapArray.last!.value))
         } else {
             return "NA"
         }

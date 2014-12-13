@@ -275,6 +275,29 @@ class WebServicesManagerAPI: NSObject {
         }
     }
     
+    func marketCapDoubleValueFromRawString(rawString: String) -> Double {
+        
+        var cleanedString = rawString.stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+        var value: Double = 0.0
+        if cleanedString.hasSuffix("T") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("T", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000000
+        } else if cleanedString.hasSuffix("B") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("B", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000
+        } else if cleanedString.hasSuffix("M") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("M", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000
+        } else if cleanedString.hasSuffix("K") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("K", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000
+        } else {
+            value = NSString(string: cleanedString).doubleValue
+        }
+        
+        return value
+    }
+    
     
     // MARK: - Network Activity Indicator
     
@@ -610,6 +633,50 @@ class WebServicesManagerAPI: NSObject {
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
         
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        
+        var marketCapHeadingFound: Bool = false
+        var marketCapTableRowIndex: Int = 0
+        
+        while !marketCapHeadingFound && marketCapTableRowIndex < 10 {
+            marketCapTableRowIndex++
+            let potentialHeadingPath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[1]"
+            
+            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+                
+                for node in potentialHeadingArray {
+                    
+                    if let rawPotentialHeading: String = node.firstChild?.content {
+                        let cleanedPotentialHeading = rawPotentialHeading.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        
+                        if cleanedPotentialHeading == "Mkt cap" {
+                            let valuePath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[2]"
+                            
+                            if let valuePathArray = parser.searchWithXPathQuery(valuePath) {
+                                
+                                for node in valuePathArray {
+                                    
+                                    if let rawValueString: String = node.firstChild?.content {
+                                        let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                                        financialMetric.type = "Market Cap"
+                                        financialMetric.year = 0
+                                        financialMetric.value = marketCapDoubleValueFromRawString(rawValueString)
+                                        financialMetrics.addObject(financialMetric)
+                                        marketCapHeadingFound = true
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if marketCapHeadingFound { break }
+                }
+            }
+        }
+        company.financialMetrics = financialMetrics.copy() as NSSet
+        
+        
         let descriptionPath = "//div[@class='companySummary']"
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
             if companyDescription.count > 0 {
@@ -633,7 +700,7 @@ class WebServicesManagerAPI: NSObject {
         var addressHeadingFound: Bool = false
         var addressDivIndex: Int = 0
         
-        while !addressHeadingFound {
+        while !addressHeadingFound && addressDivIndex < 100 {
             
             addressDivIndex++
             let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]/h3"
