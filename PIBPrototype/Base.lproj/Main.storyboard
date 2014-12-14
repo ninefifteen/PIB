@@ -285,16 +285,24 @@
                         <gestureRecognizers/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="tTq-ty-GUF" appends="YES" id="DER-Ca-AwP"/>
+                            <outletCollection property="gestureRecognizers" destination="DhZ-3c-Xii" appends="YES" id="kmw-it-5A9"/>
                         </connections>
                     </view>
                     <connections>
+                        <outlet property="doubleTapGestureRecognizer" destination="tTq-ty-GUF" id="4Ed-2m-zMa"/>
                         <outlet property="graphView" destination="ggK-qC-wbi" id="V0h-7q-dZN"/>
+                        <outlet property="singleTapGestureRecognizer" destination="DhZ-3c-Xii" id="7MR-F7-O1Q"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IkJ-Zc-RIK" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="tTq-ty-GUF">
+                <tapGestureRecognizer id="DhZ-3c-Xii" userLabel="Single Tap Gesture Recognizer">
                     <connections>
-                        <action selector="handleDoubleTap:" destination="1zm-eX-qNe" id="ZlY-4O-ut6"/>
+                        <action selector="handleSingleTapGesture:" destination="1zm-eX-qNe" id="o29-z0-I0C"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="tTq-ty-GUF" userLabel="Double Tap Gesture Recognizer">
+                    <connections>
+                        <action selector="handleDoubleTapGesture:" destination="1zm-eX-qNe" id="Nf3-Qw-82y"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

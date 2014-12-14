@@ -14,6 +14,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
     
+    @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
+    @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
+    
     var company: Company!
     
     let graph = CPTXYGraph()
@@ -79,7 +82,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let scatterPlotSymbolSize = CGSizeMake(13.0, 13.0)
     let plotSymbolMarginForHitDetection: CGFloat = 30.0
     
-    var allAnnotationsShowing: Bool = false
+    var plots = Array<CPTPlot>()
+    
+    var plotLabelState: Int = 0 // 0: All plots labeled, 1: First plot labeled, 2: Second plot labeled, 3: No plots labeled.
     
     
     // MARK: - View Life Cycle
@@ -89,6 +94,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        
+        singleTapGestureRecognizer.requireGestureRecognizerToFail(doubleTapGestureRecognizer)
+        
         configureTextStyles()
         
         switch pageIdentifier {
@@ -232,7 +240,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             break
         }
         
-        addAnnotationsToAllPlots()
+        plotLabelState = 0  // All plots labeled.
+        addRemoveAnnotationsAllPlots()
     }
     
     override func didReceiveMemoryWarning() {
@@ -561,6 +570,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.delegate = self
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
+        plots.append(revenueBarPlot)
         
         if isDataForProfitMarginPlot {
             
@@ -590,6 +600,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             profitMarginLinePlot.plotSymbol = plotSymbol
             
             graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
+            plots.append(profitMarginLinePlot)
         }
         
         // Add legend.
@@ -634,6 +645,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
             
             graph.addPlot(revenueGrowthPlot, toPlotSpace:plotSpace)
+            plots.append(revenueGrowthPlot)
         }
         
         if isDataForProfitMarginPlot {
@@ -662,6 +674,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             profitMarginPlot.plotSymbol = profitMarginPlotSymbol
             
             graph.addPlot(profitMarginPlot, toPlotSpace:plotSpace)
+            plots.append(profitMarginPlot)
         }
         
         // Add legend.
@@ -701,6 +714,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         grossMarginPlot.plotSymbol = grossMarginPlotSymbol
         
         graph.addPlot(grossMarginPlot, toPlotSpace:plotSpace)
+        plots.append(grossMarginPlot)
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -739,6 +753,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         rAndDLinePlot.plotSymbol = plotSymbol
         
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
+        plots.append(rAndDLinePlot)
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -777,6 +792,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         sgAndAPlot.plotSymbol = sgAndAPlotSymbol
         
         graph.addPlot(sgAndAPlot, toPlotSpace:plotSpace)
+        plots.append(sgAndAPlot)
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -1188,7 +1204,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt) {
         
-        var removedAnnotation: Bool = false
+        /*var removedAnnotation: Bool = false
         
         let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
@@ -1205,8 +1221,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if !removedAnnotation {
             
-            addAnnotationToBarPlot(plot, atSelectedRecordIndex: idx)
-        }
+            addAnnotationsToBarPlot(plot, atSelectedRecordIndex: idx)
+        }*/
     }
     
     
@@ -1214,7 +1230,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt) {
         
-        var removedAnnotation: Bool = false
+        /*var removedAnnotation: Bool = false
         
         let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
@@ -1231,54 +1247,101 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if !removedAnnotation {
             
-            addAnnotationToScatterPlot(plot, atSelectedRecordIndex: idx)
-        }
+            addAnnotationsToScatterPlot(plot, atSelectedRecordIndex: idx)
+        }*/
     }
     
     
     // MARK: - Gesture Recognizer Methods
     
-    @IBAction func handleDoubleTap(recognizer: UITapGestureRecognizer) {
+    @IBAction func handleSingleTapGesture(recognizer: UITapGestureRecognizer) {
         
-        if allAnnotationsShowing {
-            graph.plotAreaFrame.plotArea.removeAllAnnotations()
-            allAnnotationsShowing = false
+        if plots.count == 1 {
+            plotLabelState = plotLabelState == 0 ? 3 : 0
         } else {
-            addAnnotationsToAllPlots()
+            plotLabelState++
+            if plotLabelState > 3 { plotLabelState = 0 }
         }
+        
+        switch plotLabelState {
+        case 0:
+            addRemoveAnnotationsAllPlots()
+        case 1:
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            addAnnotationsToPlot(plots[0])
+        case 2:
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            addAnnotationsToPlot(plots[1])
+        case 3:
+            addRemoveAnnotationsAllPlots()
+        default:
+            break
+        }
+    }
+    
+    @IBAction func handleDoubleTapGesture(recognizer: UITapGestureRecognizer) {
+        
+        plotLabelState = plotLabelState == 0 ? 3 : 0
+        addRemoveAnnotationsAllPlots()
     }
     
     
     // MARK: - Plot Annotation Methods
     
-    func addAnnotationsToAllPlots() {
+    func addRemoveAnnotationsAllPlots() {
+        
+        if plotLabelState > 0 {
+            
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            
+        } else {
+            
+            let maxIndex: Int = Int(plotSpaceLength) - 1
+            
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            
+            if let plots = graph.allPlots() as? Array<CPTPlot> {
+                
+                for plot in plots {
+                    
+                    if let barPlot = plot as? CPTBarPlot {
+                        
+                        for index in 0...maxIndex {
+                            addAnnotationsToBarPlot(barPlot, atSelectedRecordIndex: UInt(index))
+                        }
+                        
+                    } else if let scatterPlot = plot as? CPTScatterPlot {
+                        
+                        for index in 0...maxIndex {
+                            addAnnotationsToScatterPlot(scatterPlot, atSelectedRecordIndex: UInt(index))
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func addAnnotationsToPlot(plot: CPTPlot!) {
         
         let maxIndex: Int = Int(plotSpaceLength) - 1
         
         graph.plotAreaFrame.plotArea.removeAllAnnotations()
         
-        if let plots = graph.allPlots() as? Array<CPTPlot> {
+        if let barPlot = plot as? CPTBarPlot {
             
-            for plot in plots {
-                
-                if let barPlot = plot as? CPTBarPlot {
-                    
-                    for index in 0...maxIndex {
-                        addAnnotationToBarPlot(barPlot, atSelectedRecordIndex: UInt(index))
-                    }
-                    
-                } else if let scatterPlot = plot as? CPTScatterPlot {
-                    
-                    for index in 0...maxIndex {
-                        addAnnotationToScatterPlot(scatterPlot, atSelectedRecordIndex: UInt(index))
-                    }
-                }
+            for index in 0...maxIndex {
+                addAnnotationsToBarPlot(barPlot, atSelectedRecordIndex: UInt(index))
+            }
+            
+        } else if let scatterPlot = plot as? CPTScatterPlot {
+            
+            for index in 0...maxIndex {
+                addAnnotationsToScatterPlot(scatterPlot, atSelectedRecordIndex: UInt(index))
             }
         }
-        allAnnotationsShowing = true
     }
     
-    func addAnnotationToBarPlot(plot: CPTBarPlot!, atSelectedRecordIndex idx: UInt) {
+    func addAnnotationsToBarPlot(plot: CPTBarPlot!, atSelectedRecordIndex idx: UInt) {
         
         let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
@@ -1305,7 +1368,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
     
-    func addAnnotationToScatterPlot(plot: CPTScatterPlot!, atSelectedRecordIndex idx: UInt) {
+    func addAnnotationsToScatterPlot(plot: CPTScatterPlot!, atSelectedRecordIndex idx: UInt) {
         
         let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
