@@ -55,7 +55,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if segue.identifier == "showDetail" {
             
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-            let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
                 let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
                 controller.company = company
                 controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
@@ -91,7 +91,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("CellA", forIndexPath: indexPath) as UITableViewCell
-        //let cell = tableView.dequeueReusableCellWithIdentifier("CellB", forIndexPath: indexPath) as UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }
@@ -103,6 +102,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
+            
             let context = self.fetchedResultsController.managedObjectContext
             context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject)
                 
