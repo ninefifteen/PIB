@@ -22,6 +22,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
     @IBOutlet weak var profitMarginLabel: UILabel!
+    @IBOutlet weak var marketCapLabel: UILabel!
     
     @IBOutlet weak var descriptionViewHeightContraint: NSLayoutConstraint!
     
@@ -129,9 +130,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
-            
-            let marketCapLabelText = company.currencySymbol + marketCapLabelStringForCompany(company)
-            println("market cap: \(marketCapLabelText)")
+            marketCapLabel.text = company.currencySymbol + marketCapLabelStringForCompany(company)
             
             pageControl.hidden = false
             
