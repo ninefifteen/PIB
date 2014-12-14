@@ -130,26 +130,28 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 switch financialMetric.type {
                 case "Revenue Growth":
                     revenueGrowthArray.append(financialMetric)
-                case "Net Income Growth":
-                    netIncomeGrowthArray.append(financialMetric)
+                case "Profit Margin":
+                    profitMarginArray.append(financialMetric)
                 default:
                     break
                 }
             }
             
             revenueGrowthArray.sort({ $0.year < $1.year })
-            netIncomeGrowthArray.sort({ $0.year < $1.year })
+            profitMarginArray.sort({ $0.year < $1.year })
+            
+            if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
             
             numberOfDataPointPerPlot = revenueGrowthArray.count
             
-            var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(netIncomeGrowthArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(netIncomeGrowthArray)
-            var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(netIncomeGrowthArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(netIncomeGrowthArray)
+            var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
+            var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
             
             calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
             
-            configureRevenueGrowthNetIncomeGrowthGraph()
+            configureRevenueGrowthProfitMarginGraph()
             
         case "GrossMargin":
             var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
@@ -598,13 +600,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         self.graphView.hostedGraph = graph
     }
     
-    func configureRevenueGrowthNetIncomeGrowthGraph() {
+    func configureRevenueGrowthProfitMarginGraph() {
         
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("Growth Dynamics")
         
         let isDataForRevenueGrowthPlot: Bool = minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0
-        let isDataForProfitGrowthPlot: Bool = minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0
+        let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
         
         if isDataForRevenueGrowthPlot {
             
@@ -634,32 +636,32 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             graph.addPlot(revenueGrowthPlot, toPlotSpace:plotSpace)
         }
         
-        if isDataForProfitGrowthPlot {
+        if isDataForProfitMarginPlot {
             
-            let netIncomeGrowthPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
             
-            let netIncomeGrowthPlotLineStyle = CPTMutableLineStyle()
-            netIncomeGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
-            netIncomeGrowthPlotLineStyle.lineColor = netIncomeGrowthPlotColor
+            let profitMarginPlotLineStyle = CPTMutableLineStyle()
+            profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+            profitMarginPlotLineStyle.lineColor = profitMarginPlotColor
             
-            let netIncomeGrowthPlot = CPTScatterPlot()
-            netIncomeGrowthPlot.delegate = self
-            netIncomeGrowthPlot.dataSource = self
-            netIncomeGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
-            netIncomeGrowthPlot.dataLineStyle = netIncomeGrowthPlotLineStyle
-            netIncomeGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
-            netIncomeGrowthPlot.identifier = "Profit Growth"
+            let profitMarginPlot = CPTScatterPlot()
+            profitMarginPlot.delegate = self
+            profitMarginPlot.dataSource = self
+            profitMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            profitMarginPlot.dataLineStyle = profitMarginPlotLineStyle
+            profitMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            profitMarginPlot.identifier = "Profit Margin"
             
-            let netIncomeGrowthSymbolLineStyle = CPTMutableLineStyle()
-            netIncomeGrowthSymbolLineStyle.lineColor = netIncomeGrowthPlotColor
-            netIncomeGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
-            let netIncomeGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            netIncomeGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
-            netIncomeGrowthPlotSymbol.lineStyle = netIncomeGrowthSymbolLineStyle
-            netIncomeGrowthPlotSymbol.size = scatterPlotSymbolSize
-            netIncomeGrowthPlot.plotSymbol = netIncomeGrowthPlotSymbol
+            let profitMarginSymbolLineStyle = CPTMutableLineStyle()
+            profitMarginSymbolLineStyle.lineColor = profitMarginPlotColor
+            profitMarginSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let profitMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            profitMarginPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            profitMarginPlotSymbol.lineStyle = profitMarginSymbolLineStyle
+            profitMarginPlotSymbol.size = scatterPlotSymbolSize
+            profitMarginPlot.plotSymbol = profitMarginPlotSymbol
             
-            graph.addPlot(netIncomeGrowthPlot, toPlotSpace:plotSpace)
+            graph.addPlot(profitMarginPlot, toPlotSpace:plotSpace)
         }
         
         // Add legend.
@@ -1086,27 +1088,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     return nil
                 }
                 
-            } else if plotID == "Profit Margin Background" {
-                
-                switch CPTScatterPlotField(rawValue: Int(field))! {
-                    
-                case .X:
-                    let x = Double(recordIndex) + 0.50
-                    return x as NSNumber
-                    
-                case .Y:
-                    let plotID = plot.identifier as String
-                    
-                    if plotID == "Profit Margin Background" {
-                        return profitMarginArray[Int(recordIndex)].value
-                    } else {
-                        return nil
-                    }
-                    
-                default:
-                    return nil
-                }
-                
             } else {
                 return nil
             }
@@ -1124,8 +1105,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 if plotID == "Revenue Growth" {
                     return revenueGrowthArray[Int(recordIndex)].value
-                } else if plotID == "Profit Growth" {
-                    return netIncomeGrowthArray[Int(recordIndex)].value
+                } else if plotID == "Profit Margin" {
+                    return profitMarginArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
