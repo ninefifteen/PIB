@@ -30,6 +30,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         webServicesManagerAPI.delegate = self
 
         searchBar.becomeFirstResponder()
+        
     }
 
     override func didReceiveMemoryWarning() {
