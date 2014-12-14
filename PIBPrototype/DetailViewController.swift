@@ -185,8 +185,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             
             if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
                 pageIdentifiers.append("Growth")
-            } else if minimumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(netIncomeGrowthArray) != 0.0 {
-                pageIdentifiers.append("Growth")
             }
             
             if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
