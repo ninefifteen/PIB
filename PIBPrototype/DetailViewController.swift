@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
@@ -34,6 +35,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     var pageIdentifiers = Array<String>()
     
     var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
     
     var fullDescription: String = ""
     
@@ -46,6 +48,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         // Do any additional setup after loading the view, typically from a nib.
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleManagedObjectModelChangeNotification:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext)
+        
         let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButtonItem
         
@@ -55,6 +59,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     
@@ -94,6 +102,28 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             view.layoutIfNeeded()
             
             pageControl.hidden = false
+        }
+    }
+    
+    
+    // MARK: - Managed Object Model Change
+    
+    func handleManagedObjectModelChangeNotification(notification: NSNotification!) {
+        
+        if company == nil { return }
+        
+        if let deletedObjects = notification.userInfo?[NSDeletedObjectsKey] as? NSSet {
+            for deletedObject in deletedObjects {
+                if let deletedCompany = deletedObject as? Company {
+                    if deletedCompany == company {
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            self.company = nil
+                            self.updateLabels()
+                            self.containerView.hidden = true
+                        })
+                    }
+                }
+            }
         }
     }
     
