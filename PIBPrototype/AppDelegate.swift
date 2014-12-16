@@ -24,6 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        GAI.sharedInstance().trackUncaughtExceptions = true
+        GAI.sharedInstance().logger.logLevel = GAILogLevel.Verbose
+        GAI.sharedInstance().dispatchInterval = 10
+        let tracker = GAI.sharedInstance().trackerWithTrackingId("UA-35969227-1")
+        
         let splitViewController = self.window!.rootViewController as UISplitViewController
         splitViewController.view.tintColor = UIColor.whiteColor()
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as UINavigationController

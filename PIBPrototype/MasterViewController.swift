@@ -29,8 +29,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
+        
         // Do any additional setup after loading the view, typically from a nib.
+        
+        let tracker = GAI.sharedInstance().defaultTracker
+        tracker.set(kGAIScreenName, value: "Master")
+        tracker.send(GAIDictionaryBuilder.createAppView().build())
+        
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         title = "Companies"
         let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)

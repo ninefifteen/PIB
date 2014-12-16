@@ -27,6 +27,10 @@ class ExpandedDescriptionViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
+        let tracker = GAI.sharedInstance().defaultTracker
+        tracker.set(kGAIScreenName, value: "Expanded Description")
+        tracker.send(GAIDictionaryBuilder.createAppView().build())
+        
         updateLabels()
     }
 

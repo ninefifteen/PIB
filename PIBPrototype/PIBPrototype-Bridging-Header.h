@@ -8,6 +8,14 @@
 
 #import "CorePlot-CocoaTouch.h"
 #import "MBProgressHUD.h"
+#import "GAI.h"
+#import "GAIFields.h"
+#import "GAILogger.h"
+#import "GAITracker.h"
+#import "GAIDictionaryBuilder.h"
+
+#import <CoreData/CoreData.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 
 #import <libxml/tree.h>
 #import <libxml/parser.h>
