@@ -184,12 +184,16 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleSummaryForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let urlString = "http://www.google.com/finance?q=" + exchange + "%3A" + symbol
+        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol!
         return urlString
     }
     
     func urlStringForGoogleFinancialsForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let urlString = "http://www.google.com/finance?q=" + exchange + "%3A" + symbol + "&fstype=ii"
+        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol! + "&fstype=ii"
         return urlString
     }
     

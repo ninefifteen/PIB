@@ -36,7 +36,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let tracker = GAI.sharedInstance().defaultTracker
         tracker.set(kGAIScreenName, value: "Master")
-        tracker.send(GAIDictionaryBuilder.createAppView().build())
+        let builder = GAIDictionaryBuilder.createScreenView()
+        builder.set("start", forKey: kGAISessionControl)
+        tracker.set(kGAIScreenName, value: "Master")
+        tracker.send(builder.build())
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
         title = "Companies"
