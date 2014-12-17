@@ -48,9 +48,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         // Do any additional setup after loading the view, typically from a nib.
         
-        let tracker = GAI.sharedInstance().defaultTracker
-        tracker.set(kGAIScreenName, value: "Detail")
-        tracker.send(GAIDictionaryBuilder.createAppView().build())
+        if logAnalytics {
+            let tracker = GAI.sharedInstance().defaultTracker
+            tracker.set(kGAIScreenName, value: "Detail")
+            tracker.send(GAIDictionaryBuilder.createAppView().build())
+        }
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleManagedObjectModelChangeNotification:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext)
         

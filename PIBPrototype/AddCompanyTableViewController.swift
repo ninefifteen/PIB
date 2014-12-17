@@ -23,9 +23,11 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let tracker = GAI.sharedInstance().defaultTracker
-        tracker.set(kGAIScreenName, value: "Add Company")
-        tracker.send(GAIDictionaryBuilder.createAppView().build())
+        if logAnalytics {
+            let tracker = GAI.sharedInstance().defaultTracker
+            tracker.set(kGAIScreenName, value: "Add Company")
+            tracker.send(GAIDictionaryBuilder.createAppView().build())
+        }
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
