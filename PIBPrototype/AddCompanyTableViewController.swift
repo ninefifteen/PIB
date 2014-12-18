@@ -122,11 +122,24 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         // Add selected company to Core Data.
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         companyToAdd = searchResultsCompanies[indexPath.row]
+        if let companyName = companyToAdd?.name {
+            sendAddedCompanyNameToGoogleAnalytics(companyName)
+        }
         insertNewCompany(companyToAdd!)
     }
     
     
     // MARK: - General Class Methods
+    
+    func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
+        
+        if logAnalytics {
+            let tracker = GAI.sharedInstance().defaultTracker
+            //tracker.set(kGAIScreenName, value: "Add Company")
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
+            //tracker.set(kGAIScreenName, value: nil)
+        }
+    }
     
     func insertNewCompany(newCompany: Company) {
         
