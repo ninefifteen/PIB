@@ -726,7 +726,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/shawnseals/GitRepositories/Scoutly/PIB/PIBPrototype,
+					/Users/shawnseals/GitRepositories/Scoutly/PIB/PIB,
 					"$(PROJECT_DIR)/PIB",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -745,7 +745,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/Users/shawnseals/GitRepositories/Scoutly/PIB/PIBPrototype,
+					/Users/shawnseals/GitRepositories/Scoutly/PIB/PIB,
 					"$(PROJECT_DIR)/PIB",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
