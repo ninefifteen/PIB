@@ -10,6 +10,8 @@
 		450DFF9619F05DD00030B5B1 /* libCorePlot-CocoaTouch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9519F05DD00030B5B1 /* libCorePlot-CocoaTouch.a */; };
 		450DFF9819F05E4E0030B5B1 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9719F05E4E0030B5B1 /* Accelerate.framework */; };
 		450DFF9A19F05E540030B5B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 450DFF9919F05E540030B5B1 /* QuartzCore.framework */; };
+		451CCF1C1A42587800BBE125 /* libAdIdAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 451CCF1B1A42587800BBE125 /* libAdIdAccess.a */; };
+		451CCF1E1A42594200BBE125 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 451CCF1D1A42594200BBE125 /* AdSupport.framework */; };
 		4522FCCB1A0D6C0900A0049C /* NDHpple.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCC81A0D6C0900A0049C /* NDHpple.swift */; };
 		4522FCCC1A0D6C0900A0049C /* NDHppleElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCC91A0D6C0900A0049C /* NDHppleElement.swift */; };
 		4522FCCD1A0D6C0900A0049C /* XPathQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4522FCCA1A0D6C0900A0049C /* XPathQuery.swift */; };
@@ -131,6 +133,8 @@
 		450DFF9719F05E4E0030B5B1 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		450DFF9919F05E540030B5B1 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		450DFF9B19F05EAE0030B5B1 /* PIBPrototype-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PIBPrototype-Bridging-Header.h"; sourceTree = "<group>"; };
+		451CCF1B1A42587800BBE125 /* libAdIdAccess.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdIdAccess.a; sourceTree = "<group>"; };
+		451CCF1D1A42594200BBE125 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		4522FCC81A0D6C0900A0049C /* NDHpple.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NDHpple.swift; sourceTree = "<group>"; };
 		4522FCC91A0D6C0900A0049C /* NDHppleElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NDHppleElement.swift; sourceTree = "<group>"; };
 		4522FCCA1A0D6C0900A0049C /* XPathQuery.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XPathQuery.swift; sourceTree = "<group>"; };
@@ -179,6 +183,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				451CCF1E1A42594200BBE125 /* AdSupport.framework in Frameworks */,
+				451CCF1C1A42587800BBE125 /* libAdIdAccess.a in Frameworks */,
 				45BD12E11A4094190099BE69 /* libsqlite3.dylib in Frameworks */,
 				45BD12DF1A40922F0099BE69 /* libGoogleAnalyticsServices.a in Frameworks */,
 				45BD12D01A4090590099BE69 /* libz.dylib in Frameworks */,
@@ -203,6 +209,8 @@
 		450DFF4419F05D9D0030B5B1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				451CCF1D1A42594200BBE125 /* AdSupport.framework */,
+				451CCF1B1A42587800BBE125 /* libAdIdAccess.a */,
 				45BD12E01A4094190099BE69 /* libsqlite3.dylib */,
 				45BD12DE1A40922F0099BE69 /* libGoogleAnalyticsServices.a */,
 				45BD12CF1A4090590099BE69 /* libz.dylib */,

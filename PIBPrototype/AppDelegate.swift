@@ -34,6 +34,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             let tracker = GAI.sharedInstance().trackerWithTrackingId("UA-35969227-1")
             let version = NSBundle.mainBundle().objectForInfoDictionaryKey(kCFBundleVersionKey) as String
             tracker.set(kGAIAppVersion, value: version)
+            tracker.allowIDFACollection = true
         }
         
         let splitViewController = self.window!.rootViewController as UISplitViewController
