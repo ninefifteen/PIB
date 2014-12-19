@@ -85,10 +85,9 @@ class WebServicesManagerAPI: NSObject {
     func downloadGoogleSummaryForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
-        
-        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange)
+        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
         let url = NSURL(string: googleSummaryUrlString)
-        //println(url!)
+        println("Google Finance Summary URL: \(url!)")
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
@@ -132,9 +131,9 @@ class WebServicesManagerAPI: NSObject {
         
         incrementNetworkActivityCount()
         
-        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchange)
+        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
         let url = NSURL(string: googleFinancialMetricsUrlString)
-        //println(url!)
+        println("Google Finance Financials URL: \(url!)")
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
