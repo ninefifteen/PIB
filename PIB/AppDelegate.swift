@@ -26,6 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
+        let defaults = NSUserDefaults.standardUserDefaults()
+        if defaults.objectForKey("firstRun") == nil {
+            defaults.setObject("true", forKey: "firstRun")
+        }
+        
         if logAnalytics {
             GAI.sharedInstance().trackUncaughtExceptions = true
             GAI.sharedInstance().logger.logLevel = GAILogLevel.Verbose
