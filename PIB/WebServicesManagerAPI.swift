@@ -46,7 +46,7 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadCompaniesMatchingSearchTerm rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
@@ -252,22 +252,27 @@ class WebServicesManagerAPI: NSObject {
         
         for (index: String, subJson: JSON) in json {
             
-            var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
-            
-            if let exch = subJson["exch"].string {
-                company.exchange = exch
+            if let type = subJson["type"].string {
+                if type == "S" {
+                    
+                    var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+                    
+                    if let exch = subJson["exch"].string {
+                        company.exchange = exch
+                    }
+                    if let exchDisp = subJson["exchDisp"].string {
+                        company.exchangeDisplayName = exchDisp
+                    }
+                    if let name = subJson["name"].string {
+                        company.name = name
+                    }
+                    if let tickerSymbol = subJson["symbol"].string {
+                        company.tickerSymbol = tickerSymbol
+                    }
+                    
+                    companies.append(company)
+                }
             }
-            if let exchDisp = subJson["exchDisp"].string {
-                company.exchangeDisplayName = exchDisp
-            }
-            if let name = subJson["name"].string {
-                company.name = name
-            }
-            if let tickerSymbol = subJson["symbol"].string {
-                company.tickerSymbol = tickerSymbol
-            }
-            
-            companies.append(company)
         }
         
         return companies
