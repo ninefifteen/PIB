@@ -125,7 +125,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         if let companyName = companyToAdd?.name {
             sendAddedCompanyNameToGoogleAnalytics(companyName)
         }
-        insertNewCompany(companyToAdd!)
+        performSegueWithIdentifier("unwindFromAddCompany", sender: self)
     }
     
     

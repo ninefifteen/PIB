@@ -9,13 +9,19 @@
 import UIKit
 import CoreData
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, WebServicesMangerAPIDelegate {
     
     
     // MARK: - Properties
     
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext!
+    
+    lazy var webServicesManagerAPI: WebServicesManagerAPI = {
+        let webServicesManagerAPI = WebServicesManagerAPI()
+        webServicesManagerAPI.managedObjectContext = self.managedObjectContext
+        return webServicesManagerAPI
+    }()
     
     
     // MARK: - View Life Cycle
@@ -54,6 +60,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
+    override func viewWillAppear(animated: Bool) {
+        
+        super.viewWillAppear(animated)
+        if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
+            if firstRunValueString == "true" {
+                webServicesManagerAPI.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
+                    if success {
+                        self.loadSampleCompaniesForFirstRun()
+                    }
+                })
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -87,7 +107,149 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
-        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+        if let companyToAdd = controller.companyToAdd? {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+            insertNewCompany(companyToAdd)
+        } else {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
+    
+    // MARK: - General Class Methods
+    
+    func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
+        
+        if logAnalytics {
+            let tracker = GAI.sharedInstance().defaultTracker
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
+        }
+    }
+    
+    func insertNewCompany(newCompany: Company) {
+        
+        var hud = MBProgressHUD(view: navigationController?.view)
+        navigationController?.view.addSubview(hud)
+        //hud.delegate = self
+        hud.labelText = "Loading"
+        hud.show(true)
+        
+        if !persistentStorageContainsCompany(newCompany) {
+            
+            // Create new company managed object.
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+            
+            // Set attributes.
+            company.name = newCompany.name
+            company.exchange = newCompany.exchange
+            company.exchangeDisplayName = newCompany.exchangeDisplayName
+            company.tickerSymbol = newCompany.tickerSymbol
+            company.street = ""
+            company.city = ""
+            company.state = ""
+            company.zipCode = ""
+            company.country = ""
+            company.companyDescription = ""
+            company.webLink = ""
+            company.currencySymbol = ""
+            //company.currencyCode = ""
+            company.employeeCount = 0
+            
+            let companyName = newCompany.name   // Used for error message in the event financial data is not found.
+            
+            // Download fundamentals for newly added company.
+            var scrapeSuccessful: Bool = false
+            webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+                scrapeSuccessful = success
+                self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                    if scrapeSuccessful { scrapeSuccessful = success }
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        if !scrapeSuccessful {
+                            self.managedObjectContext.deleteObject(company)
+                        }
+                        // Save the context.
+                        var error: NSError? = nil
+                        if !self.managedObjectContext.save(&error) {
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                        hud.hide(true)
+                        hud.removeFromSuperview()
+                        if !scrapeSuccessful {
+                            self.showCompanyDataNotFoundAlert(companyName)
+                        }
+                    })
+                })
+            })
+        } else {
+            hud.hide(true)
+            hud.removeFromSuperview()
+        }
+    }
+    
+    func persistentStorageContainsCompany(company: Company) -> Bool {
+        
+        let fetchRequest = NSFetchRequest()
+        // Edit the entity name as appropriate.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entity
+        
+        let predicate = NSPredicate(format: "name == %@ AND exchange == %@", company.name, company.exchange)
+        fetchRequest.predicate = predicate
+        
+        var error: NSError? = nil
+        let result: [AnyObject]? = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: &error)
+        
+        return result!.count == 0 ? false : true
+    }
+    
+    func showCompanyDataNotFoundAlert(companyName: String) {
+        let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+        alert.addAction(action)
+        presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func loadSampleCompaniesForFirstRun() {
+        
+        let sampleCompaniesDictionaryArray = [
+            ["name": "Apple Inc.", "exchange": "NMS", "exchangeDisplayName": "NASDAQ", "symbol": "AAPL"],
+            ["name": "salesforce.com, inc", "exchange": "NYQ", "exchangeDisplayName": "NYSE", "symbol": "CRM"],
+            ["name": "Google Inc.", "exchange": "NMS", "exchangeDisplayName": "NASDAQ", "symbol": "GOOG"],
+            ["name": "Workday, Inc.", "exchange": "NYQ", "exchangeDisplayName": "NYSE", "symbol": "WDAY"],
+            ["name": "NetSuite Inc.", "exchange": "NYQ", "exchangeDisplayName": "NYSE", "symbol": "N"]
+        ]
+        
+        let sampleCompanies = companiesFromDictionaryArray(sampleCompaniesDictionaryArray)
+        
+        for sampleCompany in sampleCompanies {
+            insertNewCompany(sampleCompany)
+        }
+        
+        NSUserDefaults.standardUserDefaults().setObject("false", forKey: "firstRun")
+    }
+    
+    func companiesFromDictionaryArray(sampleCompaniesDictionaryArray: Array<Dictionary<String, String>>) -> [Company] {
+        
+        var companies = [Company]()
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        
+        for companyDictionary in sampleCompaniesDictionaryArray {
+            
+            var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+            
+            company.name = companyDictionary["name"]!
+            company.exchange = companyDictionary["exchange"]!
+            company.exchangeDisplayName = companyDictionary["exchangeDisplayName"]!
+            company.tickerSymbol = companyDictionary["symbol"]!
+            
+            companies.append(company)
+        }
+        
+        return companies
     }
     
     
@@ -277,6 +439,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     self.tableView.reloadData()
     }
     */
+    
+    
+    // MARK: - Web Services Manager API Delegate
+    
+    func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
+        presentViewController(alert, animated: true, completion: nil)
+    }
     
 }
 

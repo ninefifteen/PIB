@@ -82,6 +82,43 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
+    func checkConnectionToGoogleFinanceWithCompletion(completion: ((success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        let url = NSURL(string: "http://www.google.com/finance")
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            if error == nil {
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                        if completion != nil {
+                            completion!(success: true)
+                        }
+                    })
+                    
+                } else {
+                    println("http://www.google.com/finance HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(success: false)
+                    }
+                }
+            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
+                println("http://www.google.com/finance Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        dataTask.resume()
+    }
+    
     func downloadGoogleSummaryForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
