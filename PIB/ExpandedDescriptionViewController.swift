@@ -17,6 +17,11 @@ class ExpandedDescriptionViewController: UIViewController {
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
     
+    @IBOutlet weak var revenueLabel: UILabel!
+    @IBOutlet weak var employeeCountLabel: UILabel!
+    @IBOutlet weak var profitMarginLabel: UILabel!
+    @IBOutlet weak var marketCapLabel: UILabel!
+    
     var company: Company!
     
     
@@ -63,6 +68,16 @@ class ExpandedDescriptionViewController: UIViewController {
             if company.companyDescription != "" {
                 descriptionTextView.text = company.companyDescription
             }
+            
+            if company.employeeCount > 0 {
+                employeeCountLabel.text = PIBHelper.pibStandardStyleValueStringFromDoubleValue(company.employeeCount.doubleValue)
+            } else {
+                employeeCountLabel.text = "-"
+            }
+            
+            revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+            profitMarginLabel.text = profitMarginLabelStringForCompany(company)
+            marketCapLabel.text = company.currencySymbol + marketCapLabelStringForCompany(company)
         }
     }
     
@@ -76,6 +91,102 @@ class ExpandedDescriptionViewController: UIViewController {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
             self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
         })
+    }
+    
+    
+    // MARK: - Helper Methods
+    
+    func revenueLabelStringForCompany(company: Company) -> String {
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Revenue" {
+                totalRevenueArray.append(financialMetric)
+            }
+        }
+        
+        totalRevenueArray.sort({ $0.year < $1.year })
+        
+        if totalRevenueArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
+        } else {
+            return "-"
+        }
+    }
+    
+    func ebitdaLabelStringForCompany(company: Company) -> String {
+        
+        var ebitdaArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "EBITDA" {
+                ebitdaArray.append(financialMetric)
+            }
+        }
+        
+        ebitdaArray.sort({ $0.year < $1.year })
+        
+        if ebitdaArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
+        } else {
+            return "-"
+        }
+    }
+    
+    func ebitdaMarginLabelStringForCompany(company: Company) -> String {
+        
+        var ebitdaMarginArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "EBITDA Margin" {
+                ebitdaMarginArray.append(financialMetric)
+            }
+        }
+        
+        ebitdaMarginArray.sort({ $0.year < $1.year })
+        
+        if ebitdaMarginArray.count > 0 {
+            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
+        } else {
+            return "-"
+        }
+    }
+    
+    func profitMarginLabelStringForCompany(company: Company) -> String {
+        
+        var profitMarginArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Profit Margin" {
+                profitMarginArray.append(financialMetric)
+            }
+        }
+        
+        profitMarginArray.sort({ $0.year < $1.year })
+        
+        if profitMarginArray.count > 0 {
+            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))
+        } else {
+            return "-"
+        }
+    }
+    
+    func marketCapLabelStringForCompany(company: Company) -> String {
+        
+        var marketCapArray = Array<FinancialMetric>()
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Market Cap" {
+                marketCapArray.append(financialMetric)
+            }
+        }
+        
+        if marketCapArray.count > 0 {
+            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(marketCapArray.last!.value))
+        } else {
+            return "-"
+        }
     }
     
 
