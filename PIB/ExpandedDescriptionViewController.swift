@@ -29,7 +29,7 @@ class ExpandedDescriptionViewController: UIViewController {
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.set(kGAIScreenName, value: "Expanded Description")
+            tracker.set(kGAIScreenName, value: GoogleAnalytics.kExpandedDescriptionScreenName)
             tracker.send(GAIDictionaryBuilder.createAppView().build())
         }
         

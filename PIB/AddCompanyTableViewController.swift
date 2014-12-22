@@ -26,7 +26,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.set(kGAIScreenName, value: "Add Company")
+            tracker.set(kGAIScreenName, value: GoogleAnalytics.kAddCompanyScreenName)
             tracker.send(GAIDictionaryBuilder.createAppView().build())
         }
 
@@ -102,7 +102,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
 
         if searchResultsCompanies.count > 0 {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier("companyCell", forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewCompanyCell, forIndexPath: indexPath) as UITableViewCell
             let company = searchResultsCompanies[indexPath.row]
             cell.textLabel!.text = company.name
             cell.detailTextLabel!.text = company.exchange
@@ -110,7 +110,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             
         } else {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier("noResultsCell", forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewNoResultsCell, forIndexPath: indexPath) as UITableViewCell
             return cell
         }
     }
@@ -125,7 +125,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         if let companyName = companyToAdd?.name {
             sendAddedCompanyNameToGoogleAnalytics(companyName)
         }
-        performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+        performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
     }
     
     
@@ -135,9 +135,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            //tracker.set(kGAIScreenName, value: "Add Company")
             tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
-            //tracker.set(kGAIScreenName, value: nil)
         }
     }
     
@@ -194,7 +192,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
                         hud.hide(true)
                         hud.removeFromSuperview()
                         if scrapeSuccessful {
-                            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+                            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
                         } else {
                             self.showCompanyDataNotFoundAlert(companyName)
                         }
@@ -204,7 +202,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             
         } else {
             
-            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
         }
     }
     
@@ -228,7 +226,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
         let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
         let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (action) -> Void in
-            self.performSegueWithIdentifier("unwindFromAddCompany", sender: self)
+            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
         }
         alert.addAction(action)
         presentViewController(alert, animated: true, completion: nil)

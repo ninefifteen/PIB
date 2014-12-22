@@ -20,7 +20,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         UINavigationBar.appearance().barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
         UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent
-        //UIView.appearance().tintColor = UIColor.whiteColor()
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
@@ -36,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             GAI.sharedInstance().logger.logLevel = GAILogLevel.Verbose
             GAI.sharedInstance().dispatchInterval = 10
             GAI.sharedInstance().dryRun = false
-            let tracker = GAI.sharedInstance().trackerWithTrackingId("UA-35969227-1")
+            let tracker = GAI.sharedInstance().trackerWithTrackingId(GoogleAnalytics.kTrackerId)
             let version = NSBundle.mainBundle().objectForInfoDictionaryKey(kCFBundleVersionKey) as String
             tracker.set(kGAIAppVersion, value: version)
             tracker.allowIDFACollection = true

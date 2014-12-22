@@ -22,6 +22,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         webServicesManagerAPI.managedObjectContext = self.managedObjectContext
         return webServicesManagerAPI
     }()
+
+    let masterViewTitle = "Companies"
     
     
     // MARK: - View Life Cycle
@@ -42,15 +44,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.set(kGAIScreenName, value: "Master")
+            tracker.set(kGAIScreenName, value: GoogleAnalytics.kMasterScreenName)
             let builder = GAIDictionaryBuilder.createScreenView()
             builder.set("start", forKey: kGAISessionControl)
-            tracker.set(kGAIScreenName, value: "Master")
+            tracker.set(kGAIScreenName, value: GoogleAnalytics.kMasterScreenName)
             tracker.send(builder.build())
         }
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
-        title = "Companies"
+        title = masterViewTitle
         let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButtonItem
         
@@ -84,7 +86,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        if segue.identifier == "showDetail" {
+        if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
             if let indexPath = self.tableView.indexPathForSelectedRow() {
                 let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
@@ -95,7 +97,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 controller.navigationItem.leftItemsSupplementBackButton = true
             }
             
-        } else if segue.identifier == "addCompany" {
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
             
             let navigationController = segue.destinationViewController as UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
@@ -121,7 +123,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
+            tracker.send(GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build())
         }
     }
     
@@ -265,7 +267,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("CellA", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
     }

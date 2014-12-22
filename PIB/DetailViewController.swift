@@ -50,7 +50,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.set(kGAIScreenName, value: "Detail")
+            tracker.set(kGAIScreenName, value: GoogleAnalytics.kDetailScreenName)
             tracker.send(GAIDictionaryBuilder.createAppView().build())
         }
         
@@ -396,14 +396,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        if segue.identifier == "embedGraph" {
+        if segue.identifier == MainStoryboard.SegueIdentifiers.kEmbedGraph {
             determineGraphsToBeDisplayed()
             graphPageViewController = segue.destinationViewController as GraphPageViewController
             graphPageViewController.company = company
             graphPageViewController.pageIndices = pageIndices
             graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self
-        } else if segue.identifier == "showExpandedDescription" {
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowExpandedDescription {
             let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
             expandedDescriptionViewController.company = company
         }
