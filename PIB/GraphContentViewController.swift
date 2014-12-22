@@ -38,13 +38,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
     var yAxisRange: Double = 0.0
-    let numberOfYAxisIntervals: Double = 4.0
     
     var y2AxisMin: Double = 0.0
     var y2AxisMax: Double = 0.0
     var y2AxisInterval: Double = 0.0
     var y2AxisRange: Double = 0.0
-    let numberOfY2AxisIntervals: Double = 4.0
     var requiredMajorIntervalsBelowZero: Int = 0
     
     var xAxisLabels = Array<String>()
@@ -62,10 +60,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var y2AxisCustomTickLocations = Array<Double>()
     var yMajorGridLineStyle = CPTMutableLineStyle()
     var barLineStyle = CPTMutableLineStyle()
-    
-    let xAxisLabelColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
-    let yAxisLabelColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
-    let y2AxisLabelColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
     
     let xAxisLabelTextStyle = CPTMutableTextStyle()
     let yAxisLabelTextStyle = CPTMutableTextStyle()
@@ -254,26 +248,25 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func configureTextStyles() {
         
-        xAxisLabelTextStyle.color = xAxisLabelColor
-        xAxisLabelTextStyle.fontSize = 14.0
+        xAxisLabelTextStyle.color = GraphContent.Color.kXAxisLabelColor
+        xAxisLabelTextStyle.fontSize = GraphContent.Font.Size.kXAxisLabelFontSize
         
-        yAxisLabelTextStyle.color = yAxisLabelColor
-        yAxisLabelTextStyle.fontSize = 14.0
+        yAxisLabelTextStyle.color = GraphContent.Color.kYAxisLabelColor
+        yAxisLabelTextStyle.fontSize = GraphContent.Font.Size.kYAxisLabelFontSize
         
-        y2AxisLabelTextStyle.color = y2AxisLabelColor
-        y2AxisLabelTextStyle.fontSize = 14.0
+        y2AxisLabelTextStyle.color = GraphContent.Color.kYAxisLabelColor
+        y2AxisLabelTextStyle.fontSize = GraphContent.Font.Size.kYAxisLabelFontSize
         y2AxisLabelTextStyle.textAlignment = CPTTextAlignment.Left
         
         legendTextStyle.color = CPTColor.darkGrayColor()
-        legendTextStyle.fontSize = 12.0
+        legendTextStyle.fontSize = GraphContent.Font.Size.kLegendFontSize
         
         annotationTextStyle.color = CPTColor.grayColor()
-        annotationTextStyle.fontSize = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
+        annotationTextStyle.fontSize = GraphContent.Font.Size.kAnnotationFontSize
         
-        //titleTextStyle.color = CPTColor(componentRed: 120.0/255.0, green: 120.0/255.0, blue: 120.0/255.0, alpha: 1.0)
         titleTextStyle.fontName = "Helvetica-Bold"
-        titleTextStyle.color = yAxisLabelColor
-        titleTextStyle.fontSize = 15.0
+        titleTextStyle.color = GraphContent.Color.kYAxisLabelColor
+        titleTextStyle.fontSize = GraphContent.Font.Size.kTitleFontSize
     }
     
     func legendForGraph() -> CPTLegend {
@@ -372,14 +365,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels
         
         // Create y-axis custom tick locations.
-        for index in 0...Int(numberOfYAxisIntervals) {
+        for index in 0...Int(GraphContent.Axis.Y.kNumberOfIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
         }
         
         // Create y-axis major tick line style.
         yMajorGridLineStyle.lineWidth = 1.0
-        yMajorGridLineStyle.lineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
+        yMajorGridLineStyle.lineColor = GraphContent.Color.kGridLineColor
         yMajorGridLineStyle.dashPattern = [2.0, 2.0]
         
         y = axisSet.yAxis
@@ -456,14 +449,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels
         
         // Create y-axis custom tick locations.
-        for index in 0...Int(numberOfYAxisIntervals) {
+        for index in 0...Int(GraphContent.Axis.Y.kNumberOfIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
         }
         
         // Create y-axis major tick line style.
         yMajorGridLineStyle.lineWidth = 1.0
-        yMajorGridLineStyle.lineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
+        yMajorGridLineStyle.lineColor = GraphContent.Color.kGridLineColor
         yMajorGridLineStyle.dashPattern = [2.0, 2.0]
         
         y = axisSet.yAxis
@@ -560,7 +553,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let revenueBarPlot = CPTBarPlot()
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
-        revenueBarPlot.fill = CPTFill(color: CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0))
+        revenueBarPlot.fill = CPTFill(color: GraphContent.Color.kRevenuePlotColor)
         revenueBarPlot.barWidth = 0.60
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = 0.50
@@ -575,7 +568,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         if isDataForProfitMarginPlot {
             
             // Profit Margin line plot.
-            let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            let profitMarginPlotColor = GraphContent.Color.kProfitMarginPlotColor
             
             let profitMarginPlotLineStyle = CPTMutableLineStyle()
             profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -594,7 +587,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
             //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-            plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             plotSymbol.lineStyle = symbolLineStyle
             plotSymbol.size = scatterPlotSymbolSize
             profitMarginLinePlot.plotSymbol = plotSymbol
@@ -621,7 +614,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForRevenueGrowthPlot {
             
-            let revenueGrowthPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+            let revenueGrowthPlotColor = GraphContent.Color.kRevenuePlotColor
             
             let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
             revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -639,7 +632,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthSymbolLineStyle.lineColor = revenueGrowthPlotColor
             revenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            revenueGrowthPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             revenueGrowthPlotSymbol.lineStyle = revenueGrowthSymbolLineStyle
             revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
             revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
@@ -650,7 +643,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForProfitMarginPlot {
             
-            let profitMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            let profitMarginPlotColor = GraphContent.Color.kProfitMarginPlotColor
             
             let profitMarginPlotLineStyle = CPTMutableLineStyle()
             profitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -668,7 +661,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             profitMarginSymbolLineStyle.lineColor = profitMarginPlotColor
             profitMarginSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let profitMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            profitMarginPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+            profitMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             profitMarginPlotSymbol.lineStyle = profitMarginSymbolLineStyle
             profitMarginPlotSymbol.size = scatterPlotSymbolSize
             profitMarginPlot.plotSymbol = profitMarginPlotSymbol
@@ -690,7 +683,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("Gross Margin")
         
-        let grossMarginPlotColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+        let grossMarginPlotColor = GraphContent.Color.kGrossMarginPlotColor
         
         let grossMarginPlotLineStyle = CPTMutableLineStyle()
         grossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -708,7 +701,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = grossMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let grossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        grossMarginPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         grossMarginPlotSymbol.lineStyle = symbolLineStyle
         grossMarginPlotSymbol.size = scatterPlotSymbolSize
         grossMarginPlot.plotSymbol = grossMarginPlotSymbol
@@ -729,11 +722,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("R & D")
         
-        let raAndDLinePlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        let rAndDLinePlotColor = GraphContent.Color.kRAndDPlotColor
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
         rAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
-        rAndDLinePlotLineStyle.lineColor = raAndDLinePlotColor
+        rAndDLinePlotLineStyle.lineColor = rAndDLinePlotColor
         
         let rAndDLinePlot = CPTScatterPlot()
         rAndDLinePlot.delegate = self
@@ -744,10 +737,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         rAndDLinePlot.identifier = "R&D"
         
         let symbolLineStyle = CPTMutableLineStyle()
-        symbolLineStyle.lineColor = raAndDLinePlotColor
+        symbolLineStyle.lineColor = rAndDLinePlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
         rAndDLinePlot.plotSymbol = plotSymbol
@@ -768,7 +761,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("SG & A")
         
-        let sgAndAPlotColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+        let sgAndAPlotColor = GraphContent.Color.kSgAndAPlotColor
         
         let sgAndAPlotLineStyle = CPTMutableLineStyle()
         sgAndAPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -786,7 +779,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = sgAndAPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let sgAndAPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        sgAndAPlotSymbol.fill = CPTFill(color: CPTColor.whiteColor())
+        sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         sgAndAPlotSymbol.lineStyle = symbolLineStyle
         sgAndAPlotSymbol.size = scatterPlotSymbolSize
         sgAndAPlot.plotSymbol = sgAndAPlotSymbol
@@ -841,7 +834,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var range: Double = yAxisMaximum - yAxisMinimum
         
-        var interval: Double = range / numberOfYAxisIntervals
+        var interval: Double = range / GraphContent.Axis.Y.kNumberOfIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
         if minY < 0.0 {
@@ -850,12 +843,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = intervalMultiple * interval
         }
         
-        maxY = minY + numberOfYAxisIntervals * interval
+        maxY = minY + GraphContent.Axis.Y.kNumberOfIntervals * interval
         
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
-        yAxisRange = numberOfYAxisIntervals * interval
+        yAxisRange = GraphContent.Axis.Y.kNumberOfIntervals * interval
         
         let minimumValueRangePercentage = (minimumValue + abs(yAxisMin)) / yAxisRange
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
@@ -882,7 +875,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = minY < maxY * 0.10 ? -0.001 : 0.0
         }
         
-        maxY += ((maxY - minY) / (numberOfYAxisIntervals * 2)) // Add room for labels.
+        maxY += ((maxY - minY) / (GraphContent.Axis.Y.kNumberOfIntervals * 2)) // Add room for labels.
         
         // Compensate for plot symbols near zero being partially cut off.
         let adjustZoneMax = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 3.0 : 1.0
@@ -890,7 +883,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(adjustedPercentageMinimumValue)
         
         if percentageIntervalsBelowZero == 1 && minY >= 0 {
-            minY = -((maxY - minY) / (numberOfYAxisIntervals * 2))
+            minY = -((maxY - minY) / (GraphContent.Axis.Y.kNumberOfIntervals * 2))
         } else if percentageIntervalsBelowZero == 2 {
             if maxY >= fabs(minY) {
                 minY = -fabs(maxY)
@@ -912,7 +905,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             range = (maxY - minY) * 1.05
         }
         
-        var interval: Double = range / numberOfYAxisIntervals
+        var interval: Double = range / GraphContent.Axis.Y.kNumberOfIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
         if minY < 0.0 {
@@ -921,11 +914,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = intervalMultiple * interval
         }
         
-        maxY = minY + numberOfYAxisIntervals * interval
+        maxY = minY + GraphContent.Axis.Y.kNumberOfIntervals * interval
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
-        yAxisRange = numberOfYAxisIntervals * interval
+        yAxisRange = GraphContent.Axis.Y.kNumberOfIntervals * interval
         
         // Calculate Y2 axis.
         if minY + interval * 3.0 <= 0.0 {
