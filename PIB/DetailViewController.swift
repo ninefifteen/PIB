@@ -161,7 +161,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             if company.employeeCount > 0 {
                 employeeCountLabel.text = PIBHelper.pibStandardStyleValueStringFromDoubleValue(company.employeeCount.doubleValue)
             } else {
-                employeeCountLabel.text = "NA"
+                employeeCountLabel.text = "-"
             }
             
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
@@ -261,7 +261,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
         } else {
-            return "NA"
+            return "-"
         }
     }
     
@@ -280,7 +280,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         if ebitdaArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
         } else {
-            return "NA"
+            return "-"
         }
     }
     
@@ -299,7 +299,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         if ebitdaMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
         } else {
-            return "NA"
+            return "-"
         }
     }
     
@@ -318,7 +318,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         if profitMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))
         } else {
-            return "NA"
+            return "-"
         }
     }
     
@@ -335,7 +335,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         if marketCapArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(marketCapArray.last!.value))
         } else {
-            return "NA"
+            return "-"
         }
     }
     

@@ -333,7 +333,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
         } else {
-            return "* NA *"
+            return "-"
         }
     }
     
@@ -352,7 +352,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if ebitdaMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
         } else {
-            return "* NA *"
+            return "-"
         }
     }
     
