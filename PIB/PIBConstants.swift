@@ -30,12 +30,6 @@ struct MainStoryboard {
 
 struct GraphContent {
     
-    struct Axis {
-        struct Y {
-            static let kNumberOfIntervals: Double = 4.0
-        }
-    }
-    
     struct Color {
         
         // Base CPTColors used in Graphs.

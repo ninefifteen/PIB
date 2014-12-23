@@ -38,6 +38,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
     var yAxisRange: Double = 0.0
+    var yAxisIntervals: Double = 4.0
     
     var y2AxisMin: Double = 0.0
     var y2AxisMax: Double = 0.0
@@ -79,6 +80,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var plots = Array<CPTPlot>()
     
     var plotLabelState: Int = 0 // 0: All plots labeled, 1: First plot labeled, 2: Second plot labeled, 3: No plots labeled.
+    
+    let showYAxis: Bool = false
     
     
     // MARK: - View Life Cycle
@@ -311,16 +314,20 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.paddingTop = 5.0
         graph.paddingBottom = 0.0
         
-        if pageIdentifier == "Revenue" {
-            graph.plotAreaFrame.paddingLeft = 54.0
-        } else {
-            if yAxisMin <= -1000.0 {
-                graph.plotAreaFrame.paddingLeft = 70.0
-            } else if yAxisMax >= 1000.0 {
-                graph.plotAreaFrame.paddingLeft = 64.0
-            } else {
+        if showYAxis {
+            if pageIdentifier == "Revenue" {
                 graph.plotAreaFrame.paddingLeft = 54.0
+            } else {
+                if yAxisMin <= -1000.0 {
+                    graph.plotAreaFrame.paddingLeft = 70.0
+                } else if yAxisMax >= 1000.0 {
+                    graph.plotAreaFrame.paddingLeft = 64.0
+                } else {
+                    graph.plotAreaFrame.paddingLeft = 54.0
+                }
             }
+        } else {
+            graph.plotAreaFrame.paddingLeft = 10.0
         }
         graph.plotAreaFrame.paddingTop = 36.0
         graph.plotAreaFrame.paddingRight = 10.0
@@ -365,7 +372,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels
         
         // Create y-axis custom tick locations.
-        for index in 0...Int(GraphContent.Axis.Y.kNumberOfIntervals) {
+        for index in 0...Int(yAxisIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
         }
@@ -390,21 +397,23 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y.labelTextStyle = yAxisLabelTextStyle
         
         // Custom Y Axis Labels
-        for (index, value) in enumerate(yAxisCustomTickLocations) {
-            var label: String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
-            yAxisLabels.append(label)
+        if showYAxis {
+            for (index, value) in enumerate(yAxisCustomTickLocations) {
+                var label: String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+                yAxisLabels.append(label)
+            }
+            
+            var yLabelLocation = 0
+            let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
+            for tickLocation in yAxisCustomTickLocations {
+                let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
+                newLabel.tickLocation = tickLocation
+                newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
+                yAxisCustomLabels.addObject(newLabel)
+            }
+            
+            y.axisLabels = yAxisCustomLabels
         }
-        
-        var yLabelLocation = 0
-        let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
-        for tickLocation in yAxisCustomTickLocations {
-            let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
-            newLabel.tickLocation = tickLocation
-            newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
-            yAxisCustomLabels.addObject(newLabel)
-        }
-        
-        y.axisLabels = yAxisCustomLabels
         
         // Create bar line style.
         barLineStyle.lineWidth = 1.0
@@ -449,7 +458,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels
         
         // Create y-axis custom tick locations.
-        for index in 0...Int(GraphContent.Axis.Y.kNumberOfIntervals) {
+        for index in 0...Int(yAxisIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
         }
@@ -474,22 +483,23 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y.labelTextStyle = yAxisLabelTextStyle
         
         // Custom Y Axis Labels
-        for (index, value) in enumerate(yAxisCustomTickLocations) {
-            var label:String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value)) + "%"
-            yAxisLabels.append(label)
+        if showYAxis {
+            for (index, value) in enumerate(yAxisCustomTickLocations) {
+                var label:String = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value)) + "%"
+                yAxisLabels.append(label)
+            }
+            
+            var yLabelLocation = 0
+            let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
+            for tickLocation in yAxisCustomTickLocations {
+                let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
+                newLabel.tickLocation = tickLocation
+                newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
+                yAxisCustomLabels.addObject(newLabel)
+            }
+            
+            y.axisLabels = yAxisCustomLabels
         }
-        
-        var yLabelLocation = 0
-        let yAxisCustomLabels = NSMutableSet(capacity: yAxisLabels.count)
-        for tickLocation in yAxisCustomTickLocations {
-            let newLabel = CPTAxisLabel(text: yAxisLabels[yLabelLocation++], textStyle: y.labelTextStyle)
-            newLabel.tickLocation = tickLocation
-            newLabel.offset = y.labelOffset + y.majorTickLength - 6.0
-            yAxisCustomLabels.addObject(newLabel)
-        }
-        
-        y.axisLabels = yAxisCustomLabels
-        
     }
     
     func configureRevenueIncomeMarginGraph() {
@@ -503,7 +513,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         if isDataForProfitMarginPlot {
             
             // Change right padding for 2nd Y Axis labels.
-            graph.plotAreaFrame.paddingRight = 46.0
+            if showYAxis { graph.plotAreaFrame.paddingRight = 46.0 }
             
             // Add 2nd plot space to graph for scatter plot.
             plotSpace2 = CPTXYPlotSpace()
@@ -526,21 +536,23 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             y2.tickDirection = CPTSign.Positive
             
             // Custom Labels for 2nd Y Axis.
-            for (index, value) in enumerate(y2AxisCustomTickLocations) {
-                var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
-                y2AxisLabels.append(label)
+            if showYAxis {
+                for (index, value) in enumerate(y2AxisCustomTickLocations) {
+                    var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
+                    y2AxisLabels.append(label)
+                }
+                
+                var y2LabelLocation = 0
+                let y2AxisCustomLabels = NSMutableSet(capacity: y2AxisLabels.count)
+                for tickLocation in y2AxisCustomTickLocations {
+                    let newLabel = CPTAxisLabel(text: y2AxisLabels[y2LabelLocation++], textStyle: y2.labelTextStyle)
+                    newLabel.tickLocation = tickLocation
+                    newLabel.offset = y2.labelOffset + y2.majorTickLength - 6.0
+                    newLabel.alignment = CPTAlignment.Left
+                    y2AxisCustomLabels.addObject(newLabel)
+                }
+                y2.axisLabels = y2AxisCustomLabels
             }
-            
-            var y2LabelLocation = 0
-            let y2AxisCustomLabels = NSMutableSet(capacity: y2AxisLabels.count)
-            for tickLocation in y2AxisCustomTickLocations {
-                let newLabel = CPTAxisLabel(text: y2AxisLabels[y2LabelLocation++], textStyle: y2.labelTextStyle)
-                newLabel.tickLocation = tickLocation
-                newLabel.offset = y2.labelOffset + y2.majorTickLength - 6.0
-                newLabel.alignment = CPTAlignment.Left
-                y2AxisCustomLabels.addObject(newLabel)
-            }
-            y2.axisLabels = y2AxisCustomLabels
             
             graph.axisSet.axes = [x, y2, y]
             
@@ -834,7 +846,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var range: Double = yAxisMaximum - yAxisMinimum
         
-        var interval: Double = range / GraphContent.Axis.Y.kNumberOfIntervals
+        var interval: Double = range / yAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
         if minY < 0.0 {
@@ -843,12 +855,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = intervalMultiple * interval
         }
         
-        maxY = minY + GraphContent.Axis.Y.kNumberOfIntervals * interval
+        maxY = minY + yAxisIntervals * interval
         
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
-        yAxisRange = GraphContent.Axis.Y.kNumberOfIntervals * interval
+        yAxisRange = yAxisIntervals * interval
         
         let minimumValueRangePercentage = (minimumValue + abs(yAxisMin)) / yAxisRange
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
@@ -875,7 +887,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = minY < maxY * 0.10 ? -0.001 : 0.0
         }
         
-        maxY += ((maxY - minY) / (GraphContent.Axis.Y.kNumberOfIntervals * 2)) // Add room for labels.
+        maxY += ((maxY - minY) / (yAxisIntervals * 2)) // Add room for labels.
         
         // Compensate for plot symbols near zero being partially cut off.
         let adjustZoneMax = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 3.0 : 1.0
@@ -883,7 +895,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(adjustedPercentageMinimumValue)
         
         if percentageIntervalsBelowZero == 1 && minY >= 0 {
-            minY = -((maxY - minY) / (GraphContent.Axis.Y.kNumberOfIntervals * 2))
+            minY = -((maxY - minY) / (yAxisIntervals * 2))
         } else if percentageIntervalsBelowZero == 2 {
             if maxY >= fabs(minY) {
                 minY = -fabs(maxY)
@@ -905,7 +917,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             range = (maxY - minY) * 1.05
         }
         
-        var interval: Double = range / GraphContent.Axis.Y.kNumberOfIntervals
+        var interval: Double = range / yAxisIntervals
         interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
         
         if minY < 0.0 {
@@ -914,11 +926,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             minY = intervalMultiple * interval
         }
         
-        maxY = minY + GraphContent.Axis.Y.kNumberOfIntervals * interval
+        maxY = minY + yAxisIntervals * interval
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
-        yAxisRange = GraphContent.Axis.Y.kNumberOfIntervals * interval
+        yAxisRange = yAxisIntervals * interval
         
         // Calculate Y2 axis.
         if minY + interval * 3.0 <= 0.0 {
