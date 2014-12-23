@@ -331,7 +331,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         graph.plotAreaFrame.paddingTop = 36.0
         graph.plotAreaFrame.paddingRight = 10.0
-        graph.plotAreaFrame.paddingBottom = 60.0
+        graph.plotAreaFrame.paddingBottom = 64.0
     }
     
     func configureBaseBarGraph() {

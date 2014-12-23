@@ -56,9 +56,9 @@ struct GraphContent {
         
         struct Size {
             
-            static let kXAxisLabelFontSize: CGFloat = 14.0
+            static let kXAxisLabelFontSize: CGFloat = 18.0
             static let kYAxisLabelFontSize: CGFloat = 14.0
-            static let kLegendFontSize: CGFloat = 12.0
+            static let kLegendFontSize: CGFloat = 16.0
             static let kAnnotationFontSize: CGFloat = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
             static let kTitleFontSize: CGFloat = 15.0
         }
