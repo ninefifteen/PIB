@@ -284,10 +284,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         legend.textStyle = legendTextStyle
         legend.rowMargin = 10.0
         legend.numberOfRows = 1
-        legend.paddingLeft = 8.0
-        legend.paddingTop = 8.0
-        legend.paddingRight = 8.0
-        legend.paddingBottom = 8.0
+        legend.paddingLeft = 4.0
+        legend.paddingTop = 4.0
+        legend.paddingRight = 4.0
+        legend.paddingBottom = 4.0
         
         return legend
     }
@@ -331,7 +331,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         } else {
             graph.plotAreaFrame.paddingLeft = 10.0
         }
-        graph.plotAreaFrame.paddingTop = 36.0
+        graph.plotAreaFrame.paddingTop = 34.0
         graph.plotAreaFrame.paddingRight = 10.0
         graph.plotAreaFrame.paddingBottom = 64.0
     }
@@ -868,7 +868,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
         
         let minimumAcceptableRangePercentage = 0.05
-        let maximumAcceptableRangePercentage = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95
+        let maximumAcceptableRangePercentage = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.87 : 0.95
         
         if minimumValueRangePercentage < minimumAcceptableRangePercentage && maximumValueRangePercentage > maximumAcceptableRangePercentage {
             calculateYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum - 0.05 * yAxisRange, initialYAxisMaximum: yAxisMaximum + 0.05 * yAxisRange)
