@@ -38,7 +38,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var yAxisMax: Double = 0.0
     var yAxisInterval: Double = 0.0
     var yAxisRange: Double = 0.0
-    var yAxisIntervals: Double = 4.0
+    var yAxisIntervals: Double = 0.0
     
     var y2AxisMin: Double = 0.0
     var y2AxisMax: Double = 0.0
@@ -94,6 +94,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         singleTapGestureRecognizer.requireGestureRecognizerToFail(doubleTapGestureRecognizer)
         
+        yAxisIntervals = showYAxis ? 4.0 : 8.0
+        
         configureTextStyles()
         
         switch pageIdentifier {
@@ -122,7 +124,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
             var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, percentageDataMinimumValue: minPercentageValue)
+            calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
             
@@ -152,7 +154,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
             var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
             
@@ -177,7 +179,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             numberOfDataPointPerPlot = grossMarginArray.count
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
             
@@ -202,7 +204,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
             var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
             
@@ -227,7 +229,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             var minValue = minimumValueInFinancialMetricArray(rAndDArray)
             var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
             
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: 0.0, initialYAxisMaximum: maxValue)
             
             xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
             
@@ -839,7 +841,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return Double(shifted)/magnitude
     }
     
-    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double, initialYAxisMinimum yAxisMinimum: Double, initialYAxisMaximum yAxisMaximum: Double) {
+    func calculateYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double, initialYAxisMinimum yAxisMinimum: Double, initialYAxisMaximum yAxisMaximum: Double) {
         
         var minY: Double = yAxisMinimum
         var maxY: Double = yAxisMaximum
@@ -869,120 +871,58 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let maximumAcceptableRangePercentage = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95
         
         if minimumValueRangePercentage < minimumAcceptableRangePercentage && maximumValueRangePercentage > maximumAcceptableRangePercentage {
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum - 0.05 * yAxisRange, initialYAxisMaximum: yAxisMaximum + 0.05 * yAxisRange)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum - 0.05 * yAxisRange, initialYAxisMaximum: yAxisMaximum + 0.05 * yAxisRange)
         } else if minimumValueRangePercentage < minimumAcceptableRangePercentage {
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum - 0.05 * yAxisRange, initialYAxisMaximum: yAxisMaximum)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum - 0.05 * yAxisRange, initialYAxisMaximum: yAxisMaximum)
         } else if maximumValueRangePercentage > maximumAcceptableRangePercentage {
-            calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum, initialYAxisMaximum: yAxisMaximum + 0.05 * yAxisRange)
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue, dataMaximumValue: maximumValue, initialYAxisMinimum: yAxisMinimum, initialYAxisMaximum: yAxisMaximum + 0.05 * yAxisRange)
         }
     }
     
-    func calculateyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double, percentageDataMinimumValue percentageMinimumValue: Double) {
+    func calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue: Double, initialRevenueYAxisMinimum yAxisMinimum: Double, initialRevenueYAxisMaximum yAxisMaximum: Double, profitMarginMinimumPercentageValue profitMarginMinimumValue: Double) {
         
-        var minY: Double = minimumValue
-        var maxY: Double = maximumValue
+        var minY: Double = yAxisMinimum
+        var maxY: Double = yAxisMaximum
         
-        // Compensate for curved interpolation line possibly going below zero.
-        if minY >= 0.0 {
-            minY = minY < maxY * 0.10 ? -0.001 : 0.0
-        }
-        
-        maxY += ((maxY - minY) / (yAxisIntervals * 2)) // Add room for labels.
-        
-        // Compensate for plot symbols near zero being partially cut off.
-        let adjustZoneMax = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 3.0 : 1.0
-        let adjustedPercentageMinimumValue = percentageMinimumValue < adjustZoneMax && percentageMinimumValue >= 0.0 ? -0.001 : percentageMinimumValue
-        let percentageIntervalsBelowZero = calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(adjustedPercentageMinimumValue)
-        
-        if percentageIntervalsBelowZero == 1 && minY >= 0 {
-            minY = -((maxY - minY) / (yAxisIntervals * 2))
-        } else if percentageIntervalsBelowZero == 2 {
-            if maxY >= fabs(minY) {
-                minY = -fabs(maxY)
-            } else {
-                maxY = fabs(minY)
-            }
-        } else if percentageIntervalsBelowZero == 3 {
-            if maxY >= fabs(minY) {
-                minY = -fabs(maxY) * 3.0
-            } else {
-                maxY = fabs(minY) * 3.0
-            }
-        }
-        
-        var range: Double = 0.0
-        if minY < 0.0 {
-            range = (maxY - minY) * 1.40
-        } else {
-            range = (maxY - minY) * 1.05
-        }
+        var range: Double = yAxisMaximum - yAxisMinimum
         
         var interval: Double = range / yAxisIntervals
-        interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 2)
+        interval = multipleOfFiveCeilNumber(interval, toSignificantFigures: 3)
         
-        if minY < 0.0 {
-            var intervalMultiple = (minY * 1.05) / interval
-            intervalMultiple = floor(intervalMultiple)
-            minY = intervalMultiple * interval
+        if yAxisMinimum >= 0.0 {
+            maxY = yAxisIntervals * interval
+        } else {
+            let intervalsBelowZero = abs(floor(minY / interval))
+            let intervalsAboveZero = yAxisIntervals - intervalsBelowZero
+            minY = -(intervalsBelowZero * interval)
+            maxY = intervalsAboveZero * interval
         }
         
-        maxY = minY + yAxisIntervals * interval
         yAxisMin = minY
         yAxisMax = maxY
         yAxisInterval = interval
         yAxisRange = yAxisIntervals * interval
         
-        // Calculate Y2 axis.
-        if minY + interval * 3.0 <= 0.0 {
-            y2AxisCustomTickLocations = [-300.0, -200.0, -100.0, 0.0, 100.0]
-            y2AxisMin = -300.0
-            y2AxisMax = 100.0
-            y2AxisInterval = 100.0
-        } else if minY + interval * 2.0 <= 0.0 {
-            y2AxisCustomTickLocations = [-100.0, -50.0, 0.0, 50.0, 100.0]
-            y2AxisMin = -100.0
-            y2AxisMax = 100.0
-            y2AxisInterval = 50.0
-        } else if minY + interval <= 0.0 {
-            y2AxisCustomTickLocations = [-33.333, 0.0, 33.333, 66.666, 99.999]
-            y2AxisMin = -33.333
-            y2AxisMax = 100.0
-            y2AxisInterval = 33.333
-        } else {
-            y2AxisCustomTickLocations = [0.0, 25.0, 50.0, 75.0, 100.0]
-            y2AxisMin = 0.0
-            y2AxisMax = 100.0
-            y2AxisInterval = 25.0
-        }
+        y2AxisMax = 100.0
+        y2AxisMin = (yAxisMin / yAxisMax) * 100.0
         y2AxisRange = y2AxisMax - y2AxisMin
+        y2AxisInterval = y2AxisRange / yAxisIntervals
+        
+        let minimumValueRangePercentage = (profitMarginMinimumValue + abs(y2AxisMin)) / y2AxisRange
+        let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
+        
+        let minimumValueRangePercentageLowerLimit = 0.05
+        let minimumValueRangePercentageUpperLimit = 0.30
+        let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95
+        let maximumRangePercentageLowerLimit = 0.75
+        
+        if maximumValueRangePercentage > maximumRangePercentageUpperLimit {
+            calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue, initialRevenueYAxisMinimum: yAxisMinimum, initialRevenueYAxisMaximum: yAxisMaximum + 0.02 * yAxisRange, profitMarginMinimumPercentageValue: profitMarginMinimumValue)
+        } else if minimumValueRangePercentage < minimumValueRangePercentageLowerLimit {
+            calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue, initialRevenueYAxisMinimum: yAxisMinimum - 0.02 * yAxisRange, initialRevenueYAxisMaximum: yAxisMaximum, profitMarginMinimumPercentageValue: profitMarginMinimumValue)
+        }
     }
     
-    func calculateyPercentageOnlyYAxisMinMaxAndIntervalForDataMinimumValue(minimumValue: Double, dataMaximumValue maximumValue: Double) {
-        
-        // Calculate Y2 axis.
-        if minimumValue < -100.0 {
-            yAxisCustomTickLocations = [-300.0, -200.0, -100.0, 0.0, 100.0]
-            yAxisMin = -300.0
-            yAxisMax = 100.0
-            yAxisInterval = 100.0
-        } else if minimumValue < -100.0 / 3.0 {
-            yAxisCustomTickLocations = [-100.0, -50.0, 0.0, 50.0, 100.0]
-            yAxisMin = -100.0
-            yAxisMax = 100.0
-            yAxisInterval = 50.0
-        } else if minimumValue < 0.0 {
-            yAxisCustomTickLocations = [-33.333, 0.0, 33.333, 66.666, 99.999]
-            yAxisMin = -33.333
-            yAxisMax = 100.0
-            yAxisInterval = 33.333
-        } else {
-            yAxisCustomTickLocations = [0.0, 25.0, 50.0, 75.0, 100.0]
-            yAxisMin = 0.0
-            yAxisMax = 100.0
-            yAxisInterval = 25.0
-        }
-        yAxisRange = yAxisMax - yAxisMin
-    }
     
     func minimumOrZeroValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
         
@@ -1024,18 +964,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return maximumValue
     }
     
-    func calculateRequiredMajorIntervalsBelowZeroForMinimumPercentage(minPercentage: Double) -> Int {
-        
-        if minPercentage < -100.0 {
-            return 3
-        } else if minPercentage < -100.0 / 3.0 {
-            return 2
-        } else if minPercentage < 0.0 {
-            return 1
-        } else {
-            return 0
-        }
-    }
     
     func xAxisLabelsForFinancialMetrics(financialMetrics: Array<FinancialMetric>) -> Array<String> {
         
