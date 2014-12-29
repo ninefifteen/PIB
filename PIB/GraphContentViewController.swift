@@ -345,7 +345,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
-        //plotSpace.delegate = self
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -433,7 +432,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
-        //plotSpace.delegate = self
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -527,7 +525,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             graph.addPlotSpace(plotSpace2)
             plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
             plotSpace2.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
-            //plotSpace2.delegate = self
             
             // Configure 2nd Y Axis for scatter plot.
             y2.coordinate = CPTCoordinate.Y
