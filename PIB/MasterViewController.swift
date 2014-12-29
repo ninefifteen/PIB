@@ -11,6 +11,26 @@ import CoreData
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, WebServicesMangerAPIDelegate {
     
+    // MARK: - Types
+    
+    struct MainStoryboard {
+        
+        struct SegueIdentifiers {
+            static let kAddCompany = "addCompany"
+            static let kShowDetail = "showDetail"
+        }
+        
+        struct TableViewCellIdentifiers {
+            static let kMasterViewTableCell = "masterViewCell"
+        }
+    }
+    
+    struct GoogleAnalytics {
+        static let kMasterScreenName = "Master"
+        static let kEventCategoryUserAction = "User Action"
+        static let kEventActionAddCompany = "Add Company"
+    }
+    
     
     // MARK: - Properties
     

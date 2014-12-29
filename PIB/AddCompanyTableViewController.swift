@@ -11,6 +11,24 @@ import CoreData
 
 class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate, WebServicesMangerAPIDelegate {
     
+    // MARK: - Types
+    
+    struct MainStoryboard {
+        
+        struct SegueIdentifiers {
+            static let kUnwindFromAddCompany = "unwindFromAddCompany"
+        }
+        
+        struct TableViewCellIdentifiers {
+            static let kAddCompanyViewCompanyCell = "companyCell"
+            static let kAddCompanyViewNoResultsCell = "noResultsCell"
+        }
+    }
+    
+    struct GoogleAnalytics {
+        static let kAddCompanyScreenName = "Add Company"
+    }
+    
     // MARK: - Properties
     
     let webServicesManagerAPI = WebServicesManagerAPI()

@@ -13,6 +13,10 @@ let logAnalytics: Bool = false
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
+    
+    struct GoogleAnalytics {
+        static let kTrackerId = "UA-35969227-1"
+    }
 
     var window: UIWindow?
     
