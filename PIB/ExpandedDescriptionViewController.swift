@@ -11,6 +11,13 @@ import UIKit
 class ExpandedDescriptionViewController: UIViewController {
     
     
+    // MARK: - Types
+    
+    struct GoogleAnalytics {
+        static let kExpandedDescriptionScreenName = "Expanded Description"
+    }
+    
+    
     // MARK: - Properties
     
     @IBOutlet weak var nameLabel: UILabel!

@@ -12,6 +12,20 @@ import CoreData
 class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     
     
+    // MARK: - Types
+    
+    struct MainStoryboard {
+        struct SegueIdentifiers {
+            static let kShowExpandedDescription = "showExpandedDescription"
+            static let kEmbedGraph = "embedGraph"
+        }
+    }
+    
+    struct GoogleAnalytics {
+        static let kDetailScreenName = "Detail"
+    }
+    
+    
     // MARK: - Properties
     
     @IBOutlet weak var nameView: UIView!

@@ -10,6 +10,53 @@ import UIKit
 
 class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate, CPTPlotAreaDelegate, CPTPlotSpaceDelegate, CPTAxisDelegate {
 
+    
+    // MARK: - Types
+    
+    struct GraphContent {
+        
+        struct Axis {
+            struct Y {
+                static let kNumberOfIntervals: Double = 4.0
+            }
+        }
+        
+        struct Color {
+            
+            // Base CPTColors used in Graphs.
+            private static let kRedColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
+            private static let kDarkGreenColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
+            private static let kTealColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
+            private static let kMagentaColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            
+            static let kGridLineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
+            
+            static let kXAxisLabelColor = kDarkGreenColor
+            static let kYAxisLabelColor = kRedColor
+            
+            static let kRevenuePlotColor = kTealColor
+            static let kProfitMarginPlotColor = kMagentaColor
+            static let kGrossMarginPlotColor = kMagentaColor
+            static let kRAndDPlotColor = kTealColor
+            static let kSgAndAPlotColor = kTealColor
+            
+            static let kPlotSymbolFillColor = CPTColor.whiteColor()
+        }
+        
+        struct Font {
+            
+            struct Size {
+                
+                static let kXAxisLabelFontSize: CGFloat = 14.0
+                static let kYAxisLabelFontSize: CGFloat = 14.0
+                static let kLegendFontSize: CGFloat = 12.0
+                static let kAnnotationFontSize: CGFloat = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
+                static let kTitleFontSize: CGFloat = 15.0
+            }
+        }
+    }
+    
+    
     // MARK: - Properties
     
     @IBOutlet weak var graphView: CPTGraphHostingView!

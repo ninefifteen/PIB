@@ -38,7 +38,6 @@
 		45126A061A435D56005A01CC /* ExpandedDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */; };
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
-		45D4D6FE1A488E9600941F92 /* PIBConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D4D6FD1A488E9600941F92 /* PIBConstants.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -178,7 +177,6 @@
 		45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandedDescriptionViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
-		45D4D6FD1A488E9600941F92 /* PIBConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PIBConstants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,7 +250,6 @@
 				451269481A433020005A01CC /* Info.plist */,
 				451269821A433497005A01CC /* PIB-Bridging-Header.h */,
 				451269FD1A435BF0005A01CC /* PIBHelper.swift */,
-				45D4D6FD1A488E9600941F92 /* PIBConstants.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -579,7 +576,6 @@
 				451269FC1A435A77005A01CC /* Company.swift in Sources */,
 				451269781A433277005A01CC /* SwiftyJSON.swift in Sources */,
 				4512697E1A43340A005A01CC /* XPathQuery.swift in Sources */,
-				45D4D6FE1A488E9600941F92 /* PIBConstants.swift in Sources */,
 				45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */,
 				451269511A433020005A01CC /* DetailViewController.swift in Sources */,
 			);
