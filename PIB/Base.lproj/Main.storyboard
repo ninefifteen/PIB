@@ -386,11 +386,13 @@
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="kgk-1P-coj" appends="YES" id="ZaZ-wO-1fe"/>
                             <outletCollection property="gestureRecognizers" destination="c41-LJ-Tnt" appends="YES" id="IfR-yj-zZ5"/>
+                            <outletCollection property="gestureRecognizers" destination="G0x-he-0eB" appends="YES" id="vhf-cg-tA8"/>
                         </connections>
                     </view>
                     <connections>
                         <outlet property="doubleTapGestureRecognizer" destination="kgk-1P-coj" id="DK9-fb-YwI"/>
                         <outlet property="graphView" destination="Juc-q4-TcI" id="oI5-qi-jXB"/>
+                        <outlet property="longPressGestureRecognizer" destination="G0x-he-0eB" id="oX7-L7-gDS"/>
                         <outlet property="singleTapGestureRecognizer" destination="c41-LJ-Tnt" id="tKH-ny-JQu"/>
                     </connections>
                 </viewController>
@@ -405,6 +407,11 @@
                         <action selector="handleDoubleTapGesture:" destination="YRn-km-u7G" id="cMV-Fg-gK9"/>
                     </connections>
                 </tapGestureRecognizer>
+                <pongPressGestureRecognizer enabled="NO" allowableMovement="10" minimumPressDuration="0.5" id="G0x-he-0eB">
+                    <connections>
+                        <action selector="handleLongPressGestureRecognizer:" destination="YRn-km-u7G" id="Whe-6Z-MG1"/>
+                    </connections>
+                </pongPressGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1488" y="890"/>
         </scene>

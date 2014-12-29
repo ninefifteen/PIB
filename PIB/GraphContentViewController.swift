@@ -8,7 +8,7 @@
 
 import UIKit
 
-class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate, CPTPlotAreaDelegate {
+class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate, CPTPlotAreaDelegate, CPTPlotSpaceDelegate, CPTAxisDelegate {
 
     // MARK: - Properties
     
@@ -16,6 +16,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     @IBOutlet weak var singleTapGestureRecognizer: UITapGestureRecognizer!
     @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
+    @IBOutlet var longPressGestureRecognizer: UILongPressGestureRecognizer!
     
     var company: Company!
     
@@ -344,6 +345,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
+        //plotSpace.delegate = self
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -356,6 +358,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //x.title = "X Axis"
         //x.titleLocation = 1.5
         //x.titleOffset = 35
+        x.delegate = self
         
         // Custom X-axis labels.
         x.labelingPolicy = .None
@@ -430,6 +433,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
+        //plotSpace.delegate = self
         
         axisSet = graph.axisSet as CPTXYAxisSet
         
@@ -442,6 +446,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //x.title = "X Axis"
         //x.titleLocation = 1.5
         //x.titleOffset = 35
+        x.delegate = self
         
         // Custom X-axis labels.
         x.labelingPolicy = .None
@@ -522,6 +527,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             graph.addPlotSpace(plotSpace2)
             plotSpace2.yRange = CPTPlotRange(location: y2AxisMin, length: y2AxisRange)
             plotSpace2.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
+            //plotSpace2.delegate = self
             
             // Configure 2nd Y Axis for scatter plot.
             y2.coordinate = CPTCoordinate.Y
@@ -1137,53 +1143,83 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
 
     // MARK: - CPTBarPlotDelegate
     
-    func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt) {
+    
+    func barPlot(plot: CPTBarPlot!, barTouchDownAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
         
-        /*var removedAnnotation: Bool = false
+        println("barPlot(_:barTouchDownAtRecordIndex:withEvent:)")
+        //println("barTouchDown UIEvent: \(event)\n")
+    }
+    
+    func barPlot(plot: CPTBarPlot!, barTouchUpAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
         
+        println("barPlot(_:barTouchUpAtRecordIndex:withEvent:)")
+        //println("barTouchUp UIEvent: \(event)\n")
+    }
+    
+    func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
+        
+        
+        println("barPlot(_:barWasSelectedAtRecordIndex:withEvent:)")
         let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
-        
-        for annotation in graph.plotAreaFrame.plotArea.annotations {
-            if let annotationAnchorPlotPoint = annotation.anchorPlotPoint as? [NSNumber] {
-                if annotationAnchorPlotPoint[0] == x && annotationAnchorPlotPoint[1] == y {
-                    graph.plotAreaFrame.plotArea.removeAnnotation(annotation as CPTAnnotation)
-                    removedAnnotation = true
-                }
-            }
-        }
-        
-        if !removedAnnotation {
-            
-            addAnnotationsToBarPlot(plot, atSelectedRecordIndex: idx)
-        }*/
+        //println("index: \(idx), value: \(value)")
+        //println("barPlot UIEvent: \(event)\n")
     }
     
     
     // MARK: - CPTScatterPlotDelegate
     
-    func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt) {
+    func scatterPlot(plot: CPTScatterPlot!, plotSymbolTouchDownAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
         
-        /*var removedAnnotation: Bool = false
+        println("scatterPlot(_:plotSymbolTouchDownAtRecordIndex:withEvent:)")
+        //println("plotSymbolTouchDown UIEvent: \(event)\n")
+    }
+    
+    func scatterPlot(plot: CPTScatterPlot!, plotSymbolTouchUpAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
         
+        println("scatterPlot(_:plotSymbolTouchUpAtRecordIndex:withEvent:)")
+        //println("plotSymbolTouchUp UIEvent: \(event)\n")
+    }
+    
+    func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
+        
+        println("scatterPlot(_:plotSymbolWasSelectedAtRecordIndex:withEvent:)")
         let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        for annotation in graph.plotAreaFrame.plotArea.annotations {
-            if let annotationAnchorPlotPoint = annotation.anchorPlotPoint as? [NSNumber] {
-                if annotationAnchorPlotPoint[0] == x && annotationAnchorPlotPoint[1] == y {
-                    graph.plotAreaFrame.plotArea.removeAnnotation(annotation as CPTAnnotation)
-                    removedAnnotation = true
-                }
-            }
-        }
+        //println("index: \(idx), value: \(value)")
+        //println("scatterPlot UIEvent: \(event)\n")
+    }
+    
+    
+    // MARK: - CPTAxisDelegate
+    
+    func axis(axis: CPTAxis!, labelWasSelected label: CPTAxisLabel!, withEvent event: UIEvent!) {
         
-        if !removedAnnotation {
-            
-            addAnnotationsToScatterPlot(plot, atSelectedRecordIndex: idx)
-        }*/
+        println("axis(_:labelWasSelected:withEvent:)")
+    }
+    
+    
+    // MARK: - CPTPlotSpaceDelegate
+    
+    func plotSpace(space: CPTPlotSpace!, shouldHandlePointingDeviceDownEvent event: UIEvent!, atPoint point: CGPoint) -> Bool {
+        
+        println("plotSpace(_:shouldHandlePointingDeviceDownEvent:atPoint:)")
+        return false
+    }
+    
+    func plotSpace(space: CPTPlotSpace!, shouldHandlePointingDeviceDraggedEvent event: UIEvent!, atPoint point: CGPoint) -> Bool {
+        
+        //println("plotSpace(_:shouldHandlePointingDeviceDraggedEvent:atPoint:)")
+        return false
+    }
+    
+    func plotSpace(space: CPTPlotSpace!, shouldHandlePointingDeviceUpEvent event: UIEvent!, atPoint point: CGPoint) -> Bool {
+        
+        println("plotSpace(_:shouldHandlePointingDeviceUpEvent:atPoint:)")
+        return false
     }
     
     
@@ -1191,6 +1227,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     @IBAction func handleSingleTapGesture(recognizer: UITapGestureRecognizer) {
         
+        println("handleSingleTapGesture")
         if plots.count == 1 {
             plotLabelState = plotLabelState == 0 ? 3 : 0
         } else {
@@ -1216,8 +1253,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     @IBAction func handleDoubleTapGesture(recognizer: UITapGestureRecognizer) {
         
+        println("handleDoubleTapGesture")
         plotLabelState = plotLabelState == 0 ? 3 : 0
         addRemoveAnnotationsAllPlots()
+    }
+    
+    @IBAction func handleLongPressGestureRecognizer(recognizer: UILongPressGestureRecognizer) {
+        
+        println("handleLongPressGestureRecognizer")
     }
     
     
