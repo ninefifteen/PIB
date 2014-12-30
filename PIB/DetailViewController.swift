@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class DetailViewController: UIViewController, UIPageViewControllerDelegate {
+class DetailViewController: UIViewController, UIPageViewControllerDelegate, GraphContentViewControllerDelegate {
     
     
     // MARK: - Types
@@ -34,8 +34,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
+    @IBOutlet weak var valueView: UIView!
+    @IBOutlet weak var valueViewLabel: UILabel!
     
-    @IBOutlet weak var descriptionViewHeightContraint: NSLayoutConstraint!
+    @IBOutlet weak var descriptionViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -88,7 +91,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
         
         super.viewWillLayoutSubviews()
         
-        if descriptionViewHeightContraint.constant > 0 && company != nil {
+        if descriptionViewHeightConstraint.constant > 0 && company != nil {
             
             let fullDescription: String = company.companyDescription
             let fullDescriptionCharacterCount = countElements(fullDescription)
@@ -114,7 +117,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             let orientation = UIApplication.sharedApplication().statusBarOrientation
             
             descriptionView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
-            descriptionViewHeightContraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
+            descriptionViewHeightConstraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
             view.layoutIfNeeded()
             
             pageControl.hidden = false
@@ -299,6 +302,15 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
     }
     
     
+    // MARK: - GraphContentViewControllerDelegate
+    
+    func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String) {
+        
+        println("\nuserSelectedGraphPointOfType(_:forYear:withValue:)")
+        println("type: \(type), year: \(year), value: \(value)\n")
+    }
+    
+    
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -310,6 +322,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate {
             graphPageViewController.pageIndices = pageIndices
             graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self
+            graphPageViewController.graphContentViewControllerDelegate = self
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowExpandedDescription {
             let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
             expandedDescriptionViewController.company = company

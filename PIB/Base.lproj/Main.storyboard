@@ -328,15 +328,40 @@
                                     <action selector="pageControlValueChanged:" destination="QDx-Jf-XX2" eventType="valueChanged" id="RMD-kj-791"/>
                                 </connections>
                             </pageControl>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kL8-DU-Dxt">
+                                <rect key="frame" x="0.0" y="64" width="600" height="136"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YearValueLabel" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMZ-2S-vqe">
+                                        <rect key="frame" x="194" y="48" width="213" height="39"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                        <color key="textColor" red="0.14117647058823529" green="0.61568627450980395" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wMZ-2S-vqe" secondAttribute="trailing" constant="8" id="2Ik-Q9-P2X"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="wMZ-2S-vqe" secondAttribute="bottom" constant="8" id="3x0-nS-lch"/>
+                                    <constraint firstItem="wMZ-2S-vqe" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kL8-DU-Dxt" secondAttribute="leading" constant="8" id="TUt-QT-m8I"/>
+                                    <constraint firstAttribute="centerY" secondItem="wMZ-2S-vqe" secondAttribute="centerY" id="aT1-2Q-Orl"/>
+                                    <constraint firstAttribute="height" constant="136" id="cOG-qv-e80"/>
+                                    <constraint firstAttribute="centerX" secondItem="wMZ-2S-vqe" secondAttribute="centerX" id="l1g-nT-liC"/>
+                                    <constraint firstItem="wMZ-2S-vqe" firstAttribute="top" relation="greaterThanOrEqual" secondItem="kL8-DU-Dxt" secondAttribute="top" constant="8" id="ltP-8S-kQO"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="mug-A5-joV" firstAttribute="top" secondItem="84L-Ze-ivB" secondAttribute="bottom" id="847-s4-bfB"/>
                             <constraint firstAttribute="trailing" secondItem="tqM-Rp-xFw" secondAttribute="trailing" id="FJE-cK-FRF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="kL8-DU-Dxt" secondAttribute="trailing" constant="-16" id="Fp3-aB-ikE"/>
                             <constraint firstItem="tqM-Rp-xFw" firstAttribute="leading" secondItem="hw2-SP-5du" secondAttribute="leading" id="KJ1-OP-eDe"/>
                             <constraint firstItem="bvf-tB-SnS" firstAttribute="top" secondItem="tqM-Rp-xFw" secondAttribute="bottom" id="LIs-cA-wge"/>
+                            <constraint firstItem="kL8-DU-Dxt" firstAttribute="top" secondItem="84L-Ze-ivB" secondAttribute="bottom" id="TwA-Mu-WXC"/>
                             <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="hYC-A9-3Ea" secondAttribute="bottom" id="VsD-nV-X02"/>
                             <constraint firstItem="bvf-tB-SnS" firstAttribute="top" secondItem="uEj-i2-fX0" secondAttribute="bottom" id="Y7m-8Q-lDT"/>
+                            <constraint firstItem="kL8-DU-Dxt" firstAttribute="leading" secondItem="hw2-SP-5du" secondAttribute="leadingMargin" constant="-16" id="YCO-D5-tLE"/>
+                            <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="kL8-DU-Dxt" secondAttribute="bottom" id="cZH-xP-Lv1"/>
                             <constraint firstItem="mug-A5-joV" firstAttribute="leading" secondItem="hw2-SP-5du" secondAttribute="leadingMargin" constant="-16" id="e4d-0y-5ve"/>
                             <constraint firstAttribute="trailingMargin" secondItem="hYC-A9-3Ea" secondAttribute="trailing" constant="-16" id="eSC-AG-wiD"/>
                             <constraint firstItem="hYC-A9-3Ea" firstAttribute="top" secondItem="mug-A5-joV" secondAttribute="bottom" id="qRq-yv-ekf"/>
@@ -351,11 +376,14 @@
                         <outlet property="containerView" destination="tqM-Rp-xFw" id="iTi-9S-rX4"/>
                         <outlet property="descriptionTextView" destination="J8j-l0-Mhe" id="ssY-fz-BF9"/>
                         <outlet property="descriptionView" destination="hYC-A9-3Ea" id="r8j-NV-Fow"/>
-                        <outlet property="descriptionViewHeightContraint" destination="5Df-KW-DYo" id="act-gi-sEj"/>
+                        <outlet property="descriptionViewHeightConstraint" destination="5Df-KW-DYo" id="3QP-mO-oT4"/>
                         <outlet property="locationLabel" destination="XBy-gW-Cbq" id="ZUk-22-82b"/>
                         <outlet property="nameLabel" destination="OgA-Mz-VvC" id="pUw-82-AmM"/>
                         <outlet property="nameView" destination="mug-A5-joV" id="QpL-Sq-V4X"/>
                         <outlet property="pageControl" destination="uEj-i2-fX0" id="Ios-SM-zBx"/>
+                        <outlet property="valueView" destination="kL8-DU-Dxt" id="Dnn-f3-kuf"/>
+                        <outlet property="valueViewHeightConstraint" destination="cOG-qv-e80" id="whc-Ec-K94"/>
+                        <outlet property="valueViewLabel" destination="wMZ-2S-vqe" id="Cy3-uj-TnA"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sSi-aJ-TIe" sceneMemberID="firstResponder"/>

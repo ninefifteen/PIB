@@ -16,6 +16,8 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     var pageIdentifiers = Array<String>()
     var company: Company!
     
+    weak var graphContentViewControllerDelegate: DetailViewController!
+    
     
     // MARK: - View Life Cycle
     
@@ -47,6 +49,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
             graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
             graphContentViewController.company = company
+            graphContentViewController.delegate = graphContentViewControllerDelegate
             return graphContentViewController
         } else {
             return nil

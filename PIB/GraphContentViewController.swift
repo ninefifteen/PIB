@@ -8,6 +8,12 @@
 
 import UIKit
 
+
+@objc protocol GraphContentViewControllerDelegate: class {
+    optional func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String)
+}
+
+
 class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlotDelegate, CPTScatterPlotDelegate, CPTPlotAreaDelegate {
 
     
@@ -58,6 +64,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     
     // MARK: - Properties
+    
+    weak var delegate: GraphContentViewControllerDelegate?
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
     
@@ -1189,7 +1197,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        let typeString = plot.identifier as String
+        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: String(value.stringValue))
     }
     
     
@@ -1203,7 +1213,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        let typeString = plot.identifier as String
+        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: String(value.stringValue))
     }
     
     
