@@ -125,7 +125,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewCompanyCell, forIndexPath: indexPath) as UITableViewCell
             let company = searchResultsCompanies[indexPath.row]
             cell.textLabel!.text = company.name
-            cell.detailTextLabel!.text = company.exchange
+            cell.detailTextLabel!.text = company.exchangeDisplayName
             return cell
             
         } else {
