@@ -312,9 +312,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String) {
         
-        //println("\nuserSelectedGraphPointOfType(_:forYear:withValue:)")
-        //println("type: \(type), year: \(year), value: \(value)\n")
-        
         let valueViewLabelString = year + "  " + value
         
         if valueViewLabelString == valueViewLabel.text && type == valueViewTypeLabel.text {

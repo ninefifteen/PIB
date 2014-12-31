@@ -1190,9 +1190,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     // MARK: - CPTBarPlotDelegate
     
     func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
-        
-        //println("barPlot(_:barWasSelectedAtRecordIndex:withEvent:)")
-        
+                
         let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
@@ -1207,8 +1205,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     // MARK: - CPTScatterPlotDelegate
     
     func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
-        
-        //println("scatterPlot(_:plotSymbolWasSelectedAtRecordIndex:withEvent:)")
         
         let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
