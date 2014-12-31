@@ -332,21 +332,25 @@
                                 <rect key="frame" x="0.0" y="64" width="600" height="136"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YearValueLabel" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wMZ-2S-vqe">
-                                        <rect key="frame" x="194" y="48" width="213" height="39"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="32"/>
+                                        <rect key="frame" x="167" y="60" width="266" height="48"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="40"/>
                                         <color key="textColor" red="0.14117647058823529" green="0.61568627450980395" blue="0.29019607843137252" alpha="1" colorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="TypeLabel" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gcl-2z-7vj">
+                                        <rect key="frame" x="255" y="28" width="90" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="wMZ-2S-vqe" secondAttribute="trailing" constant="8" id="2Ik-Q9-P2X"/>
-                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="wMZ-2S-vqe" secondAttribute="bottom" constant="8" id="3x0-nS-lch"/>
-                                    <constraint firstItem="wMZ-2S-vqe" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="kL8-DU-Dxt" secondAttribute="leading" constant="8" id="TUt-QT-m8I"/>
-                                    <constraint firstAttribute="centerY" secondItem="wMZ-2S-vqe" secondAttribute="centerY" id="aT1-2Q-Orl"/>
+                                    <constraint firstItem="wMZ-2S-vqe" firstAttribute="top" secondItem="Gcl-2z-7vj" secondAttribute="bottom" constant="8" id="FKL-qf-I0g"/>
+                                    <constraint firstAttribute="centerX" secondItem="wMZ-2S-vqe" secondAttribute="centerX" id="LVF-PC-wTF"/>
+                                    <constraint firstAttribute="centerY" secondItem="wMZ-2S-vqe" secondAttribute="centerY" constant="-16" id="bpW-M9-Ivz"/>
                                     <constraint firstAttribute="height" constant="136" id="cOG-qv-e80"/>
-                                    <constraint firstAttribute="centerX" secondItem="wMZ-2S-vqe" secondAttribute="centerX" id="l1g-nT-liC"/>
-                                    <constraint firstItem="wMZ-2S-vqe" firstAttribute="top" relation="greaterThanOrEqual" secondItem="kL8-DU-Dxt" secondAttribute="top" constant="8" id="ltP-8S-kQO"/>
+                                    <constraint firstAttribute="centerX" secondItem="Gcl-2z-7vj" secondAttribute="centerX" id="s4Y-ca-fK6"/>
                                 </constraints>
                             </view>
                         </subviews>
@@ -384,6 +388,7 @@
                         <outlet property="valueView" destination="kL8-DU-Dxt" id="Dnn-f3-kuf"/>
                         <outlet property="valueViewHeightConstraint" destination="cOG-qv-e80" id="whc-Ec-K94"/>
                         <outlet property="valueViewLabel" destination="wMZ-2S-vqe" id="Cy3-uj-TnA"/>
+                        <outlet property="valueViewTypeLabel" destination="Gcl-2z-7vj" id="cOK-4L-zml"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sSi-aJ-TIe" sceneMemberID="firstResponder"/>

@@ -1199,7 +1199,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as String
-        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: String(value.stringValue))
+        let valueString =  company.currencySymbol + PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(value))
+        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
@@ -1215,16 +1216,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as String
-        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: String(value.stringValue))
+        let valueString = PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(value))
+        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
     // MARK: - Gesture Recognizer Methods
-    
-    @IBAction func handleSingleTapGesture(recognizer: UITapGestureRecognizer) {
-        
-        println("handleSingleTapGesture")
-    }
     
     @IBAction func handleDoubleTapGesture(recognizer: UITapGestureRecognizer) {
         

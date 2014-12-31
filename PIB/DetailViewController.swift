@@ -35,6 +35,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var valueView: UIView!
+    @IBOutlet weak var valueViewTypeLabel: UILabel!
     @IBOutlet weak var valueViewLabel: UILabel!
     
     @IBOutlet weak var descriptionViewHeightConstraint: NSLayoutConstraint!
@@ -116,6 +117,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             
             let orientation = UIApplication.sharedApplication().statusBarOrientation
             
+            if !valueView.hidden && UIInterfaceOrientationIsLandscape(orientation) {
+                valueViewTypeLabel.text = ""
+                valueViewLabel.text = ""
+                valueView.hidden = true
+            }
             descriptionView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
             descriptionViewHeightConstraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
             view.layoutIfNeeded()
@@ -306,8 +312,20 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String) {
         
-        println("\nuserSelectedGraphPointOfType(_:forYear:withValue:)")
-        println("type: \(type), year: \(year), value: \(value)\n")
+        //println("\nuserSelectedGraphPointOfType(_:forYear:withValue:)")
+        //println("type: \(type), year: \(year), value: \(value)\n")
+        
+        let valueViewLabelString = year + "  " + value
+        
+        if valueViewLabelString == valueViewLabel.text && type == valueViewTypeLabel.text {
+            valueViewTypeLabel.text = ""
+            valueViewLabel.text = ""
+            valueView.hidden = true
+        } else {
+            valueViewTypeLabel.text = type
+            valueViewLabel.text = valueViewLabelString
+            valueView.hidden = false
+        }
     }
     
     
