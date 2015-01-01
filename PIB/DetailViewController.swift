@@ -325,6 +325,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         }
     }
     
+    @IBAction func cancelValueViewButtonPressed(sender: UIButton) {
+        valueViewTypeLabel.text = ""
+        valueViewLabel.text = ""
+        valueView.hidden = true
+    }
+    
     
     // MARK: - Segues
     

@@ -343,9 +343,26 @@
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bwp-Z5-DLI">
+                                        <rect key="frame" x="560" y="8" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="cZi-ic-xdW"/>
+                                            <constraint firstAttribute="height" constant="32" id="xc0-Na-wXY"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <state key="normal" title="✕">
+                                            <color key="titleColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="cancelValueViewButtonPressed:" destination="QDx-Jf-XX2" eventType="touchUpInside" id="AEY-wt-QPf"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Bwp-Z5-DLI" secondAttribute="trailing" constant="8" id="2xO-fo-FQz"/>
+                                    <constraint firstItem="Bwp-Z5-DLI" firstAttribute="top" secondItem="kL8-DU-Dxt" secondAttribute="top" constant="8" id="8K9-Dk-31w"/>
                                     <constraint firstItem="wMZ-2S-vqe" firstAttribute="top" secondItem="Gcl-2z-7vj" secondAttribute="bottom" constant="8" id="FKL-qf-I0g"/>
                                     <constraint firstAttribute="centerX" secondItem="wMZ-2S-vqe" secondAttribute="centerX" id="LVF-PC-wTF"/>
                                     <constraint firstAttribute="centerY" secondItem="wMZ-2S-vqe" secondAttribute="centerY" constant="-16" id="bpW-M9-Ivz"/>
