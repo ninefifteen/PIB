@@ -1030,7 +1030,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         var xAxisLabels = Array<String>()
         
         let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "MM-yyyy"
+        dateFormatter.dateFormat = "MMM yyyy"
         
         for (index, financialMetric) in enumerate(financialMetrics) {
             let label: String = dateFormatter.stringFromDate(financialMetric.date)
@@ -1206,9 +1206,16 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        //println("index: \(idx), date: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as String
-        let valueString =  company.currencySymbol + PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(value))
+        var valueString = company.currencySymbol + PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(value))
+        var revenueGrowthValueString: String = ""
+        
+        if idx > 0 {
+            let revenueGrowthValue = Double(revenueGrowthArray[idx - 1].value)
+            let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "(" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) + ")" : "(+" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) + ")"
+            valueString = valueString + " " + revenueGrowthValueString
+        }
+        
         delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
@@ -1328,7 +1335,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if idx > 0 {
             let revenueGrowthValue = Double(revenueGrowthArray[idx - 1].value)
-            let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "\n" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) : "\n+" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue)
+            let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "\n(" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) + ")" : "\n(+" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) + ")"
             let attributesRevenueGrowthValueString = [NSFontAttributeName : UIFont.systemFontOfSize(GraphContent.Font.Size.kAnnotationSubFontSize), NSForegroundColorAttributeName : UIColor.grayColor(), NSParagraphStyleAttributeName : paragraphStyle]
             attributedRevenueGrowthValueString = NSMutableAttributedString(string: revenueGrowthValueString, attributes: attributesRevenueGrowthValueString)
             attributedAnnotationString.appendAttributedString(attributedRevenueGrowthValueString)
