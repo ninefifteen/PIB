@@ -10,7 +10,7 @@ import UIKit
 
 
 @objc protocol GraphContentViewControllerDelegate: class {
-    optional func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String)
+    optional func userSelectedGraphPointOfType(type: String, forDate date: String, withValue value: String)
 }
 
 
@@ -169,9 +169,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 }
             }
             
-            totalRevenueArray.sort({ $0.year < $1.year })
-            profitMarginArray.sort({ $0.year < $1.year })
-            revenueGrowthArray.sort({ $0.year < $1.year })
+            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            revenueGrowthArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             numberOfDataPointPerPlot = totalRevenueArray.count
             
@@ -200,8 +200,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 }
             }
             
-            revenueGrowthArray.sort({ $0.year < $1.year })
-            profitMarginArray.sort({ $0.year < $1.year })
+            revenueGrowthArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
             
@@ -229,7 +229,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 }
             }
             
-            grossMarginArray.sort({ $0.year < $1.year })
+            grossMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
             var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
@@ -255,7 +255,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 }
             }
             
-            sgAndAArray.sort({ $0.year < $1.year })
+            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             numberOfDataPointPerPlot = sgAndAArray.count
             
@@ -281,7 +281,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 }
             }
             
-            rAndDArray.sort({ $0.year < $1.year })
+            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             numberOfDataPointPerPlot = rAndDArray.count
             
@@ -1029,8 +1029,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var xAxisLabels = Array<String>()
         
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "MM-yyyy"
+        
         for (index, financialMetric) in enumerate(financialMetrics) {
-            let label: String = "\(financialMetric.year)"
+            let label: String = dateFormatter.stringFromDate(financialMetric.date)
             xAxisLabels.append(label)
         }
         
@@ -1203,10 +1206,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        //println("index: \(idx), date: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as String
         let valueString =  company.currencySymbol + PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(value))
-        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: valueString)
+        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
@@ -1218,10 +1221,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        //println("index: \(idx), year: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
+        //println("index: \(idx), date: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as String
         let valueString = PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(value))
-        delegate?.userSelectedGraphPointOfType!(typeString, forYear: xAxisLabels[Int(idx)], withValue: valueString)
+        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     

@@ -310,9 +310,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - GraphContentViewControllerDelegate
     
-    func userSelectedGraphPointOfType(type: String, forYear year: String, withValue value: String) {
+    func userSelectedGraphPointOfType(type: String, forDate date: String, withValue value: String) {
         
-        let valueViewLabelString = year + "  " + value
+        let valueViewLabelString = date + "  " + value
         
         if valueViewLabelString == valueViewLabel.text && type == valueViewTypeLabel.text {
             valueViewTypeLabel.text = ""

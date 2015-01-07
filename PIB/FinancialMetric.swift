@@ -13,7 +13,6 @@ class FinancialMetric: NSManagedObject {
 
     @NSManaged var type: String
     @NSManaged var value: NSNumber
-    @NSManaged var year: NSNumber
     @NSManaged var date: NSDate
     @NSManaged var company: NSManagedObject
 

@@ -113,7 +113,7 @@ class ExpandedDescriptionViewController: UIViewController {
             }
         }
         
-        totalRevenueArray.sort({ $0.year < $1.year })
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
@@ -132,7 +132,7 @@ class ExpandedDescriptionViewController: UIViewController {
             }
         }
         
-        ebitdaArray.sort({ $0.year < $1.year })
+        ebitdaArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if ebitdaArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
@@ -151,7 +151,7 @@ class ExpandedDescriptionViewController: UIViewController {
             }
         }
         
-        ebitdaMarginArray.sort({ $0.year < $1.year })
+        ebitdaMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if ebitdaMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
@@ -170,7 +170,7 @@ class ExpandedDescriptionViewController: UIViewController {
             }
         }
         
-        profitMarginArray.sort({ $0.year < $1.year })
+        profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if profitMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))

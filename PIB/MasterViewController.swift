@@ -351,7 +351,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
         
-        totalRevenueArray.sort({ $0.year < $1.year })
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if totalRevenueArray.count > 0 {
             return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
@@ -370,7 +370,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
         
-        ebitdaMarginArray.sort({ $0.year < $1.year })
+        ebitdaMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if ebitdaMarginArray.count > 0 {
             return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
