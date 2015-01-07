@@ -57,6 +57,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 static let kYAxisLabelFontSize: CGFloat = 14.0
                 static let kLegendFontSize: CGFloat = 12.0
                 static let kAnnotationFontSize: CGFloat = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 18.0 : 13.0
+                static let kAnnotationSubFontSize: CGFloat = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? 13.0 : 11.0
                 static let kTitleFontSize: CGFloat = 15.0
             }
         }
@@ -161,6 +162,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     totalRevenueArray.append(financialMetric)
                 case "Profit Margin":
                     profitMarginArray.append(financialMetric)
+                case "Revenue Growth":
+                    revenueGrowthArray.append(financialMetric)
                 default:
                     break
                 }
@@ -168,6 +171,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             totalRevenueArray.sort({ $0.year < $1.year })
             profitMarginArray.sort({ $0.year < $1.year })
+            revenueGrowthArray.sort({ $0.year < $1.year })
             
             numberOfDataPointPerPlot = totalRevenueArray.count
             
@@ -324,6 +328,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         annotationTextStyle.color = CPTColor.grayColor()
         annotationTextStyle.fontSize = GraphContent.Font.Size.kAnnotationFontSize
+        annotationTextStyle.textAlignment = CPTTextAlignment.Center
         
         titleTextStyle.fontName = "Helvetica-Bold"
         titleTextStyle.color = GraphContent.Color.kYAxisLabelColor
@@ -968,9 +973,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
         
         let minimumValueRangePercentageLowerLimit = 0.05
-        let minimumValueRangePercentageUpperLimit = 0.30
-        let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95
-        let maximumRangePercentageLowerLimit = 0.75
+        //let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95    // Values to use for 1 line annotations.
+        let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.87 : 0.92  // Values to use for 2 line annotations.
         
         if maximumValueRangePercentage > maximumRangePercentageUpperLimit {
             calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue, initialRevenueYAxisMinimum: yAxisMinimum, initialRevenueYAxisMaximum: yAxisMaximum + 0.02 * yAxisRange, profitMarginMinimumPercentageValue: profitMarginMinimumValue)
@@ -1310,9 +1314,24 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = NSTextAlignment.Center
         
-        let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
+        let attributesRevenueValueString = [NSFontAttributeName : UIFont.systemFontOfSize(GraphContent.Font.Size.kAnnotationFontSize), NSForegroundColorAttributeName : UIColor.grayColor(), NSParagraphStyleAttributeName : paragraphStyle]
+        let revenueValueString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value))
+        var attributedAnnotationString = NSMutableAttributedString(string: revenueValueString, attributes: attributesRevenueValueString)
+        
+        var attributedRevenueGrowthValueString = NSMutableAttributedString()
+        
+        if idx > 0 {
+            let revenueGrowthValue = Double(revenueGrowthArray[idx - 1].value)
+            let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "\n" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue) : "\n+" + PIBHelper.pibPercentageStyleValueStringFromDoubleValue(revenueGrowthValue)
+            let attributesRevenueGrowthValueString = [NSFontAttributeName : UIFont.systemFontOfSize(GraphContent.Font.Size.kAnnotationSubFontSize), NSForegroundColorAttributeName : UIColor.grayColor(), NSParagraphStyleAttributeName : paragraphStyle]
+            attributedRevenueGrowthValueString = NSMutableAttributedString(string: revenueGrowthValueString, attributes: attributesRevenueGrowthValueString)
+            attributedAnnotationString.appendAttributedString(attributedRevenueGrowthValueString)
+        }
+        
+        let textLayer = CPTTextLayer(attributedText: attributedAnnotationString)
         //let textStyle = textLayer.textStyle.mutableCopy() as CPTMutableTextStyle
         //textStyle.color = CPTColor.blackColor()
         //textLayer.textStyle = textStyle
@@ -1326,7 +1345,12 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
-        newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 17.0) : CGPointMake(0.0, 13.0)
+        
+        if idx > 0 {
+            newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 24.0) : CGPointMake(0.0, 19.0)
+        } else {
+            newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 17.0) : CGPointMake(0.0, 13.0)
+        }
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
     }
@@ -1337,7 +1361,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
         let y: NSNumber = value as NSNumber
         
-        let annotationString = PIBHelper.pibGraphYAxisStyleValueStringFromDoubleValue(Double(value)) + "%"
+        let annotationString = PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(value))
         
         let textLayer = CPTTextLayer(text: annotationString, style: annotationTextStyle)
         //let textStyle = textLayer.textStyle.mutableCopy() as CPTMutableTextStyle

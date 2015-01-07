@@ -74,12 +74,31 @@ class PIBHelper: NSObject {
     
     class func pibPercentageStyleValueStringFromDoubleValue(value: Double) -> String {
         
+        var modifiedValue = value
+        var returnString = String()
+        
         let formatter = NSNumberFormatter()
         formatter.usesSignificantDigits = true
         formatter.maximumSignificantDigits = 3
         formatter.minimumSignificantDigits = 3
         formatter.roundingMode = NSNumberFormatterRoundingMode.RoundHalfUp
         
-        return formatter.stringFromNumber(value)! + "%"
+        if abs(modifiedValue) >= 1000000000000.0 {
+            modifiedValue /= 1000000000000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + "T"
+        } else if abs(modifiedValue) >= 1000000000.0 {
+            modifiedValue /= 1000000000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + "B"
+        } else if abs(modifiedValue) >= 1000000.0 {
+            modifiedValue /= 1000000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + "M"
+        } else if abs(modifiedValue) >= 1000.0 {
+            modifiedValue /= 1000.0
+            returnString = formatter.stringFromNumber(modifiedValue)! + "K"
+        } else {
+            returnString = formatter.stringFromNumber(modifiedValue)!
+        }
+        
+        return returnString + "%"
     }
 }

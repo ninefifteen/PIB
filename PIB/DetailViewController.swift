@@ -228,9 +228,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 pageIdentifiers.append("Revenue")
             }
             
-            if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
+            /*if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
                 pageIdentifiers.append("Growth")
-            }
+            }*/
             
             if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
                 pageIdentifiers.append("GrossMargin")
