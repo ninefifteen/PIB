@@ -23,7 +23,7 @@ class WebServicesManagerAPI: NSObject {
     weak var delegate: WebServicesMangerAPIDelegate?
     
     // Debugging properties.
-    var logMetricsToConsole: Bool = false
+    var logMetricsToConsole: Bool = true
     var googleSummaryUrlString = String()
     var googleFinancialMetricsUrlString = String()
     
@@ -462,6 +462,31 @@ class WebServicesManagerAPI: NSObject {
             return false
         }
         
+        // Dates for Google Finance metrics.
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        var datesArray = Array<NSDate>()
+        let datesPath = "//div[@id='incannualdiv']/table/thead/tr/th"
+        if let dates = parser.searchWithXPathQuery(datesPath) {
+            for (thIndex, tableHeading) in enumerate(dates) {
+                if thIndex > 0 {
+                    if var rawDateString: String = tableHeading.firstChild?.content {
+                        var spaceSplit = rawDateString.componentsSeparatedByString(" ")
+                        var cleanedDateString: String = spaceSplit[3].stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+                        if let date = dateFormatter.dateFromString(cleanedDateString) {
+                            datesArray.append(date)
+                        } else {
+                            println("\nUnable to read data found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                            return false
+                        }
+                    }
+                }
+            }
+        } else {
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            return false
+        }
+        
         // Metrics from Google Finance.
         let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
         if let allValues = parser.searchWithXPathQuery(valuesPath) {
@@ -497,10 +522,11 @@ class WebServicesManagerAPI: NSObject {
                             let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                             let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                             financialMetric.year = yearsArray[tdIndex - 1]
+                            financialMetric.date = datesArray[tdIndex - 1]
                             financialMetric.type = financialMetricType
                             financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier
                             financialMetrics.addObject(financialMetric)
-                            if logMetricsToConsole { println("Type: \(financialMetric.type), Year: \(financialMetric.year) Value: \(financialMetric.value)") }
+                            if logMetricsToConsole { println("Type: \(financialMetric.type), Year: \(financialMetric.year), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
                             
                             // Populate arrays for calculating metrics.
                             switch financialMetric.type {
@@ -531,25 +557,27 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
             
-            // Sort arrays for calculations by year.
-            revenueArray.sort({ $0.year < $1.year })
-            netIncomeArray.sort({ $0.year < $1.year })
-            operatingIncomeArray.sort({ $0.year < $1.year })
-            interestExpenseArray.sort({ $0.year < $1.year })
-            unusualExpenseArray.sort({ $0.year < $1.year })
-            depreciationAmortizationArray.sort({ $0.year < $1.year })
-            grossProfitArray.sort({ $0.year < $1.year })
-            sgAndAArray.sort({ $0.year < $1.year })
-            rAndDArray.sort({ $0.year < $1.year })
+            // Sort arrays for calculations by date.
+            revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            unusualExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            depreciationAmortizationArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            grossProfitArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             // Add calculated metrics.
             for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
                 
                 let year = operatingIncomeMetric.year
+                let date = operatingIncomeMetric.date
                 
                 let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 netOperatingIncomeMetric.type = "EBIT"
                 netOperatingIncomeMetric.year = year
+                netOperatingIncomeMetric.date = date
                 netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
                 netOperatingIncomeArray.append(netOperatingIncomeMetric)
                 financialMetrics.addObject(netOperatingIncomeMetric)
@@ -557,6 +585,7 @@ class WebServicesManagerAPI: NSObject {
                 let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitMetric.type = "Normal Net Operating Income"
                 ebitMetric.year = year
+                ebitMetric.date = date
                 ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
                 ebitArray.append(ebitMetric)
                 financialMetrics.addObject(ebitMetric)
@@ -564,6 +593,7 @@ class WebServicesManagerAPI: NSObject {
                 let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMetric.type = "EBITDA"
                 ebitdaMetric.year = year
+                ebitdaMetric.date = date
                 ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
                 ebitdaArray.append(ebitdaMetric)
                 financialMetrics.addObject(ebitdaMetric)
@@ -571,6 +601,7 @@ class WebServicesManagerAPI: NSObject {
                 let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMarginMetric.type = "EBITDA Margin"
                 ebitdaMarginMetric.year = year
+                ebitdaMarginMetric.date = date
                 ebitdaMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 ebitdaMarginArray.append(ebitdaMarginMetric)
                 financialMetrics.addObject(ebitdaMarginMetric)
@@ -578,6 +609,7 @@ class WebServicesManagerAPI: NSObject {
                 let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 profitMarginMetric.type = "Profit Margin"
                 profitMarginMetric.year = year
+                profitMarginMetric.date = date
                 profitMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 profitMarginArray.append(profitMarginMetric)
                 financialMetrics.addObject(profitMarginMetric)
@@ -585,6 +617,7 @@ class WebServicesManagerAPI: NSObject {
                 let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 grossMarginMetric.type = "Gross Margin"
                 grossMarginMetric.year = year
+                grossMarginMetric.date = date
                 grossMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 grossMarginArray.append(grossMarginMetric)
                 financialMetrics.addObject(grossMarginMetric)
@@ -592,6 +625,7 @@ class WebServicesManagerAPI: NSObject {
                 let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
                 sgAndAPercentOfRevenueMetric.year = year
+                sgAndAPercentOfRevenueMetric.date = date
                 sgAndAPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
                 financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
@@ -599,6 +633,7 @@ class WebServicesManagerAPI: NSObject {
                 let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
                 rAndDPercentOfRevenueMetric.year = year
+                rAndDPercentOfRevenueMetric.date = date
                 rAndDPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
                 rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
                 financialMetrics.addObject(rAndDPercentOfRevenueMetric)
@@ -609,6 +644,7 @@ class WebServicesManagerAPI: NSObject {
                     let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     revenueGrowthMetric.type = "Revenue Growth"
                     revenueGrowthMetric.year = year
+                    revenueGrowthMetric.date = date
                     revenueGrowthMetric.value = Double(revenueArray[index - 1].value) != 0.0 ? ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0 : 0.0
                     revenueGrowthArray.append(revenueGrowthMetric)
                     financialMetrics.addObject(revenueGrowthMetric)
@@ -616,6 +652,7 @@ class WebServicesManagerAPI: NSObject {
                     let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     netIncomeGrowthMetric.type = "Net Income Growth"
                     netIncomeGrowthMetric.year = year
+                    netIncomeGrowthMetric.date = date
                     netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
                     netIncomeGrowthArray.append(netIncomeGrowthMetric)
                     financialMetrics.addObject(netIncomeGrowthMetric)
@@ -624,37 +661,37 @@ class WebServicesManagerAPI: NSObject {
             
             if logMetricsToConsole {
                 for metric in netOperatingIncomeArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in ebitArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in ebitdaArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in ebitdaMarginArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in profitMarginArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in revenueGrowthArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in netIncomeGrowthArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in grossProfitArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in grossMarginArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in sgAndAPercentOfRevenueArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
                 for metric in rAndDPercentOfRevenueArray {
-                    println("Type: \(metric.type), Year: \(metric.year) Value: \(metric.value)")
+                    println("Type: \(metric.type), Year: \(metric.year), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
                 }
             }
             
@@ -706,6 +743,7 @@ class WebServicesManagerAPI: NSObject {
                                         let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                                         financialMetric.type = "Market Cap"
                                         financialMetric.year = 0
+                                        financialMetric.date = NSDate()
                                         financialMetric.value = marketCapDoubleValueFromRawString(rawValueString)
                                         financialMetrics.addObject(financialMetric)
                                         marketCapHeadingFound = true
