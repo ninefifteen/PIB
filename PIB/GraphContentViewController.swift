@@ -73,6 +73,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
     
     var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
     
     let graph = CPTXYGraph()
     var pageIndex: Int = 0
@@ -154,24 +155,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         switch pageIdentifier {
             
         case "Revenue":
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "Revenue":
-                    totalRevenueArray.append(financialMetric)
-                case "Profit Margin":
-                    profitMarginArray.append(financialMetric)
-                case "Revenue Growth":
-                    revenueGrowthArray.append(financialMetric)
-                default:
-                    break
-                }
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue')", company)
+            request.predicate = totalRevenuePredicate
+            totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
             
-            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            revenueGrowthArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+            request.predicate = profitMarginPredicate
+            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
             
             numberOfDataPointPerPlot = totalRevenueArray.count
             
@@ -187,21 +200,29 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             configureRevenueIncomeMarginGraph()
             
         case "Growth":
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "Revenue Growth":
-                    revenueGrowthArray.append(financialMetric)
-                case "Profit Margin":
-                    profitMarginArray.append(financialMetric)
-                default:
-                    break
-                }
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
             
-            revenueGrowthArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+            request.predicate = profitMarginPredicate
+            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
             
             if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
             
@@ -218,18 +239,22 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             configureRevenueGrowthProfitMarginGraph()
             
         case "GrossMargin":
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "Gross Margin":
-                    grossMarginArray.append(financialMetric)
-                default:
-                    break
-                }
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
+            request.predicate = grossMarginPredicate
+            grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
-            
-            grossMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
             var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
@@ -244,18 +269,22 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             configureGrossMarginGraph()
             
         case "SG&A":
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "SG&A As Percent Of Revenue":
-                    sgAndAArray.append(financialMetric)
-                default:
-                    break
-                }
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
+            request.predicate = sgAndAPredicate
+            sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
-            
-            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             numberOfDataPointPerPlot = sgAndAArray.count
             
@@ -270,18 +299,22 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             configureSGAndAGraph()
             
         case "R&D":
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "R&D As Percent Of Revenue":
-                    rAndDArray.append(financialMetric)
-                default:
-                    break
-                }
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
+            request.predicate = rAndDPredicate
+            rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
-            
-            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             
             numberOfDataPointPerPlot = rAndDArray.count
             

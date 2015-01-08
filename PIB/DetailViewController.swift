@@ -192,36 +192,62 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             
-            var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
             
-            var totalRevenueArray = Array<FinancialMetric>()
-            var profitMarginArray = Array<FinancialMetric>()
-            var revenueGrowthArray = Array<FinancialMetric>()
-            var netIncomeGrowthArray = Array<FinancialMetric>()
-            var grossProfitArray = Array<FinancialMetric>()
-            var grossMarginArray = Array<FinancialMetric>()
-            var rAndDArray = Array<FinancialMetric>()
-            var sgAndAArray = Array<FinancialMetric>()
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
             
-            for (index, financialMetric) in enumerate(financialMetrics) {
-                switch financialMetric.type {
-                case "Revenue":
-                    totalRevenueArray.append(financialMetric)
-                case "Profit Margin":
-                    profitMarginArray.append(financialMetric)
-                case "Revenue Growth":
-                    revenueGrowthArray.append(financialMetric)
-                case "Net Income Growth":
-                    netIncomeGrowthArray.append(financialMetric)
-                case "Gross Margin":
-                    grossMarginArray.append(financialMetric)
-                case "SG&A As Percent Of Revenue":
-                    sgAndAArray.append(financialMetric)
-                case "R&D As Percent Of Revenue":
-                    rAndDArray.append(financialMetric)
-                default:
-                    break
-                }
+            var error: NSError? = nil
+            
+            let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue')", company)
+            request.predicate = totalRevenuePredicate
+            var totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+            request.predicate = profitMarginPredicate
+            var profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            /*let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            var revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }*/
+            
+            /*let netIncomeGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Net Income Growth')", company)
+            request.predicate = netIncomeGrowthPredicate
+            var netIncomeGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }*/
+            
+            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
+            request.predicate = grossMarginPredicate
+            var grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
+            request.predicate = rAndDPredicate
+            var rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
+            request.predicate = sgAndAPredicate
+            var sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
             }
             
             if minimumValueInFinancialMetricArray(totalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(totalRevenueArray) != 0.0 {
@@ -340,6 +366,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             determineGraphsToBeDisplayed()
             graphPageViewController = segue.destinationViewController as GraphPageViewController
             graphPageViewController.company = company
+            graphPageViewController.managedObjectContext = managedObjectContext
             graphPageViewController.pageIndices = pageIndices
             graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self

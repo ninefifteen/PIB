@@ -15,6 +15,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     var pageIndices = Array<Int>()
     var pageIdentifiers = Array<String>()
     var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
     
     weak var graphContentViewControllerDelegate: DetailViewController!
     
@@ -49,6 +50,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
             graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
             graphContentViewController.company = company
+            graphContentViewController.managedObjectContext = managedObjectContext
             graphContentViewController.delegate = graphContentViewControllerDelegate
             return graphContentViewController
         } else {
