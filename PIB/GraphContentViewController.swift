@@ -147,193 +147,204 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        
+        if pageIdentifier == "Description" {
+            
+            println("Description")
+            doubleTapGestureRecognizer.enabled = false
+            
+            
+            
+        } else {
+            
+            yAxisIntervals = showYAxis ? 4.0 : 8.0
+            
+            configureTextStyles()
+            
+            switch pageIdentifier {
                 
-        yAxisIntervals = showYAxis ? 4.0 : 8.0
-        
-        configureTextStyles()
-        
-        switch pageIdentifier {
-            
-        case "Revenue":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue')", company)
-            request.predicate = totalRevenuePredicate
-            totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
+            case "Revenue":
+                
+                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let request = NSFetchRequest()
+                request.entity = entityDescription
+                
+                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+                request.sortDescriptors = [sortDescriptor]
+                
+                var error: NSError? = nil
+                
+                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue')", company)
+                request.predicate = totalRevenuePredicate
+                totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+                request.predicate = profitMarginPredicate
+                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+                request.predicate = revenueGrowthPredicate
+                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                numberOfDataPointPerPlot = totalRevenueArray.count
+                
+                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
+                
+                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
+                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
+                
+                calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
+                
+                xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
+                
+                configureRevenueIncomeMarginGraph()
+                
+            case "Growth":
+                
+                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let request = NSFetchRequest()
+                request.entity = entityDescription
+                
+                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+                request.sortDescriptors = [sortDescriptor]
+                
+                var error: NSError? = nil
+                
+                let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+                request.predicate = revenueGrowthPredicate
+                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+                request.predicate = profitMarginPredicate
+                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
+                
+                numberOfDataPointPerPlot = revenueGrowthArray.count
+                
+                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
+                
+                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+                
+                xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
+                
+                configureRevenueGrowthProfitMarginGraph()
+                
+            case "GrossMargin":
+                
+                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let request = NSFetchRequest()
+                request.entity = entityDescription
+                
+                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+                request.sortDescriptors = [sortDescriptor]
+                
+                var error: NSError? = nil
+                
+                let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
+                request.predicate = grossMarginPredicate
+                grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
+                
+                numberOfDataPointPerPlot = grossMarginArray.count
+                
+                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+                
+                xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
+                
+                configureGrossMarginGraph()
+                
+            case "SG&A":
+                
+                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let request = NSFetchRequest()
+                request.entity = entityDescription
+                
+                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+                request.sortDescriptors = [sortDescriptor]
+                
+                var error: NSError? = nil
+                
+                let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
+                request.predicate = sgAndAPredicate
+                sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                numberOfDataPointPerPlot = sgAndAArray.count
+                
+                var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
+                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
+                
+                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+                
+                xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
+                
+                configureSGAndAGraph()
+                
+            case "R&D":
+                
+                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let request = NSFetchRequest()
+                request.entity = entityDescription
+                
+                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+                request.sortDescriptors = [sortDescriptor]
+                
+                var error: NSError? = nil
+                
+                let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
+                request.predicate = rAndDPredicate
+                rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                numberOfDataPointPerPlot = rAndDArray.count
+                
+                var minValue = minimumValueInFinancialMetricArray(rAndDArray)
+                var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
+                
+                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+                
+                xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
+                
+                configureRAndDGraph()
+                
+            default:
+                break
             }
             
-            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
-            request.predicate = profitMarginPredicate
-            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
+            plotLabelState = 0  // All plots labeled.
+            addRemoveAnnotationsAllPlots()
             
-            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
-            request.predicate = revenueGrowthPredicate
-            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            numberOfDataPointPerPlot = totalRevenueArray.count
-            
-            var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
-            
-            var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
-            var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
-            
-            calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
-            
-            xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
-            
-            configureRevenueIncomeMarginGraph()
-            
-        case "Growth":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
-            request.predicate = revenueGrowthPredicate
-            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
-            request.predicate = profitMarginPredicate
-            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
-            
-            numberOfDataPointPerPlot = revenueGrowthArray.count
-            
-            var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
-            var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
-            
-            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-            
-            xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
-            
-            configureRevenueGrowthProfitMarginGraph()
-            
-        case "GrossMargin":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
-            request.predicate = grossMarginPredicate
-            grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
-            var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
-            
-            numberOfDataPointPerPlot = grossMarginArray.count
-            
-            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-            
-            xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
-            
-            configureGrossMarginGraph()
-            
-        case "SG&A":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
-            request.predicate = sgAndAPredicate
-            sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            numberOfDataPointPerPlot = sgAndAArray.count
-            
-            var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
-            var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
-            
-            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-            
-            xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
-            
-            configureSGAndAGraph()
-            
-        case "R&D":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
-            request.predicate = rAndDPredicate
-            rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            numberOfDataPointPerPlot = rAndDArray.count
-            
-            var minValue = minimumValueInFinancialMetricArray(rAndDArray)
-            var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
-            
-            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-            
-            xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
-            
-            configureRAndDGraph()
-            
-        default:
-            break
         }
-        
-        plotLabelState = 0  // All plots labeled.
-        addRemoveAnnotationsAllPlots()
     }
     
     override func didReceiveMemoryWarning() {

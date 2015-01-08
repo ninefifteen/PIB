@@ -29,8 +29,7 @@ class ExpandedDescriptionViewController: UIViewController {
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
-    var company: Company!
-    
+    var company: Company!    
     
     // MARK: - View Life Cycle
 

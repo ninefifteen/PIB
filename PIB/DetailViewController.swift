@@ -29,16 +29,13 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - Properties
     
     @IBOutlet weak var nameView: UIView!
-    @IBOutlet weak var descriptionView: UIView!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
-    @IBOutlet weak var descriptionTextView: UITextView!
     @IBOutlet weak var valueView: UIView!
     @IBOutlet weak var valueViewTypeLabel: UILabel!
     @IBOutlet weak var valueViewLabel: UILabel!
     
-    @IBOutlet weak var descriptionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
@@ -88,7 +85,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - Subview Size Modification
     
-    override func viewWillLayoutSubviews() {
+    /*override func viewWillLayoutSubviews() {
         
         super.viewWillLayoutSubviews()
         
@@ -128,7 +125,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             
             pageControl.hidden = false
         }
-    }
+    }*/
     
     
     // MARK: - Managed Object Model Change
@@ -173,16 +170,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 locationLabel.text = ""
             }
             
-            if company.companyDescription != "" {
-                descriptionTextView.text = company.companyDescription
-            }
-            
             pageControl.hidden = false
             
         } else {
             
             nameLabel.hidden = true
-            descriptionView.hidden = true
+            locationLabel.hidden = true
             pageControl.hidden = true
         }
     }
@@ -191,6 +184,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     func determineGraphsToBeDisplayed() {
         
         if company != nil {
+            
+            pageIdentifiers.append("Description")
             
             let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
             let request = NSFetchRequest()
