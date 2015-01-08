@@ -273,6 +273,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         }
     }
     
+    func removeValueView() {
+        valueViewTypeLabel.text = ""
+        valueViewLabel.text = ""
+        valueView.hidden = true
+    }
+    
     
     // MARK: - Helper Methods
     
@@ -325,6 +331,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
         let currentContentPage = graphPageViewController.viewControllers.last as GraphContentViewController
         let currentPageIndex = currentContentPage.pageIndex
+        removeValueView()
         pageControl.currentPage = currentPageIndex
     }
     
@@ -347,9 +354,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     }
     
     @IBAction func cancelValueViewButtonPressed(sender: UIButton) {
-        valueViewTypeLabel.text = ""
-        valueViewLabel.text = ""
-        valueView.hidden = true
+        removeValueView()
     }
     
     

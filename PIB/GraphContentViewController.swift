@@ -69,6 +69,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     weak var delegate: GraphContentViewControllerDelegate?
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
+    @IBOutlet weak var descriptionView: UIView!
     
     @IBOutlet weak var doubleTapGestureRecognizer: UITapGestureRecognizer!
     
@@ -150,12 +151,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if pageIdentifier == "Description" {
             
-            println("Description")
             doubleTapGestureRecognizer.enabled = false
+            graphView.hidden = true
             
-            
+            let expandedDescriptionViewController = storyboard?.instantiateViewControllerWithIdentifier("ExpandedDescriptionViewController") as ExpandedDescriptionViewController
+            expandedDescriptionViewController.company = company
+            addChildViewController(expandedDescriptionViewController)
+            expandedDescriptionViewController.view.frame = descriptionView.frame
+            descriptionView.addSubview(expandedDescriptionViewController.view)
+            //expandedDescriptionViewController.didMoveToParentViewController(self)
             
         } else {
+            
+            descriptionView.hidden = true
             
             yAxisIntervals = showYAxis ? 4.0 : 8.0
             

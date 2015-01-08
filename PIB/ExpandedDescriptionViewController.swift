@@ -20,8 +20,6 @@ class ExpandedDescriptionViewController: UIViewController {
     
     // MARK: - Properties
     
-    @IBOutlet weak var nameLabel: UILabel!
-    @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var descriptionTextView: UITextView!
     
     @IBOutlet weak var revenueLabel: UILabel!
@@ -58,18 +56,6 @@ class ExpandedDescriptionViewController: UIViewController {
     func updateLabels() {
         
         if company != nil {
-            
-            nameLabel.text = company.name
-            
-            if company.city != "" {
-                if company.country != "" {
-                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-                } else {
-                    locationLabel.text = company.city.capitalizedString
-                }
-            } else {
-                locationLabel.text = ""
-            }
             
             if company.companyDescription != "" {
                 descriptionTextView.text = company.companyDescription
