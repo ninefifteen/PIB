@@ -33,8 +33,6 @@ class WebServicesManagerAPI: NSObject {
     
     func downloadCurrencyExchangeRateFrom(fromCurrency: String, to toCurrency: String) -> Double {  // Note: Synchronous network request.
         
-        incrementNetworkActivityCount()
-        
         //println("URL: \(urlStringForExchangeRateFrom(fromCurrency, to: toCurrency))")
         let url = NSURL(string: urlStringForExchangeRateFrom(fromCurrency, to: toCurrency))
         let request = NSURLRequest(URL: url!)
@@ -67,8 +65,6 @@ class WebServicesManagerAPI: NSObject {
         } else {
             println("Unable To Download Exchange Rate Data. Connection Error: \(error?.localizedDescription)")
         }
-        
-        self.decrementNetworkActivityCount()
         
         return -1.0 // Return of negative value indicates failure of function.
     }
@@ -473,7 +469,7 @@ class WebServicesManagerAPI: NSObject {
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
         let parser = NDHpple(HTMLData: html!)
         
-        // Currency type and symbol.
+        // Currency type.
         let currencyTypePath = "//th[@class='lm lft nwp']"
         if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
             if currencyTypeArray.count > 0 {
@@ -491,13 +487,18 @@ class WebServicesManagerAPI: NSObject {
             return false
         }
         
-        var exchangeRate: Double = 0.0
+        // Download currency exchange rate if necessary.
+        var exchangeRate: Double = 1.0
         if company.currencyCode != "USD" {
             exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
+            if exchangeRate < 0.0 { // Exchange rate was not available.
+                exchangeRate = 1.0
+            } else {
+                company.currencyCode = "USD"
+                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+            }
         }
-        
-        println("exchangeRate: \(exchangeRate)")
-        
+                
         // Dates for Google Finance metrics.
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
@@ -559,7 +560,7 @@ class WebServicesManagerAPI: NSObject {
                             let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                             financialMetric.date = datesArray[tdIndex - 1]
                             financialMetric.type = financialMetricType
-                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier
+                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
                             financialMetrics.addObject(financialMetric)
                             if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
                             

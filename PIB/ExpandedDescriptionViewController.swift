@@ -69,7 +69,7 @@ class ExpandedDescriptionViewController: UIViewController {
             
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
-            marketCapLabel.text = company.currencySymbol + marketCapLabelStringForCompany(company)
+            marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
         }
     }
     
