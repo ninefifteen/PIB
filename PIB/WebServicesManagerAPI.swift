@@ -6,6 +6,7 @@
 //  Copyright (c) 2014 Scoutly. All rights reserved.
 //
 
+
 import UIKit
 import CoreData
 
@@ -29,6 +30,48 @@ class WebServicesManagerAPI: NSObject {
     
     
     // MARK: - Main Methods
+    
+    func downloadCurrencyExchangeRateFrom(fromCurrency: String, to toCurrency: String) -> Double {  // Note: Synchronous network request.
+        
+        incrementNetworkActivityCount()
+        
+        //println("URL: \(urlStringForExchangeRateFrom(fromCurrency, to: toCurrency))")
+        let url = NSURL(string: urlStringForExchangeRateFrom(fromCurrency, to: toCurrency))
+        let request = NSURLRequest(URL: url!)
+        var response: NSURLResponse? = nil
+        var error: NSError? = nil
+        let responseData = NSURLConnection.sendSynchronousRequest(request, returningResponse: &response, error: &error) as NSData?
+        
+        if error == nil {
+            if let httpResponse = response as? NSHTTPURLResponse {
+                if httpResponse.statusCode == 200 {
+                    
+                    if let data = responseData {
+                        
+                        //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                        //println("WebServicesManagerAPI downloadCurrencyExchangeRateFrom rawStringData:\n\(rawStringData)")
+                        
+                        if let exchangeRateString = JSON(data: data)["query"]["results"]["rate"]["Rate"].string {
+                            return (exchangeRateString as NSString).doubleValue
+                        }
+                        
+                    } else {
+                        println("Unable To Download Exhchange Rate Data. Response Data is nil")
+                    }
+                } else {
+                    println("Unable To Download Exhchange Rate Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                }
+            } else {
+                println("Unable To Download Exhchange Rate Data. HTTP Response Status Code is nil")
+            }
+        } else {
+            println("Unable To Download Exchange Rate Data. Connection Error: \(error?.localizedDescription)")
+        }
+        
+        self.decrementNetworkActivityCount()
+        
+        return -1.0 // Return of negative value indicates failure of function.
+    }
     
     func downloadCompaniesMatchingSearchTerm(searchTerm: String, withCompletion completion: ((companies: [Company], success: Bool) -> Void)?) {
         
@@ -212,6 +255,11 @@ class WebServicesManagerAPI: NSObject {
     
     
     // MARK: - Helper Methods
+    
+    func urlStringForExchangeRateFrom(fromCurrency: String, to toCurrency: String) -> String {
+        let urlString = "http://query.yahooapis.com/v1/public/yql?q=select%20%2a%20from%20yahoo.finance.xchange%20where%20pair%20in%20%28%22" + fromCurrency + toCurrency + "%22%29&format=json&env=store://datatables.org/alltableswithkeys"
+        return urlString
+    }
     
     func urlStringForSearchString(searchString: String) -> String {
         let escapedSearchString = searchString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
@@ -442,6 +490,13 @@ class WebServicesManagerAPI: NSObject {
             println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
             return false
         }
+        
+        var exchangeRate: Double = 0.0
+        if company.currencyCode != "USD" {
+            exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
+        }
+        
+        println("exchangeRate: \(exchangeRate)")
         
         // Dates for Google Finance metrics.
         let dateFormatter = NSDateFormatter()

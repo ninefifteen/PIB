@@ -71,7 +71,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        
+
         if !searchText.isEmpty {
             
             webServicesManagerAPI.downloadCompaniesMatchingSearchTerm(searchText, withCompletion: { (companies, success) -> Void in
