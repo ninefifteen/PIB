@@ -265,15 +265,19 @@ class WebServicesManagerAPI: NSObject {
     
     func urlStringForGoogleSummaryForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
         let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
-        let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let correctedExchange = exchange == "OTC Markets" ? "OTCMKTS" : exchange
+        let escapedExchange = correctedExchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol!
+        //println("urlStringForGoogleSummaryForCompanyWithTickerSymbol: \(urlString)")
         return urlString
     }
     
     func urlStringForGoogleFinancialsForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
         let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
-        let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let correctedExchange = exchange == "OTC Markets" ? "OTCMKTS" : exchange
+        let escapedExchange = correctedExchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol! + "&fstype=ii"
+        //println("urlStringForGoogleFinancialsForCompanyWithTickerSymbol: \(urlString)")
         return urlString
     }
     
@@ -298,23 +302,23 @@ class WebServicesManagerAPI: NSObject {
             
             if let type = subJson["type"].string {
                 if type == "S" {
-                    
-                    var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
-                    
-                    if let exch = subJson["exch"].string {
-                        company.exchange = exch
-                    }
-                    if let exchDisp = subJson["exchDisp"].string {
-                        company.exchangeDisplayName = exchDisp
-                    }
-                    if let name = subJson["name"].string {
-                        company.name = name
-                    }
                     if let tickerSymbol = subJson["symbol"].string {
-                        company.tickerSymbol = tickerSymbol
+                        if tickerSymbol.rangeOfString(".") == nil {
+                            var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+                            company.tickerSymbol = tickerSymbol
+                            if let exchDisp = subJson["exchDisp"].string {
+                                company.exchangeDisplayName = exchDisp
+                            }
+                            if let exch = subJson["exch"].string {
+                                company.exchange = exch
+                            }
+                            if let name = subJson["name"].string {
+                                company.name = name
+                            }
+                            
+                            companies.append(company)
+                        }
                     }
-                    
-                    companies.append(company)
                 }
             }
         }
