@@ -26,5 +26,6 @@ class Company: NSManagedObject {
     @NSManaged var webLink: String
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
+    @NSManaged var dataDownloadComplete: NSNumber
 
 }

@@ -46,6 +46,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     let masterViewTitle = "Companies"
     
+    var isFirstAppearanceOfView: Bool = true
+    
     
     // MARK: - View Life Cycle
     
@@ -86,6 +88,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func viewWillAppear(animated: Bool) {
         
         super.viewWillAppear(animated)
+        
         if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
             if firstRunValueString == "true" {
                 webServicesManagerAPI.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
@@ -93,8 +96,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                         self.loadSampleCompaniesForFirstRun()
                     }
                 })
+            } else if isFirstAppearanceOfView {
+                removeIncompleteDataCompanies()
             }
         }
+        
+        isFirstAppearanceOfView = false
     }
     
     override func didReceiveMemoryWarning() {
@@ -128,7 +135,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
-        
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
@@ -140,6 +146,37 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     // MARK: - General Class Methods
     
+    func removeIncompleteDataCompanies() {
+        
+        // Delete companies with incomplete data (download interrupted).
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        var requestError: NSError? = nil
+        
+        let incompleteCompaniesPredicate = NSPredicate(format: "dataDownloadComplete == 0")
+        request.predicate = incompleteCompaniesPredicate
+        var incompleteCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        if requestError != nil {
+            println("Fetch request error: \(requestError?.description)")
+        }
+        
+        for company in incompleteCompaniesArray {
+            managedObjectContext.deleteObject(company)
+        }
+        
+        // Save the context.
+        var saveError: NSError? = nil
+        if !managedObjectContext.save(&saveError) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(saveError), \(saveError.userInfo)")
+            abort()
+        }
+    }
+    
     func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
         
         if logAnalytics {
@@ -150,11 +187,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func insertNewCompany(newCompany: Company) {
         
-        var hud = MBProgressHUD(view: navigationController?.view)
+        /*var hud = MBProgressHUD(view: navigationController?.view)
         navigationController?.view.addSubview(hud)
         //hud.delegate = self
         hud.labelText = "Loading"
-        hud.show(true)
+        hud.show(true)*/
         
         if !persistentStorageContainsCompany(newCompany) {
             
@@ -189,6 +226,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         if !scrapeSuccessful {
                             self.managedObjectContext.deleteObject(company)
+                        } else {
+                            company.dataDownloadComplete = true
                         }
                         // Save the context.
                         var error: NSError? = nil
@@ -198,8 +237,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                             //println("Unresolved error \(error), \(error.userInfo)")
                             abort()
                         }
-                        hud.hide(true)
-                        hud.removeFromSuperview()
+                        //hud.hide(true)
+                        //hud.removeFromSuperview()
                         if !scrapeSuccessful {
                             self.showCompanyDataNotFoundAlert(companyName)
                         }
@@ -207,8 +246,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 })
             })
         } else {
-            hud.hide(true)
-            hud.removeFromSuperview()
+            //hud.hide(true)
+            //hud.removeFromSuperview()
         }
     }
     
@@ -336,6 +375,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         let marginLabel = cell.viewWithTag(103) as UILabel
         marginLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+        
+        cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
     }
     
     
@@ -382,11 +423,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     // MARK: - Fetched results controller
     
+    var _fetchedResultsController: NSFetchedResultsController? = nil
+    
     var fetchedResultsController: NSFetchedResultsController {
         if _fetchedResultsController != nil {
             return _fetchedResultsController!
         }
-        
+                
         let fetchRequest = NSFetchRequest()
         // Edit the entity name as appropriate.
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
@@ -394,6 +437,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
+        
+        // Only fetch companies with complete data downloads.
+        //let predicate = NSPredicate(format: "dataDownloadComplete == 1")
+        //fetchRequest.predicate = predicate
         
         // Edit the sort key as appropriate.
         let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")
@@ -417,7 +464,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         return _fetchedResultsController!
     }
-    var _fetchedResultsController: NSFetchedResultsController? = nil
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         self.tableView.beginUpdates()

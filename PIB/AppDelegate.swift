@@ -28,7 +28,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        
         let defaults = NSUserDefaults.standardUserDefaults()
         if defaults.objectForKey("firstRun") == nil {
             defaults.setObject("true", forKey: "firstRun")
@@ -86,6 +85,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // Saves changes in the application's managed object context before the application terminates.
         self.saveContext()
     }
+    
     
     // MARK: - Split view
     

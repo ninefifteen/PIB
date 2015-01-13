@@ -135,6 +135,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         }
     }
     
+    
     // MARK: - Table View Delegate
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -156,73 +157,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
-        }
-    }
-    
-    func insertNewCompany(newCompany: Company) {
-        
-        var hud = MBProgressHUD(view: navigationController?.view)
-        navigationController?.view.addSubview(hud)
-        //hud.delegate = self
-        hud.labelText = "Loading"
-        hud.show(true)
-        
-        if !persistentStorageContainsCompany(newCompany) {
-            
-            // Create new company managed object.
-            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-            
-            // Set attributes.
-            company.name = newCompany.name
-            company.exchange = newCompany.exchange
-            company.exchangeDisplayName = newCompany.exchangeDisplayName
-            company.tickerSymbol = newCompany.tickerSymbol
-            company.street = ""
-            company.city = ""
-            company.state = ""
-            company.zipCode = ""
-            company.country = ""
-            company.companyDescription = ""
-            company.webLink = ""
-            company.currencySymbol = ""
-            //company.currencyCode = ""
-            company.employeeCount = 0
-            
-            let companyName = newCompany.name   // Used for error message in the event financial data is not found.
-            
-            // Download fundamentals for newly added company.
-            var scrapeSuccessful: Bool = false
-            webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-                scrapeSuccessful = success
-                self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                    if scrapeSuccessful { scrapeSuccessful = success }
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        if !scrapeSuccessful {
-                            self.managedObjectContext.deleteObject(company)
-                        }
-                        // Save the context.
-                        var error: NSError? = nil
-                        if !self.managedObjectContext.save(&error) {
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        hud.hide(true)
-                        hud.removeFromSuperview()
-                        if scrapeSuccessful {
-                            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
-                        } else {
-                            self.showCompanyDataNotFoundAlert(companyName)
-                        }
-                    })
-                })
-            })
-            
-        } else {
-            
-            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
         }
     }
     
