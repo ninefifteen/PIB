@@ -83,12 +83,15 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zrG-yX-aCw">
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zrG-yX-aCw">
                                             <rect key="frame" x="532" y="31" width="52" height="14"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="11"/>
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <activityIndicatorView opaque="NO" tag="105" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Wax-N6-GGW">
+                                            <rect key="frame" x="564" y="16" width="20" height="20"/>
+                                        </activityIndicatorView>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="v7r-fM-3gn" firstAttribute="top" secondItem="wdE-Tj-kZW" secondAttribute="bottom" constant="3" id="32e-Af-wqT"/>
@@ -98,6 +101,8 @@
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="bottom" secondItem="7jD-uo-l9B" secondAttribute="bottom" id="Czd-wN-WLR"/>
                                         <constraint firstItem="v7r-fM-3gn" firstAttribute="bottom" secondItem="zrG-yX-aCw" secondAttribute="bottom" id="Q1E-Od-bUV"/>
                                         <constraint firstItem="7jD-uo-l9B" firstAttribute="trailing" secondItem="3DM-MB-fO4" secondAttribute="trailingMargin" constant="-8" id="TIt-hV-NJR"/>
+                                        <constraint firstAttribute="centerY" secondItem="Wax-N6-GGW" secondAttribute="centerY" id="Yxr-7y-32z"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="Wax-N6-GGW" secondAttribute="trailing" constant="8" id="iIZ-uk-jE0"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="v7r-fM-3gn" secondAttribute="trailing" constant="70" id="iYX-jx-boc"/>
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="leading" secondItem="3DM-MB-fO4" secondAttribute="leadingMargin" constant="8" id="lsG-f4-Fo0"/>
                                         <constraint firstItem="zrG-yX-aCw" firstAttribute="trailing" secondItem="3DM-MB-fO4" secondAttribute="trailingMargin" constant="-8" id="yAe-ZX-7u4"/>

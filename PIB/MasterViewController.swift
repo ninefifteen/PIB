@@ -373,8 +373,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             locationLabel.text = " "
         }
         
-        let marginLabel = cell.viewWithTag(103) as UILabel
-        marginLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+        if company.dataDownloadComplete.boolValue {
+            let revenueLabel = cell.viewWithTag(103) as UILabel
+            revenueLabel.hidden = false
+            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+            revenueTitleLabel.hidden = false
+            revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+            activityIndicator.hidden = true
+        } else {
+            let revenueLabel = cell.viewWithTag(103) as UILabel
+            revenueLabel.hidden = true
+            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+            revenueTitleLabel.hidden = true
+        }
         
         cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
     }
