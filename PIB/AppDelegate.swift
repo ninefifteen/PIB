@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-let logAnalytics: Bool = false
+let logAnalytics: Bool = true
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
