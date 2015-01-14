@@ -386,6 +386,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             revenueLabel.hidden = true
             let revenueTitleLabel = cell.viewWithTag(104) as UILabel
             revenueTitleLabel.hidden = true
+            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+            activityIndicator.hidden = false
+            activityIndicator.startAnimating()
         }
         
         cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
