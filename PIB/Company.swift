@@ -27,5 +27,8 @@ class Company: NSManagedObject {
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
     @NSManaged var dataDownloadComplete: NSNumber
+    @NSManaged var isTarget: NSNumber
+    @NSManaged var peers: NSSet
+    @NSManaged var targets: NSSet
 
 }

@@ -10,6 +10,7 @@
         <attribute name="employeeCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchangeDisplayName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="isTarget" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
@@ -17,6 +18,8 @@
         <attribute name="webLink" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="zipCode" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="financialMetrics" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FinancialMetric" inverseName="company" inverseEntity="FinancialMetric" syncable="YES"/>
+        <relationship name="peers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Company" inverseName="targets" inverseEntity="Company" syncable="YES"/>
+        <relationship name="targets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Company" inverseName="peers" inverseEntity="Company" syncable="YES"/>
     </entity>
     <entity name="FinancialMetric" representedClassName="PIB.FinancialMetric" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
@@ -25,7 +28,7 @@
         <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="financialMetrics" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Company" positionX="-63" positionY="-18" width="128" height="285"/>
-        <element name="FinancialMetric" positionX="-54" positionY="-9" width="128" height="105"/>
+        <element name="Company" positionX="-81" positionY="-18" width="128" height="328"/>
+        <element name="FinancialMetric" positionX="189" positionY="180" width="128" height="105"/>
     </elements>
 </model>
