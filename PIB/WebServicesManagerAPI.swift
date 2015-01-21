@@ -445,32 +445,10 @@ class WebServicesManagerAPI: NSObject {
         return value
     }
     
-    func isSavedCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String) -> Bool {
-        
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let request = NSFetchRequest()
-        request.entity = entityDescription
-        
-        var requestError: NSError? = nil
-        
-        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
-        request.predicate = predicate
-        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
-        if requestError != nil {
-            println("Fetch request error: \(requestError?.description)")
-            return true
-        }
-        
-        if matchingCompaniesArray.count > 0 {
-            return true
-        } else {
-            return false
-        }
-    }
     
     func insertNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String) {
         
-        if !isSavedCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName) {
+        if !Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
             // Create new company managed object.
             let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
@@ -520,6 +498,31 @@ class WebServicesManagerAPI: NSObject {
                 })
             })
             */
+        }
+    }
+    
+    func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, toPeersOfCompany company: Company) {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        var requestError: NSError? = nil
+        
+        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
+        request.predicate = predicate
+        
+        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        if requestError != nil {
+            println("Fetch request error: \(requestError?.description)")
+            return
+        }
+        
+        if matchingCompaniesArray.count > 0 {
+            let peerCompany = matchingCompaniesArray[0]
+            var peers = company.peers.mutableCopy() as NSMutableSet
+            peers.addObject(peerCompany)
+            company.peers = peers.copy() as NSSet
         }
     }
     
@@ -1098,41 +1101,16 @@ class WebServicesManagerAPI: NSObject {
                 let companyName = cleanedCompanyInfoArray[1]
                 //println("tickerSymbol: \(tickerSymbol), companyName: \(companyName), exchangeDisplayName: \(exchangeDisplayName)")
                 
-                if isSavedCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName) {
-                    addCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                if Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                    addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
                 } else {
                     insertNewPeerCompanyWithName(companyName, tickerSymbol: tickerSymbol, exchangeDisplayName: exchangeDisplayName)
-                    addCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                    addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
                 }
             }
         }
         
         return true
-    }
-    
-    func addCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, toPeersOfCompany company: Company) {
-        
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let request = NSFetchRequest()
-        request.entity = entityDescription
-        
-        var requestError: NSError? = nil
-        
-        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
-        request.predicate = predicate
-        
-        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
-        if requestError != nil {
-            println("Fetch request error: \(requestError?.description)")
-            return
-        }
-        
-        if matchingCompaniesArray.count > 0 {
-            let peerCompany = matchingCompaniesArray[0]
-            var peers = company.peers.mutableCopy() as NSMutableSet
-            peers.addObject(peerCompany)
-            company.peers = peers.copy() as NSSet
-        }
     }
     
 }
