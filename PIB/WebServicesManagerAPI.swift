@@ -27,6 +27,7 @@ class WebServicesManagerAPI: NSObject {
     var logMetricsToConsole: Bool = false
     var googleSummaryUrlString = String()
     var googleFinancialMetricsUrlString = String()
+    var googleRelatedCompaniesUrlString = String()
     
     
     // MARK: - Main Methods
@@ -169,7 +170,7 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
@@ -215,8 +216,8 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //println("WebServicesManagerAPI downloadGoogleFinancialsForCompany rawStringData:\n\(rawStringData)")
                 
                 let httpResponse = response as NSHTTPURLResponse
                 
@@ -230,14 +231,60 @@ class WebServicesManagerAPI: NSObject {
                     })
                     
                 } else {
-                    println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    println("Unable To Download Company Financial Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
                         completion!(success: false)
                     }
                     self.sendGeneralErrorMessage()
                 }
             } else if error.code != -999 {  // Error not caused by cancelling of the data task.
-                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
+                println("Unable To Download Company Financial Data. Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+                self.sendConnectionErrorMessage()
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        dataTask.resume()
+    }
+    
+    func downloadGoogleRelatedCompaniesForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        
+        googleRelatedCompaniesUrlString = urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
+        let url = NSURL(string: googleRelatedCompaniesUrlString)
+        //println("Google Related Companies URL: \(url!)")
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            if error == nil {
+                
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //println("WebServicesManagerAPI downloadGoogleRelatedCompaniesForCompany rawStringData:\n\(rawStringData)")
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                        let parseSuccess = self.parseAndAddGoogleRelatedCompaniesData(data, forCompany: company)
+                        if completion != nil {
+                            completion!(success: parseSuccess)
+                        }
+                    })
+                    
+                } else {
+                    println("Unable To Download Related Companies Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(success: false)
+                    }
+                    self.sendGeneralErrorMessage()
+                }
+            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
+                println("Unable To Download Related Companies Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
                     completion!(success: false)
                 }
@@ -276,6 +323,14 @@ class WebServicesManagerAPI: NSObject {
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol! + "&fstype=ii"
         //println("urlStringForGoogleFinancialsForCompanyWithTickerSymbol: \(urlString)")
+        return urlString
+    }
+    
+    func urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
+        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        var urlString = "http://www.google.com/finance/related?q=" + escapedExchange! + "%3A" + escapedSymbol!
+        //println("urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol: \(urlString)")
         return urlString
     }
     
@@ -390,6 +445,84 @@ class WebServicesManagerAPI: NSObject {
         return value
     }
     
+    func isSavedCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String) -> Bool {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        var requestError: NSError? = nil
+        
+        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
+        request.predicate = predicate
+        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        if requestError != nil {
+            println("Fetch request error: \(requestError?.description)")
+            return true
+        }
+        
+        if matchingCompaniesArray.count > 0 {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func insertNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String) {
+        
+        if !isSavedCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName) {
+            
+            // Create new company managed object.
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+            
+            // Set attributes.
+            company.name = name
+            company.exchange = ""
+            company.exchangeDisplayName = exchangeDisplayName
+            company.tickerSymbol = tickerSymbol
+            company.street = ""
+            company.city = ""
+            company.state = ""
+            company.zipCode = ""
+            company.country = ""
+            company.companyDescription = ""
+            company.webLink = ""
+            company.currencySymbol = ""
+            //company.currencyCode = ""
+            company.employeeCount = 0
+            company.isTarget = NSNumber(bool: false)
+            
+            let companyName = name   // Used for error message in the event financial data is not found.
+            
+            /*
+            // Download fundamentals for newly added company.
+            var scrapeSuccessful: Bool = false
+            downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+                scrapeSuccessful = success
+                self.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                    if scrapeSuccessful { scrapeSuccessful = success }
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        if !scrapeSuccessful {
+                            self.managedObjectContext.deleteObject(company)
+                        } else {
+                            company.dataDownloadComplete = true
+                        }
+                        // Save the context.
+                        var error: NSError? = nil
+                        if !self.managedObjectContext.save(&error) {
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                    })
+                })
+            })
+            */
+        }
+    }
+    
     
     // MARK: - Network Activity Indicator
     
@@ -440,303 +573,6 @@ class WebServicesManagerAPI: NSObject {
     
     
     // MARK: - HTML Parsing
-    
-    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) -> Bool {
-        
-        // Arrays for calculating data.
-        var revenueArray = Array<FinancialMetric>()
-        var netIncomeArray = Array<FinancialMetric>()
-        var operatingIncomeArray = Array<FinancialMetric>()
-        var interestExpenseArray = Array<FinancialMetric>()
-        var netOperatingIncomeArray = Array<FinancialMetric>()
-        var unusualExpenseArray = Array<FinancialMetric>()
-        var ebitArray = Array<FinancialMetric>()
-        var depreciationAmortizationArray = Array<FinancialMetric>()
-        var ebitdaArray = Array<FinancialMetric>()
-        var ebitdaMarginArray = Array<FinancialMetric>()
-        var profitMarginArray = Array<FinancialMetric>()
-        var revenueGrowthArray = Array<FinancialMetric>()
-        var netIncomeGrowthArray = Array<FinancialMetric>()
-        var grossProfitArray = Array<FinancialMetric>()
-        var grossMarginArray = Array<FinancialMetric>()
-        var sgAndAArray = Array<FinancialMetric>()
-        var sgAndAPercentOfRevenueArray = Array<FinancialMetric>()
-        var rAndDArray = Array<FinancialMetric>()
-        var rAndDPercentOfRevenueArray = Array<FinancialMetric>()
-        
-        let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
-        
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-        
-        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
-        
-        // Currency type.
-        let currencyTypePath = "//th[@class='lm lft nwp']"
-        if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
-            if currencyTypeArray.count > 0 {
-                if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
-                    var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
-                    company.currencyCode = spaceSplit[3]
-                    company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
-                }
-            } else {
-                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-                return false
-            }
-        } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-            return false
-        }
-        
-        // Download currency exchange rate if necessary.
-        var exchangeRate: Double = 1.0
-        if company.currencyCode != "USD" {
-            exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
-            if exchangeRate < 0.0 { // Exchange rate was not available.
-                exchangeRate = 1.0
-            } else {
-                company.currencyCode = "USD"
-                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
-            }
-        }
-                
-        // Dates for Google Finance metrics.
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        var datesArray = Array<NSDate>()
-        let datesPath = "//div[@id='incannualdiv']/table/thead/tr/th"
-        if let dates = parser.searchWithXPathQuery(datesPath) {
-            for (thIndex, tableHeading) in enumerate(dates) {
-                if thIndex > 0 {
-                    if var rawDateString: String = tableHeading.firstChild?.content {
-                        var spaceSplit = rawDateString.componentsSeparatedByString(" ")
-                        var cleanedDateString: String = spaceSplit[3].stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
-                        if let date = dateFormatter.dateFromString(cleanedDateString) {
-                            datesArray.append(date)
-                        } else {
-                            println("\nUnable to read data found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-                            return false
-                        }
-                    }
-                }
-            }
-        } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-            return false
-        }
-        
-        // Metrics from Google Finance.
-        let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
-        if let allValues = parser.searchWithXPathQuery(valuesPath) {
-            
-            for (trIndex, tableRow) in enumerate(allValues) {
-                
-                var tdIndex: Int = 0
-                var financialMetricType = String()
-                
-                for tableData in tableRow.children! {
-                    
-                    if tdIndex == 0 {
-                        if var rawValueString: String = tableData.firstChild?.content {
-                            financialMetricType = rawValueString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            tdIndex++
-                        }
-                    } else {
-                        var rawValueString = String()
-                        var rawValueStringSet: Bool = false
-                        
-                        if let contentString: String = tableData.firstChild?.content {
-                            rawValueString = contentString
-                            rawValueStringSet = true
-                        } else if let contentString: String = tableData.firstChild?.firstChild?.content {
-                            rawValueString = contentString
-                            rawValueStringSet = true
-                        }
-                        
-                        if rawValueStringSet {
-                            if rawValueString == "-" || rawValueString == "" {
-                                rawValueString = "0.0"
-                            }
-                            let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                            financialMetric.date = datesArray[tdIndex - 1]
-                            financialMetric.type = financialMetricType
-                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
-                            financialMetrics.addObject(financialMetric)
-                            if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
-                            
-                            // Populate arrays for calculating metrics.
-                            switch financialMetric.type {
-                            case "Revenue":
-                                revenueArray.append(financialMetric)
-                            case "Net Income":
-                                netIncomeArray.append(financialMetric)
-                            case "Operating Income":
-                                operatingIncomeArray.append(financialMetric)
-                            case "Interest Expense(Income) - Net Operating":
-                                interestExpenseArray.append(financialMetric)
-                            case "Unusual Expense (Income)":
-                                unusualExpenseArray.append(financialMetric)
-                            case "Depreciation/Amortization":
-                                depreciationAmortizationArray.append(financialMetric)
-                            case "Gross Profit":
-                                grossProfitArray.append(financialMetric)
-                            case "Selling/General/Admin. Expenses, Total":
-                                sgAndAArray.append(financialMetric)
-                            case "Research & Development":
-                                rAndDArray.append(financialMetric)
-                            default:
-                                break
-                            }
-                            tdIndex++
-                        }
-                    }
-                }
-            }
-            
-            // Sort arrays for calculations by date.
-            revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            unusualExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            depreciationAmortizationArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            grossProfitArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            
-            // Add calculated metrics.
-            for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
-                
-                let date = operatingIncomeMetric.date
-                
-                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                netOperatingIncomeMetric.type = "EBIT"
-                netOperatingIncomeMetric.date = date
-                netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
-                netOperatingIncomeArray.append(netOperatingIncomeMetric)
-                financialMetrics.addObject(netOperatingIncomeMetric)
-                
-                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitMetric.type = "Normal Net Operating Income"
-                ebitMetric.date = date
-                ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
-                ebitArray.append(ebitMetric)
-                financialMetrics.addObject(ebitMetric)
-                
-                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitdaMetric.type = "EBITDA"
-                ebitdaMetric.date = date
-                ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
-                ebitdaArray.append(ebitdaMetric)
-                financialMetrics.addObject(ebitdaMetric)
-                
-                let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitdaMarginMetric.type = "EBITDA Margin"
-                ebitdaMarginMetric.date = date
-                ebitdaMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0 : 0.0
-                ebitdaMarginArray.append(ebitdaMarginMetric)
-                financialMetrics.addObject(ebitdaMarginMetric)
-                
-                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                profitMarginMetric.type = "Profit Margin"
-                profitMarginMetric.date = date
-                profitMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
-                profitMarginArray.append(profitMarginMetric)
-                financialMetrics.addObject(profitMarginMetric)
-                
-                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                grossMarginMetric.type = "Gross Margin"
-                grossMarginMetric.date = date
-                grossMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
-                grossMarginArray.append(grossMarginMetric)
-                financialMetrics.addObject(grossMarginMetric)
-                
-                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
-                sgAndAPercentOfRevenueMetric.date = date
-                sgAndAPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
-                sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
-                financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
-                
-                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
-                rAndDPercentOfRevenueMetric.date = date
-                rAndDPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
-                rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
-                financialMetrics.addObject(rAndDPercentOfRevenueMetric)
-                
-                // Calculate and add growth metrics after first date has been iterated.
-                if index > 0 {
-                
-                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                    revenueGrowthMetric.type = "Revenue Growth"
-                    revenueGrowthMetric.date = date
-                    revenueGrowthMetric.value = Double(revenueArray[index - 1].value) != 0.0 ? ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0 : 0.0
-                    revenueGrowthArray.append(revenueGrowthMetric)
-                    financialMetrics.addObject(revenueGrowthMetric)
-                    
-                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                    netIncomeGrowthMetric.type = "Net Income Growth"
-                    netIncomeGrowthMetric.date = date
-                    netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
-                    netIncomeGrowthArray.append(netIncomeGrowthMetric)
-                    financialMetrics.addObject(netIncomeGrowthMetric)
-                }
-            }
-            
-            if logMetricsToConsole {
-                for metric in netOperatingIncomeArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in ebitArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in ebitdaArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in ebitdaMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in profitMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in revenueGrowthArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in netIncomeGrowthArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in grossProfitArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in grossMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in sgAndAPercentOfRevenueArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in rAndDPercentOfRevenueArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-            }
-            
-            if financialMetrics.count < 1 {
-                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-                return false
-            }
-            
-            company.financialMetrics = financialMetrics.copy() as NSSet
-
-        } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-            return false
-        }
-        
-        return true
-    }
     
     func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) -> Bool {
         
@@ -923,6 +759,380 @@ class WebServicesManagerAPI: NSObject {
         }
         
         return true
+    }
+    
+    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) -> Bool {
+        
+        // Arrays for calculating data.
+        var revenueArray = Array<FinancialMetric>()
+        var netIncomeArray = Array<FinancialMetric>()
+        var operatingIncomeArray = Array<FinancialMetric>()
+        var interestExpenseArray = Array<FinancialMetric>()
+        var netOperatingIncomeArray = Array<FinancialMetric>()
+        var unusualExpenseArray = Array<FinancialMetric>()
+        var ebitArray = Array<FinancialMetric>()
+        var depreciationAmortizationArray = Array<FinancialMetric>()
+        var ebitdaArray = Array<FinancialMetric>()
+        var ebitdaMarginArray = Array<FinancialMetric>()
+        var profitMarginArray = Array<FinancialMetric>()
+        var revenueGrowthArray = Array<FinancialMetric>()
+        var netIncomeGrowthArray = Array<FinancialMetric>()
+        var grossProfitArray = Array<FinancialMetric>()
+        var grossMarginArray = Array<FinancialMetric>()
+        var sgAndAArray = Array<FinancialMetric>()
+        var sgAndAPercentOfRevenueArray = Array<FinancialMetric>()
+        var rAndDArray = Array<FinancialMetric>()
+        var rAndDPercentOfRevenueArray = Array<FinancialMetric>()
+        
+        let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
+        
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        
+        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+        let parser = NDHpple(HTMLData: html!)
+        
+        // Currency type.
+        let currencyTypePath = "//th[@class='lm lft nwp']"
+        if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
+            if currencyTypeArray.count > 0 {
+                if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
+                    var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
+                    company.currencyCode = spaceSplit[3]
+                    company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                }
+            } else {
+                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                return false
+            }
+        } else {
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            return false
+        }
+        
+        // Download currency exchange rate if necessary.
+        var exchangeRate: Double = 1.0
+        if company.currencyCode != "USD" {
+            exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
+            if exchangeRate < 0.0 { // Exchange rate was not available.
+                exchangeRate = 1.0
+            } else {
+                company.currencyCode = "USD"
+                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+            }
+        }
+        
+        // Dates for Google Finance metrics.
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        var datesArray = Array<NSDate>()
+        let datesPath = "//div[@id='incannualdiv']/table/thead/tr/th"
+        if let dates = parser.searchWithXPathQuery(datesPath) {
+            for (thIndex, tableHeading) in enumerate(dates) {
+                if thIndex > 0 {
+                    if var rawDateString: String = tableHeading.firstChild?.content {
+                        var spaceSplit = rawDateString.componentsSeparatedByString(" ")
+                        var cleanedDateString: String = spaceSplit[3].stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+                        if let date = dateFormatter.dateFromString(cleanedDateString) {
+                            datesArray.append(date)
+                        } else {
+                            println("\nUnable to read data found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                            return false
+                        }
+                    }
+                }
+            }
+        } else {
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            return false
+        }
+        
+        // Metrics from Google Finance.
+        let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
+        if let allValues = parser.searchWithXPathQuery(valuesPath) {
+            
+            for (trIndex, tableRow) in enumerate(allValues) {
+                
+                var tdIndex: Int = 0
+                var financialMetricType = String()
+                
+                for tableData in tableRow.children! {
+                    
+                    if tdIndex == 0 {
+                        if var rawValueString: String = tableData.firstChild?.content {
+                            financialMetricType = rawValueString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            tdIndex++
+                        }
+                    } else {
+                        var rawValueString = String()
+                        var rawValueStringSet: Bool = false
+                        
+                        if let contentString: String = tableData.firstChild?.content {
+                            rawValueString = contentString
+                            rawValueStringSet = true
+                        } else if let contentString: String = tableData.firstChild?.firstChild?.content {
+                            rawValueString = contentString
+                            rawValueStringSet = true
+                        }
+                        
+                        if rawValueStringSet {
+                            if rawValueString == "-" || rawValueString == "" {
+                                rawValueString = "0.0"
+                            }
+                            let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                            financialMetric.date = datesArray[tdIndex - 1]
+                            financialMetric.type = financialMetricType
+                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
+                            financialMetrics.addObject(financialMetric)
+                            if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
+                            
+                            // Populate arrays for calculating metrics.
+                            switch financialMetric.type {
+                            case "Revenue":
+                                revenueArray.append(financialMetric)
+                            case "Net Income":
+                                netIncomeArray.append(financialMetric)
+                            case "Operating Income":
+                                operatingIncomeArray.append(financialMetric)
+                            case "Interest Expense(Income) - Net Operating":
+                                interestExpenseArray.append(financialMetric)
+                            case "Unusual Expense (Income)":
+                                unusualExpenseArray.append(financialMetric)
+                            case "Depreciation/Amortization":
+                                depreciationAmortizationArray.append(financialMetric)
+                            case "Gross Profit":
+                                grossProfitArray.append(financialMetric)
+                            case "Selling/General/Admin. Expenses, Total":
+                                sgAndAArray.append(financialMetric)
+                            case "Research & Development":
+                                rAndDArray.append(financialMetric)
+                            default:
+                                break
+                            }
+                            tdIndex++
+                        }
+                    }
+                }
+            }
+            
+            // Sort arrays for calculations by date.
+            revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            unusualExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            depreciationAmortizationArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            grossProfitArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            
+            // Add calculated metrics.
+            for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
+                
+                let date = operatingIncomeMetric.date
+                
+                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                netOperatingIncomeMetric.type = "EBIT"
+                netOperatingIncomeMetric.date = date
+                netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
+                netOperatingIncomeArray.append(netOperatingIncomeMetric)
+                financialMetrics.addObject(netOperatingIncomeMetric)
+                
+                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                ebitMetric.type = "Normal Net Operating Income"
+                ebitMetric.date = date
+                ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
+                ebitArray.append(ebitMetric)
+                financialMetrics.addObject(ebitMetric)
+                
+                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                ebitdaMetric.type = "EBITDA"
+                ebitdaMetric.date = date
+                ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
+                ebitdaArray.append(ebitdaMetric)
+                financialMetrics.addObject(ebitdaMetric)
+                
+                let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                ebitdaMarginMetric.type = "EBITDA Margin"
+                ebitdaMarginMetric.date = date
+                ebitdaMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                ebitdaMarginArray.append(ebitdaMarginMetric)
+                financialMetrics.addObject(ebitdaMarginMetric)
+                
+                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                profitMarginMetric.type = "Profit Margin"
+                profitMarginMetric.date = date
+                profitMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                profitMarginArray.append(profitMarginMetric)
+                financialMetrics.addObject(profitMarginMetric)
+                
+                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                grossMarginMetric.type = "Gross Margin"
+                grossMarginMetric.date = date
+                grossMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                grossMarginArray.append(grossMarginMetric)
+                financialMetrics.addObject(grossMarginMetric)
+                
+                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
+                sgAndAPercentOfRevenueMetric.date = date
+                sgAndAPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
+                financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
+                
+                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
+                rAndDPercentOfRevenueMetric.date = date
+                rAndDPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
+                financialMetrics.addObject(rAndDPercentOfRevenueMetric)
+                
+                // Calculate and add growth metrics after first date has been iterated.
+                if index > 0 {
+                    
+                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    revenueGrowthMetric.type = "Revenue Growth"
+                    revenueGrowthMetric.date = date
+                    revenueGrowthMetric.value = Double(revenueArray[index - 1].value) != 0.0 ? ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0 : 0.0
+                    revenueGrowthArray.append(revenueGrowthMetric)
+                    financialMetrics.addObject(revenueGrowthMetric)
+                    
+                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    netIncomeGrowthMetric.type = "Net Income Growth"
+                    netIncomeGrowthMetric.date = date
+                    netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
+                    netIncomeGrowthArray.append(netIncomeGrowthMetric)
+                    financialMetrics.addObject(netIncomeGrowthMetric)
+                }
+            }
+            
+            if logMetricsToConsole {
+                for metric in netOperatingIncomeArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in ebitArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in ebitdaArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in ebitdaMarginArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in profitMarginArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in revenueGrowthArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in netIncomeGrowthArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in grossProfitArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in grossMarginArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in sgAndAPercentOfRevenueArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+                for metric in rAndDPercentOfRevenueArray {
+                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                }
+            }
+            
+            if financialMetrics.count < 1 {
+                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                return false
+            }
+            
+            company.financialMetrics = financialMetrics.copy() as NSSet
+            
+        } else {
+            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            return false
+        }
+        
+        return true
+    }
+    
+    func parseAndAddGoogleRelatedCompaniesData(data: NSData, forCompany company: Company) -> Bool {
+        
+        let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+        //println("WebServicesManagerAPI parseAndAddGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
+        
+        var rawCompaniesInfoStringArray = Array<String>()
+        
+        let firstSplit = rawStringData.componentsSeparatedByString("google.finance.data = ")
+        if firstSplit.count > 0 {
+            let secondSplit = firstSplit[1].componentsSeparatedByString(";\ngoogle.finance.data.numberFormat")
+            if secondSplit.count > 0 {
+                rawCompaniesInfoStringArray = secondSplit[0].componentsSeparatedByString("values:")
+                if rawCompaniesInfoStringArray.count > 0 {
+                    rawCompaniesInfoStringArray.removeAtIndex(0)
+                    rawCompaniesInfoStringArray.removeAtIndex(0)
+                }
+            }
+        }
+        
+        for rawCompanyInfoString in rawCompaniesInfoStringArray {
+            
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+            
+            var companyInfoString = rawCompanyInfoString.componentsSeparatedByString("}")[0]
+            companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("[", withString: "", options: .LiteralSearch, range: nil)
+            companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("]", withString: "", options: .LiteralSearch, range: nil)
+            companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString(" \"", withString: "", options: .LiteralSearch, range: nil)
+            companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("\"", withString: "", options: .LiteralSearch, range: nil)
+            var cleanedCompanyInfoArray = companyInfoString.componentsSeparatedByString(",")
+            
+            //println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
+            
+            let exchangeDisplayName = cleanedCompanyInfoArray[8]
+            
+            if exchangeDisplayName != "" {
+                
+                let tickerSymbol = cleanedCompanyInfoArray[0]
+                let companyName = cleanedCompanyInfoArray[1]
+                //println("tickerSymbol: \(tickerSymbol), companyName: \(companyName), exchangeDisplayName: \(exchangeDisplayName)")
+                
+                if isSavedCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName) {
+                    addCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                } else {
+                    insertNewPeerCompanyWithName(companyName, tickerSymbol: tickerSymbol, exchangeDisplayName: exchangeDisplayName)
+                    addCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                }
+            }
+        }
+        
+        return true
+    }
+    
+    func addCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, toPeersOfCompany company: Company) {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        var requestError: NSError? = nil
+        
+        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
+        request.predicate = predicate
+        
+        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        if requestError != nil {
+            println("Fetch request error: \(requestError?.description)")
+            return
+        }
+        
+        if matchingCompaniesArray.count > 0 {
+            let peerCompany = matchingCompaniesArray[0]
+            var peers = company.peers.mutableCopy() as NSMutableSet
+            peers.addObject(peerCompany)
+            company.peers = peers.copy() as NSSet
+        }
     }
     
 }

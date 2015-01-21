@@ -42,8 +42,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let webServicesManagerAPI = WebServicesManagerAPI()
         webServicesManagerAPI.managedObjectContext = self.managedObjectContext
         return webServicesManagerAPI
-    }()
-
+        }()
+    
     let masterViewTitle = "Companies"
     
     var isFirstAppearanceOfView: Bool = true
@@ -138,7 +138,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            insertNewCompany(companyToAdd)
+            insertNewTargetCompany(companyToAdd)
         } else {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -185,13 +185,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    func insertNewCompany(newCompany: Company) {
-        
-        /*var hud = MBProgressHUD(view: navigationController?.view)
-        navigationController?.view.addSubview(hud)
-        //hud.delegate = self
-        hud.labelText = "Loading"
-        hud.show(true)*/
+    func insertNewTargetCompany(newCompany: Company) {
         
         if !persistentStorageContainsCompany(newCompany) {
             
@@ -214,6 +208,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             company.currencySymbol = ""
             //company.currencyCode = ""
             company.employeeCount = 0
+            company.isTarget = NSNumber(bool: true)
             
             let companyName = newCompany.name   // Used for error message in the event financial data is not found.
             
@@ -221,33 +216,31 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             var scrapeSuccessful: Bool = false
             webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
                 scrapeSuccessful = success
-                self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                self.webServicesManagerAPI.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
                     if scrapeSuccessful { scrapeSuccessful = success }
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        if !scrapeSuccessful {
-                            self.managedObjectContext.deleteObject(company)
-                        } else {
-                            company.dataDownloadComplete = true
-                        }
-                        // Save the context.
-                        var error: NSError? = nil
-                        if !self.managedObjectContext.save(&error) {
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        //hud.hide(true)
-                        //hud.removeFromSuperview()
-                        if !scrapeSuccessful {
-                            self.showCompanyDataNotFoundAlert(companyName)
-                        }
+                    self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                        if scrapeSuccessful { scrapeSuccessful = success }
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            if !scrapeSuccessful {
+                                self.managedObjectContext.deleteObject(company)
+                            } else {
+                                company.dataDownloadComplete = true
+                            }
+                            // Save the context.
+                            var error: NSError? = nil
+                            if !self.managedObjectContext.save(&error) {
+                                // Replace this implementation with code to handle the error appropriately.
+                                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                                //println("Unresolved error \(error), \(error.userInfo)")
+                                abort()
+                            }
+                            if !scrapeSuccessful {
+                                self.showCompanyDataNotFoundAlert(companyName)
+                            }
+                        })
                     })
                 })
             })
-        } else {
-            //hud.hide(true)
-            //hud.removeFromSuperview()
         }
     }
     
@@ -288,7 +281,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let sampleCompanies = companiesFromDictionaryArray(sampleCompaniesDictionaryArray)
         
         for sampleCompany in sampleCompanies {
-            insertNewCompany(sampleCompany)
+            insertNewTargetCompany(sampleCompany)
         }
         
         NSUserDefaults.standardUserDefaults().setObject("false", forKey: "firstRun")
@@ -444,7 +437,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if _fetchedResultsController != nil {
             return _fetchedResultsController!
         }
-                
+        
         let fetchRequest = NSFetchRequest()
         // Edit the entity name as appropriate.
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
@@ -453,9 +446,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
         
-        // Only fetch companies with complete data downloads.
-        //let predicate = NSPredicate(format: "dataDownloadComplete == 1")
-        //fetchRequest.predicate = predicate
+        // Only fetch target companies.
+        let predicate = NSPredicate(format: "isTarget == 1")
+        fetchRequest.predicate = predicate
         
         // Edit the sort key as appropriate.
         let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")

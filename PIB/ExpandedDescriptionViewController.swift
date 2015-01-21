@@ -70,6 +70,20 @@ class ExpandedDescriptionViewController: UIViewController {
             revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
             marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
+            
+            println("\nPeers:")
+            for peer in company.peers {
+                if let peerCompany = peer as? Company {
+                    println("tickerSymbol: \(peerCompany.tickerSymbol), companyName: \(peerCompany.name), exchangeDisplayName: \(peerCompany.exchangeDisplayName)")
+                }
+            }
+            
+            println("\nTargets:")
+            for target in company.targets {
+                if let targetCompany = target as? Company {
+                    println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
+                }
+            }
         }
     }
     
