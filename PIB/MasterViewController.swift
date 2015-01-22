@@ -191,9 +191,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if let savedCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
-            if savedCompany.isTarget.boolValue {   // Company is already saved to app as a target company.  Just update the financial metrics.
+            if savedCompany.isTarget.boolValue {   // Company is already saved to app as a target company.
                 
-                updateSavedCompany(savedCompany)
+                //updateSavedCompany(savedCompany)
                 return
                 
             } else {    // Company is saved to app but is only a peer.

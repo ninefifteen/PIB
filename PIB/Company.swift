@@ -31,6 +31,8 @@ class Company: NSManagedObject {
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
     
+    
+    // MARK: - Class Methods
 
     class func savedCompanyWithTickerSymbol(tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company? {
         
@@ -59,6 +61,34 @@ class Company: NSManagedObject {
         
         let company = savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         return company != nil
+    }
+    
+    
+    // MARK: - Instance Methods
+    
+    func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        var requestError: NSError? = nil
+        
+        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
+        request.predicate = predicate
+        
+        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        if requestError != nil {
+            println("Fetch request error: \(requestError?.description)")
+            return
+        }
+        
+        if matchingCompaniesArray.count > 0 {
+            let peerCompany = matchingCompaniesArray[0]
+            var peers = self.peers.mutableCopy() as NSMutableSet
+            peers.addObject(peerCompany)
+            self.peers = peers.copy() as NSSet
+        }
     }
     
 }

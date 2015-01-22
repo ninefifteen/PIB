@@ -501,31 +501,6 @@ class WebServicesManagerAPI: NSObject {
         }
     }
     
-    func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, toPeersOfCompany company: Company) {
-        
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let request = NSFetchRequest()
-        request.entity = entityDescription
-        
-        var requestError: NSError? = nil
-        
-        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
-        request.predicate = predicate
-        
-        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
-        if requestError != nil {
-            println("Fetch request error: \(requestError?.description)")
-            return
-        }
-        
-        if matchingCompaniesArray.count > 0 {
-            let peerCompany = matchingCompaniesArray[0]
-            var peers = company.peers.mutableCopy() as NSMutableSet
-            peers.addObject(peerCompany)
-            company.peers = peers.copy() as NSSet
-        }
-    }
-    
     
     // MARK: - Network Activity Indicator
     
@@ -1091,9 +1066,10 @@ class WebServicesManagerAPI: NSObject {
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("\"", withString: "", options: .LiteralSearch, range: nil)
             var cleanedCompanyInfoArray = companyInfoString.componentsSeparatedByString(",")
             
-            //println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
+            println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
             
-            let exchangeDisplayName = cleanedCompanyInfoArray[8]
+            let indexOfExchangeDisplayName = cleanedCompanyInfoArray.count - 3
+            let exchangeDisplayName = cleanedCompanyInfoArray[indexOfExchangeDisplayName]
             
             if exchangeDisplayName != "" {
                 
@@ -1102,10 +1078,10 @@ class WebServicesManagerAPI: NSObject {
                 //println("tickerSymbol: \(tickerSymbol), companyName: \(companyName), exchangeDisplayName: \(exchangeDisplayName)")
                 
                 if Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                    company.addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                 } else {
                     insertNewPeerCompanyWithName(companyName, tickerSymbol: tickerSymbol, exchangeDisplayName: exchangeDisplayName)
-                    addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, toPeersOfCompany: company)
+                    company.addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                 }
             }
         }
