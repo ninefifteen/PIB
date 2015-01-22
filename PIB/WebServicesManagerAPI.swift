@@ -1066,7 +1066,7 @@ class WebServicesManagerAPI: NSObject {
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("\"", withString: "", options: .LiteralSearch, range: nil)
             var cleanedCompanyInfoArray = companyInfoString.componentsSeparatedByString(",")
             
-            println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
+            //println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
             
             let indexOfExchangeDisplayName = cleanedCompanyInfoArray.count - 3
             let exchangeDisplayName = cleanedCompanyInfoArray[indexOfExchangeDisplayName]
