@@ -236,6 +236,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         var scrapeSuccessful: Bool = false
         webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
             scrapeSuccessful = success
+            self.tableView.reloadData()
             self.webServicesManagerAPI.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
                 if scrapeSuccessful { scrapeSuccessful = success }
                 self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
@@ -254,6 +255,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                             //println("Unresolved error \(error), \(error.userInfo)")
                             abort()
                         }
+                        self.tableView.reloadData()
                         if !scrapeSuccessful {
                             self.showCompanyDataNotFoundAlert(name)
                         }
@@ -376,7 +378,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if editingStyle == .Delete {
             
             let context = self.fetchedResultsController.managedObjectContext
-            context.deleteObject(self.fetchedResultsController.objectAtIndexPath(indexPath) as NSManagedObject)
+            let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+            
+            if company.targets.count > 0 {
+                company.isTarget = NSNumber(bool: false)
+                var peers = company.peers.mutableCopy() as NSMutableSet
+                peers.removeAllObjects()
+                company.peers = peers.copy() as NSSet
+            } else {
+                context.deleteObject(company)
+            }
             
             var error: NSError? = nil
             if !context.save(&error) {
@@ -390,43 +401,42 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
         
-        let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-        
-        let nameLabel = cell.viewWithTag(101) as UILabel
-        nameLabel.text = company.name
-        
-        let locationLabel = cell.viewWithTag(102) as UILabel
-        if company.city != "" {
-            if company.country != "" && company.state != "" {
-                locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-            } else if company.country != "" {
-                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+        if let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company {
+            let nameLabel = cell.viewWithTag(101) as UILabel
+            nameLabel.text = company.name
+            let locationLabel = cell.viewWithTag(102) as UILabel
+            if company.city != "" {
+                if company.country != "" && company.state != "" {
+                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+                } else {
+                    locationLabel.text = company.city.capitalizedString
+                }
             } else {
-                locationLabel.text = company.city.capitalizedString
+                locationLabel.text = " "
             }
-        } else {
-            locationLabel.text = " "
+            
+            if company.dataDownloadComplete.boolValue {
+                let revenueLabel = cell.viewWithTag(103) as UILabel
+                revenueLabel.hidden = false
+                let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+                revenueTitleLabel.hidden = false
+                revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+                let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+                activityIndicator.hidden = true
+            } else {
+                let revenueLabel = cell.viewWithTag(103) as UILabel
+                revenueLabel.hidden = true
+                let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+                revenueTitleLabel.hidden = true
+                let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+                activityIndicator.hidden = false
+                activityIndicator.startAnimating()
+            }
+            
+            cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
         }
-        
-        if company.dataDownloadComplete.boolValue {
-            let revenueLabel = cell.viewWithTag(103) as UILabel
-            revenueLabel.hidden = false
-            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
-            revenueTitleLabel.hidden = false
-            revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
-            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
-            activityIndicator.hidden = true
-        } else {
-            let revenueLabel = cell.viewWithTag(103) as UILabel
-            revenueLabel.hidden = true
-            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
-            revenueTitleLabel.hidden = true
-            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
-            activityIndicator.hidden = false
-            activityIndicator.startAnimating()
-        }
-        
-        cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
     }
     
     
@@ -536,8 +546,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        case .Update:
-            if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath) }
+        //case .Update:
+            //if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath) }
         case .Move:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)

@@ -71,14 +71,14 @@ class ExpandedDescriptionViewController: UIViewController {
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
             marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
             
-            println("\nPeers:")
+            println("\n\(company.name) Peers:")
             for peer in company.peers {
                 if let peerCompany = peer as? Company {
                     println("tickerSymbol: \(peerCompany.tickerSymbol), companyName: \(peerCompany.name), exchangeDisplayName: \(peerCompany.exchangeDisplayName)")
                 }
             }
             
-            println("\nTargets:")
+            println("\n\(company.name) Targets:")
             for target in company.targets {
                 if let targetCompany = target as? Company {
                     println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
