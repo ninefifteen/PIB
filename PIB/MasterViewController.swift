@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, WebServicesMangerAPIDelegate {
+class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
     
     
     // MARK: - Types
@@ -37,12 +37,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext!
-    
-    lazy var webServicesManagerAPI: WebServicesManagerAPI = {
-        let webServicesManagerAPI = WebServicesManagerAPI()
-        webServicesManagerAPI.managedObjectContext = self.managedObjectContext
-        return webServicesManagerAPI
-        }()
     
     let masterViewTitle = "Companies"
     
@@ -91,13 +85,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
             if firstRunValueString == "true" {
-                webServicesManagerAPI.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
+                WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
                     if success {
                         self.loadSampleCompaniesForFirstRun()
                     }
                 })
             } else if isFirstAppearanceOfView {
-                removeIncompleteDataCompanies()
+                Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
             }
         }
         
@@ -138,44 +132,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            insertNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName)
+            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         } else {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
         }
     }
     
-    // MARK: - General Class Methods
-    
-    func removeIncompleteDataCompanies() {
-        
-        // Delete companies with incomplete data (download interrupted).
-        
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let request = NSFetchRequest()
-        request.entity = entityDescription
-        
-        var requestError: NSError? = nil
-        
-        let incompleteCompaniesPredicate = NSPredicate(format: "dataDownloadComplete == 0")
-        request.predicate = incompleteCompaniesPredicate
-        var incompleteCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
-        if requestError != nil {
-            println("Fetch request error: \(requestError?.description)")
-        }
-        
-        for company in incompleteCompaniesArray {
-            managedObjectContext.deleteObject(company)
-        }
-        
-        // Save the context.
-        var saveError: NSError? = nil
-        if !managedObjectContext.save(&saveError) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(saveError), \(saveError.userInfo)")
-            abort()
-        }
-    }
+    // MARK: - General Methods
     
     func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
         
@@ -183,125 +146,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.send(GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build())
         }
-    }
-    
-    func insertNewTargetCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String) {
-        
-        var company: Company!
-        
-        if let savedCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-            
-            if savedCompany.isTarget.boolValue {   // Company is already saved to app as a target company.
-                
-                //updateSavedCompany(savedCompany)
-                return
-                
-            } else {    // Company is saved to app but is only a peer.
-                
-                company = savedCompany
-                
-                // Remove old finacial metrics to prepare for update.
-                var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-                financialMetrics.removeAllObjects()
-                company.financialMetrics = financialMetrics.copy() as NSSet
-            }
-            
-        } else {    // Company is NOT saved to app.
-            
-            // Create new company managed object.
-            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-            company = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-            
-            // Set attributes.
-            company.name = name
-            company.exchange = ""
-            company.exchangeDisplayName = exchangeDisplayName
-            company.tickerSymbol = tickerSymbol
-            company.street = ""
-            company.city = ""
-            company.state = ""
-            company.zipCode = ""
-            company.country = ""
-            company.companyDescription = ""
-            company.webLink = ""
-            company.currencySymbol = ""
-            //company.currencyCode = ""
-            company.employeeCount = 0
-        }
-        
-        company.dataDownloadComplete = NSNumber(bool: false)
-        company.isTarget = NSNumber(bool: true)
-        
-        // Download fundamentals for newly added company.
-        var scrapeSuccessful: Bool = false
-        webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            self.tableView.reloadData()
-            self.webServicesManagerAPI.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
-                if scrapeSuccessful { scrapeSuccessful = success }
-                self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                    if scrapeSuccessful { scrapeSuccessful = success }
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        if !scrapeSuccessful {
-                            self.managedObjectContext.deleteObject(company)
-                        } else {
-                            company.dataDownloadComplete = true
-                        }
-                        // Save the context.
-                        var error: NSError? = nil
-                        if !self.managedObjectContext.save(&error) {
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        self.tableView.reloadData()
-                        if !scrapeSuccessful {
-                            self.showCompanyDataNotFoundAlert(name)
-                        }
-                    })
-                })
-            })
-        })
-    }
-    
-    func updateSavedCompany(company: Company) {
-        
-        let companyName = company.name  // Needed for alert in the event the data not able to be downloaded.
-        
-        // Remove old finacial metrics to prepare for update.
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-        financialMetrics.removeAllObjects()
-        company.financialMetrics = financialMetrics.copy() as NSSet
-        
-        company.dataDownloadComplete = NSNumber(bool: false)
-        
-        // Download fundamentals for newly added company.
-        var scrapeSuccessful: Bool = false
-        webServicesManagerAPI.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            self.webServicesManagerAPI.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                if scrapeSuccessful { scrapeSuccessful = success }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    if !scrapeSuccessful {
-                        self.managedObjectContext.deleteObject(company)
-                    } else {
-                        company.dataDownloadComplete = true
-                    }
-                    // Save the context.
-                    var error: NSError? = nil
-                    if !self.managedObjectContext.save(&error) {
-                        // Replace this implementation with code to handle the error appropriately.
-                        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                        //println("Unresolved error \(error), \(error.userInfo)")
-                        abort()
-                    }
-                    if !scrapeSuccessful {
-                        self.showCompanyDataNotFoundAlert(companyName)
-                    }
-                })
-            })
-        })
     }
     
     func showCompanyDataNotFoundAlert(companyName: String) {
@@ -325,7 +169,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let sampleCompanies = companiesFromDictionaryArray(sampleCompaniesDictionaryArray)
         
         for sampleCompany in sampleCompanies {
-            insertNewTargetCompanyWithName(sampleCompany.name, tickerSymbol: sampleCompany.tickerSymbol, exchangeDisplayName: sampleCompany.exchangeDisplayName)
+            Company.saveNewTargetCompanyWithName(sampleCompany.name, tickerSymbol: sampleCompany.tickerSymbol, exchangeDisplayName: sampleCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         }
         
         NSUserDefaults.standardUserDefaults().setObject("false", forKey: "firstRun")
@@ -382,6 +226,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if company.targets.count > 0 {
                 company.isTarget = NSNumber(bool: false)
+                var error: NSError? = nil
+                if !context.save(&error) {
+                    // Replace this implementation with code to handle the error appropriately.
+                    // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                    //println("Unresolved error \(error), \(error.userInfo)")
+                    abort()
+                }
                 var peers = company.peers.mutableCopy() as NSMutableSet
                 peers.removeAllObjects()
                 company.peers = peers.copy() as NSSet
@@ -546,8 +397,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        //case .Update:
-            //if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath) }
+        case .Update:
+            if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath) }
         case .Move:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
@@ -569,12 +420,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     */
     
-    
+    /*
     // MARK: - Web Services Manager API Delegate
     
     func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
         presentViewController(alert, animated: true, completion: nil)
     }
-    
+    */
 }
 

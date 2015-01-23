@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate, WebServicesMangerAPIDelegate {
+class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate {
     
     
     // MARK: - Types
@@ -33,7 +33,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     
     // MARK: - Properties
     
-    let webServicesManagerAPI = WebServicesManagerAPI()
     var managedObjectContext: NSManagedObjectContext!
     var companyToAdd: Company?
     var searchResultsCompanies = [Company]()
@@ -53,9 +52,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
-        webServicesManagerAPI.managedObjectContext = managedObjectContext
-        webServicesManagerAPI.delegate = self
-
         searchBar.becomeFirstResponder()
     }
 
@@ -74,7 +70,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
 
         if !searchText.isEmpty {
             
-            webServicesManagerAPI.downloadCompaniesMatchingSearchTerm(searchText, withCompletion: { (companies, success) -> Void in
+            WebServicesManagerAPI.sharedInstance.downloadCompaniesMatchingSearchTerm(searchText, withCompletion: { (companies, success) -> Void in
                 if success {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.searchResultsCompanies = companies
@@ -150,7 +146,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
     }
     
     
-    // MARK: - General Class Methods
+    // MARK: - General Methods
     
     func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
         
@@ -159,36 +155,5 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate,
             tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
         }
     }
-    
-    func persistentStorageContainsCompany(company: Company) -> Bool {
-        
-        let fetchRequest = NSFetchRequest()
-        // Edit the entity name as appropriate.
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entity
-        
-        let predicate = NSPredicate(format: "name == %@ AND exchange == %@", company.name, company.exchange)
-        fetchRequest.predicate = predicate
-        
-        var error: NSError? = nil
-        let result: [AnyObject]? = self.managedObjectContext!.executeFetchRequest(fetchRequest, error: &error)
-        
-        return result!.count == 0 ? false : true
-    }
-    
-    func showCompanyDataNotFoundAlert(companyName: String) {
-        let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
-        let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
-        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { (action) -> Void in
-            self.performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
-        }
-        alert.addAction(action)
-        presentViewController(alert, animated: true, completion: nil)
-    }
 
-    // MARK: - Web Services Manager API Delegate
-    
-    func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
-        presentViewController(alert, animated: true, completion: nil)
-    }
 }

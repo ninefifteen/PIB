@@ -44,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             tracker.allowIDFACollection = true
         }
         
+        WebServicesManagerAPI.sharedInstance.managedObjectContext = managedObjectContext
+        
         let splitViewController = self.window!.rootViewController as UISplitViewController
         splitViewController.view.tintColor = UIColor.whiteColor()
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as UINavigationController
