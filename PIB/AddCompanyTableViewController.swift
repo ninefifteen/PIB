@@ -53,6 +53,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         // self.clearsSelectionOnViewWillAppear = false
         
         searchBar.becomeFirstResponder()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -86,9 +89,17 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         }
     }
     
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+    }
+    
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
         
         if let cancelButton = sender as? UIBarButtonItem {
             companyToAdd = nil
@@ -154,6 +165,28 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
         }
+    }
+    
+    
+    // MARK: - Web Services Manager API
+    
+    func showWebServicesManagerAPIGeneralErrorMessage() {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let alert = UIAlertController(title: "Error", message: "Unable to download data", preferredStyle: UIAlertControllerStyle.Alert)
+            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+            alert.addAction(action)
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+    
+    func showWebServicesManagerAPIConnectionErrorMessage() {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
+            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+            alert.addAction(action)
+            alert.view.tintColor = UIColor.blueColor()
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
     }
 
 }

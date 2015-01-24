@@ -77,6 +77,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let controllers = split.viewControllers
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -103,6 +106,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Dispose of any resources that can be recreated.
     }
     
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+    }
+    
     
     // MARK: - Segues
     
@@ -121,6 +129,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
             
+            NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+            NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+            
             let navigationController = segue.destinationViewController as UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
             let controller = navigationController.topViewController as AddCompanyTableViewController
@@ -129,6 +140,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
@@ -420,9 +435,29 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     */
     
-    /*
-    // MARK: - Web Services Manager API Delegate
     
+    // MARK: - Web Services Manager API
+    
+    func showWebServicesManagerAPIGeneralErrorMessage() {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let alert = UIAlertController(title: "Error", message: "Unable to download data", preferredStyle: UIAlertControllerStyle.Alert)
+            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+            alert.addAction(action)
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+    
+    func showWebServicesManagerAPIConnectionErrorMessage() {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
+            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+            alert.addAction(action)
+            alert.view.tintColor = UIColor.blueColor()
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+    
+    /*
     func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
         presentViewController(alert, animated: true, completion: nil)
     }

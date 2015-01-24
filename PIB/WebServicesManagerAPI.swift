@@ -486,22 +486,11 @@ class WebServicesManagerAPI: NSObject {
     // MARK: - Session Error Handling
     
     func sendGeneralErrorMessage() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Error", message: "Unable to download data", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            self.delegate?.webServicesManagerAPI!(self, errorAlert: alert)
-        })
+        NSNotificationCenter.defaultCenter().postNotificationName("WebServicesManagerAPIGeneralErrorMessage", object: nil)
     }
     
     func sendConnectionErrorMessage() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            alert.view.tintColor = UIColor.blueColor()
-            self.delegate?.webServicesManagerAPI!(self, errorAlert: alert)
-        })
+        NSNotificationCenter.defaultCenter().postNotificationName("WebServicesManagerAPIConnectionErrorMessage", object: nil)
     }
     
     
