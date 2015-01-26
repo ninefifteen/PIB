@@ -20,7 +20,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     weak var graphContentViewControllerDelegate: DetailViewController!
     
     
-    // MARK: - View Life Cycle
+    // MARK: - View Lifecycle
     
     override func viewDidLoad() {
         

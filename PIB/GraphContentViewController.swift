@@ -141,7 +141,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let showYAxis: Bool = false
     
     
-    // MARK: - View Life Cycle
+    // MARK: - View Lifecycle
     
     override func viewDidLoad() {
         

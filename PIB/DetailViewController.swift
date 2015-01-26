@@ -51,7 +51,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     var fullDescription: String = ""
     
     
-    // MARK: - View Life Cycle
+    // MARK: - View Lifecycle
     
     override func viewDidLoad() {
         

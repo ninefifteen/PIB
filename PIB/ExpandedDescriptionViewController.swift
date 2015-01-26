@@ -29,7 +29,7 @@ class ExpandedDescriptionViewController: UIViewController {
     
     var company: Company!    
     
-    // MARK: - View Life Cycle
+    // MARK: - View Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()

@@ -43,7 +43,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var isFirstAppearanceOfView: Bool = true
     
     
-    // MARK: - View Life Cycle
+    // MARK: - View Lifecycle
     
     override func awakeFromNib() {
         super.awakeFromNib()

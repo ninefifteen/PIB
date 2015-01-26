@@ -39,6 +39,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     
     @IBOutlet weak var searchBar: UISearchBar!
 
+    
+    // MARK: - View Lifecycle
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -61,6 +64,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
     
     // MARK: - UISearchBarDelegate
     
@@ -92,6 +96,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         removeAllObservers()
     }
     
+    
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -111,6 +116,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         }
     }
 
+    
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
