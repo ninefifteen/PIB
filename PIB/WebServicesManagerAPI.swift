@@ -316,8 +316,9 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForSearchString(searchString: String) -> String {
-        let escapedSearchString = searchString.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let escapedSearchString = searchString.stringByAddingPercentEncodingWithAllowedCharacters(NSCharacterSet.URLHostAllowedCharacterSet())
         let urlString = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=" + escapedSearchString! + "&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
+        //println("urlStringForSearchString: \(urlString)")
         return urlString
     }
     

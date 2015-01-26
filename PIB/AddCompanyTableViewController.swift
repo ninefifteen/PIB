@@ -65,6 +65,10 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         // Dispose of any resources that can be recreated.
     }
     
+    deinit {
+        removeAllObservers()
+    }
+    
     
     // MARK: - UISearchBarDelegate
     
@@ -90,10 +94,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             searchResultsCompanies.removeAll(keepCapacity: false)
             self.tableView.reloadData()
         }
-    }
-    
-    deinit {
-        removeAllObservers()
     }
     
     
