@@ -7,12 +7,7 @@
 //
 
 
-import UIKit
 import CoreData
-
-@objc protocol WebServicesMangerAPIDelegate: class {
-    optional func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController)
-}
 
 class WebServicesManagerAPI: NSObject {
     
@@ -31,7 +26,6 @@ class WebServicesManagerAPI: NSObject {
     var managedObjectContext: NSManagedObjectContext!
     var networkActivityCount: Int = 0
     var activeDataTask: NSURLSessionDataTask?
-    weak var delegate: WebServicesMangerAPIDelegate?
     
     // Debugging properties.
     var logMetricsToConsole: Bool = false
