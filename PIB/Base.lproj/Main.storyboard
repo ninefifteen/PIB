@@ -171,6 +171,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="MiV-7M-y5L" kind="unwind" unwindAction="unwindFromAddCompanySegue:" id="bFD-n6-L2Y"/>
+                                </connections>
                             </tableViewCell>
                             <tableViewCell userInteractionEnabled="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="noResultsCell" textLabel="xfo-Nh-Abn" style="IBUITableViewCellStyleDefault" id="p2S-6K-7Sr">
                                 <autoresizingMask key="autoresizingMask"/>

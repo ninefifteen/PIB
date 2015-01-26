@@ -98,7 +98,15 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         
         removeAllObservers()
         
-        if let cancelButton = sender as? UIBarButtonItem {
+        if let tableViewCell = sender as? UITableViewCell {
+            if let indexPath = tableView.indexPathForSelectedRow() {
+                tableView.deselectRowAtIndexPath(indexPath, animated: true)
+                companyToAdd = searchResultsCompanies[indexPath.row]
+                if let companyName = companyToAdd?.name {
+                    sendAddedCompanyNameToGoogleAnalytics(companyName)
+                }
+            }
+        } else if let cancelButton = sender as? UIBarButtonItem {
             companyToAdd = nil
         }
     }
@@ -137,20 +145,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewNoResultsCell, forIndexPath: indexPath) as UITableViewCell
             return cell
         }
-    }
-    
-    
-    // MARK: - Table View Delegate
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-        // Add selected company to Core Data.
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
-        companyToAdd = searchResultsCompanies[indexPath.row]
-        if let companyName = companyToAdd?.name {
-            sendAddedCompanyNameToGoogleAnalytics(companyName)
-        }
-        performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kUnwindFromAddCompany, sender: self)
     }
     
     
