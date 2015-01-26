@@ -80,6 +80,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        //DataNotFoundMessageForCompanyName
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -436,7 +438,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     */
     
     
-    // MARK: - Web Services Manager API
+    // MARK: - Notification Response
     
     func showWebServicesManagerAPIGeneralErrorMessage() {
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -455,6 +457,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             alert.view.tintColor = UIColor.blueColor()
             self.presentViewController(alert, animated: true, completion: nil)
         })
+    }
+    
+    func showDataNotFoundMessageForCompanyName(notification: NSNotification!) {
+        if let userInfo = notification.userInfo as? Dictionary<String,String> {
+            if let companyName = userInfo["companyName"] {
+                let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
+                let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
+                let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
+                alert.addAction(action)
+                presentViewController(alert, animated: true, completion: nil)
+            }
+        }
     }
     
     /*

@@ -131,7 +131,7 @@ class Company: NSManagedObject {
                             abort()
                         }
                         if !scrapeSuccessful {
-                            //self.showCompanyDataNotFoundAlert(name)
+                            Company.sendDataNotFoundMessageForCompanyName(name)
                         }
                     })
                 })
@@ -171,7 +171,7 @@ class Company: NSManagedObject {
                         abort()
                     }
                     if !scrapeSuccessful {
-                        //self.showCompanyDataNotFoundAlert(companyName)
+                        Company.sendDataNotFoundMessageForCompanyName(companyName)
                     }
                 })
             })
@@ -291,6 +291,10 @@ class Company: NSManagedObject {
             //println("Unresolved error \(saveError), \(saveError.userInfo)")
             abort()
         }
+    }
+    
+    class func sendDataNotFoundMessageForCompanyName(companyName: String) {
+        NSNotificationCenter.defaultCenter().postNotificationName("DataNotFoundMessageForCompanyName", object: self, userInfo: ["companyName": companyName])
     }
     
     
