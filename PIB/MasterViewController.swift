@@ -78,10 +78,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-        //DataNotFoundMessageForCompanyName
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
+        addAllObservers()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -109,8 +106,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        removeAllObservers()
     }
     
     
@@ -131,8 +127,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
             
-            NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-            NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+            removeAllObservers()
             
             let navigationController = segue.destinationViewController as UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
@@ -143,8 +138,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        addAllObservers()
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
@@ -210,6 +204,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         return companies
+    }
+    
+    func addAllObservers() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
+    }
+    
+    func removeAllObservers() {
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     
@@ -470,11 +476,5 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
     }
-    
-    /*
-    func webServicesManagerAPI(manager: WebServicesManagerAPI, errorAlert alert: UIAlertController) {
-        presentViewController(alert, animated: true, completion: nil)
-    }
-    */
 }
 
