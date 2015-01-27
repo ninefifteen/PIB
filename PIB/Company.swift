@@ -31,14 +31,17 @@ class Company: NSManagedObject {
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
     
+    var dataDownloadCompleteWithError: Bool = false
+    var summaryDownloadError = false
+    var financialsDownloadError = false
+    var relatedCompaniesDownloadError = false
+    
     var summaryDownloadComplete: Bool = false {
         didSet {
             println("summaryDownloadComplete didSet")
             setDataDownloadCompleteIfAllComplete()
         }
     }
-    
-    var summaryDownloadError = false
     
     var financialsDownloadComplete: Bool = false {
         didSet {
@@ -47,16 +50,12 @@ class Company: NSManagedObject {
         }
     }
     
-    var financialsDownloadError = false
-    
     var relatedCompaniesDownloadComplete: Bool = false {
         didSet {
             println("relatedCompaniesDownloadComplete didSet")
             setDataDownloadCompleteIfAllComplete()
         }
     }
-    
-    var relatedCompaniesDownloadError = false
     
     
     // MARK: - Class Methods
@@ -302,7 +301,13 @@ class Company: NSManagedObject {
     
     func setDataDownloadCompleteIfAllComplete() {
         
-        if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete { dataDownloadComplete = NSNumber(bool: true) }
+        if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
+            if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
+                dataDownloadCompleteWithError = true
+            } else {
+                dataDownloadComplete = NSNumber(bool: true)
+            }
+        }
     }
     
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
