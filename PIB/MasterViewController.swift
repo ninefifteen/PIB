@@ -78,7 +78,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
         
-        addAllObservers()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -106,7 +108,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     deinit {
-        removeAllObservers()
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     
@@ -126,9 +130,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
-            
-            removeAllObservers()
-            
+                        
             let navigationController = segue.destinationViewController as UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
             let controller = navigationController.topViewController as AddCompanyTableViewController
@@ -137,8 +139,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
-        
-        addAllObservers()
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
         if let companyToAdd = controller.companyToAdd? {
@@ -204,18 +204,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         return companies
-    }
-    
-    func addAllObservers() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
-    }
-    
-    func removeAllObservers() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     
@@ -447,34 +435,26 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Notification Response
     
     func showWebServicesManagerAPIGeneralErrorMessage() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Error", message: "Unable to download data", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            self.presentViewController(alert, animated: true, completion: nil)
-        })
+        let message = "Error. Try Again Later."
+        displayErrorMessage(message)
     }
     
     func showWebServicesManagerAPIConnectionErrorMessage() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            alert.view.tintColor = UIColor.blueColor()
-            self.presentViewController(alert, animated: true, completion: nil)
-        })
+        let message = "No Internet Connection"
+        displayErrorMessage(message)
     }
     
     func showDataNotFoundMessageForCompanyName(notification: NSNotification!) {
         if let userInfo = notification.userInfo as? Dictionary<String,String> {
             if let companyName = userInfo["companyName"] {
-                let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
-                let alert = UIAlertController(title: title, message: nil, preferredStyle: UIAlertControllerStyle.Alert)
-                let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-                alert.addAction(action)
-                presentViewController(alert, animated: true, completion: nil)
+                let message = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
+                displayErrorMessage(message)
             }
         }
+    }
+    
+    func displayErrorMessage(message: String) {
+        println("MasterViewController displayErrorMessage: \(message)")
     }
 }
 

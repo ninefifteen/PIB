@@ -23,6 +23,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         struct TableViewCellIdentifiers {
             static let kAddCompanyViewCompanyCell = "companyCell"
             static let kAddCompanyViewNoResultsCell = "noResultsCell"
+            static let kAddCompanyViewErrorMessageCell = "errorMessageCell"
         }
     }
     
@@ -36,6 +37,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     var managedObjectContext: NSManagedObjectContext!
     var companyToAdd: Company?
     var searchResultsCompanies = [Company]()
+    var webServicesManagerAPIMessages = [String]()
     
     @IBOutlet weak var searchBar: UISearchBar!
 
@@ -57,7 +59,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         
         searchBar.becomeFirstResponder()
         
-        addAllObservers()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,7 +69,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     }
     
     deinit {
-        removeAllObservers()
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
     }
     
     
@@ -83,6 +87,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             WebServicesManagerAPI.sharedInstance.downloadCompaniesMatchingSearchTerm(searchText, withCompletion: { (companies, success) -> Void in
                 if success {
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.webServicesManagerAPIMessages.removeAll(keepCapacity: false)
                         self.searchResultsCompanies = companies
                         self.tableView.reloadData()
                     })
@@ -91,6 +96,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             
         } else {
             
+            webServicesManagerAPIMessages.removeAll(keepCapacity: false)
             searchResultsCompanies.removeAll(keepCapacity: false)
             self.tableView.reloadData()
         }
@@ -100,8 +106,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        
-        removeAllObservers()
         
         if let tableViewCell = sender as? UITableViewCell {
             if let indexPath = tableView.indexPathForSelectedRow() {
@@ -146,6 +150,13 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             cell.detailTextLabel!.text = "(" + company.exchangeDisplayName + ":" + company.tickerSymbol + ")"
             return cell
             
+        } else if webServicesManagerAPIMessages.count > 0 {
+            
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewErrorMessageCell, forIndexPath: indexPath) as UITableViewCell
+            let message = webServicesManagerAPIMessages[0]
+            cell.textLabel?.text = message
+            return cell
+            
         } else {
             
             let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewNoResultsCell, forIndexPath: indexPath) as UITableViewCell
@@ -164,35 +175,25 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         }
     }
     
-    func addAllObservers() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-    }
-    
-    func removeAllObservers() {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-    }
-    
     
     // MARK: - Web Services Manager API
     
     func showWebServicesManagerAPIGeneralErrorMessage() {
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Error", message: "Unable to download data", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            self.presentViewController(alert, animated: true, completion: nil)
-        })
+        let message = "Error. Try Again Later."
+        displayErrorMessage(message)
     }
     
     func showWebServicesManagerAPIConnectionErrorMessage() {
+        let message = "No Internet Connection"
+        displayErrorMessage(message)
+    }
+    
+    func displayErrorMessage(message: String) {
+        searchResultsCompanies.removeAll(keepCapacity: false)
+        webServicesManagerAPIMessages.removeAll(keepCapacity: true)
+        webServicesManagerAPIMessages.append(message)
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            let alert = UIAlertController(title: "Connection Error", message: "You do not appear to be connected to the internet", preferredStyle: UIAlertControllerStyle.Alert)
-            let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default, handler: nil)
-            alert.addAction(action)
-            alert.view.tintColor = UIColor.blueColor()
-            self.presentViewController(alert, animated: true, completion: nil)
+            self.tableView.reloadData()
         })
     }
 
