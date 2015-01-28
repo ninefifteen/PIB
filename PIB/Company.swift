@@ -27,11 +27,11 @@ class Company: NSManagedObject {
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
     @NSManaged var dataDownloadComplete: NSNumber
+    @NSManaged var dataDownloadCompleteWithError: NSNumber
     @NSManaged var isTarget: NSNumber
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
     
-    var dataDownloadCompleteWithError: Bool = false
     var summaryDownloadError = false
     var financialsDownloadError = false
     var relatedCompaniesDownloadError = false
@@ -297,7 +297,7 @@ class Company: NSManagedObject {
         
         if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
             if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
-                dataDownloadCompleteWithError = true
+                dataDownloadCompleteWithError = NSNumber(bool: true)
             } else {
                 dataDownloadComplete = NSNumber(bool: true)
             }

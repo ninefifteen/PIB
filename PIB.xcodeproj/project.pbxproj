@@ -177,6 +177,7 @@
 		45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandedDescriptionViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
+		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -827,9 +828,10 @@
 		4512694B1A433020005A01CC /* PIB.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */,
 				4512694C1A433020005A01CC /* PIB.xcdatamodel */,
 			);
-			currentVersion = 4512694C1A433020005A01CC /* PIB.xcdatamodel */;
+			currentVersion = 45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */;
 			path = PIB.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
