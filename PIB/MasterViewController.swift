@@ -139,6 +139,28 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
+    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+        
+        
+        
+        if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
+            if let indexPath = self.tableView.indexPathForSelectedRow() {
+                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                if company.dataDownloadComplete.boolValue {
+                    return true
+                } else if company.dataDownloadCompleteWithError.boolValue {
+                    if let tableCell = sender as? UITableViewCell {
+                        //tableCell.setSelected(false, animated: true)
+                        let context = self.fetchedResultsController.managedObjectContext
+                        removeTargetCompany(company, inManagedObjectContext: context)
+                    }
+                    return false
+                }
+            }
+        }
+        return true
+    }
+    
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
@@ -207,6 +229,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return companies
     }
     
+    func removeTargetCompany(company: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
+        
+        if company.targets.count > 0 {
+            company.changeFromTargetToPeerInManagedObjectContext(managedObjectContext)
+        } else {
+            managedObjectContext.deleteObject(company)
+            var error: NSError? = nil
+            if !managedObjectContext.save(&error) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(error), \(error.userInfo)")
+                abort()
+            }
+        }
+    }
+    
     
     // MARK: - Table View
     
@@ -237,29 +275,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let context = self.fetchedResultsController.managedObjectContext
             let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
             
-            if company.targets.count > 0 {
-                company.isTarget = NSNumber(bool: false)
-                var error: NSError? = nil
-                if !context.save(&error) {
-                    // Replace this implementation with code to handle the error appropriately.
-                    // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                    //println("Unresolved error \(error), \(error.userInfo)")
-                    abort()
-                }
-                var peers = company.peers.mutableCopy() as NSMutableSet
-                peers.removeAllObjects()
-                company.peers = peers.copy() as NSSet
-            } else {
-                context.deleteObject(company)
-            }
-            
-            var error: NSError? = nil
-            if !context.save(&error) {
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                //println("Unresolved error \(error), \(error.userInfo)")
-                abort()
-            }
+            removeTargetCompany(company, inManagedObjectContext: context)
         }
     }
     
@@ -287,17 +303,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let noDataLabel = cell.viewWithTag(106) as UILabel
             
             if company.dataDownloadComplete.boolValue {
+                cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
                 revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
                 activityIndicator.hidden = true
                 noDataLabel.hidden = true
             } else if company.dataDownloadCompleteWithError.boolValue {
+                cell.contentView.alpha = 0.5
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = true
                 noDataLabel.hidden = false
             } else {
+                cell.contentView.alpha = 1.0
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = false
@@ -305,7 +324,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 noDataLabel.hidden = true
             }
             
-            cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
+            cell.userInteractionEnabled = company.dataDownloadComplete.boolValue || company.dataDownloadCompleteWithError.boolValue ? true : false
         }
     }
     

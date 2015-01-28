@@ -121,7 +121,7 @@
                                     <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="VVC-je-NKy"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="masterViewErrorCell" id="DkL-hg-yLA">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="masterViewErrorCell" id="DkL-hg-yLA">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DkL-hg-yLA" id="oB0-Wp-2gj">
@@ -140,18 +140,10 @@
                                             <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jEq-aL-0eD">
-                                            <rect key="frame" x="521" y="15" width="63" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                     </subviews>
                                     <constraints>
-                                        <constraint firstAttribute="centerY" secondItem="jEq-aL-0eD" secondAttribute="centerY" id="1bL-4e-Qo2"/>
                                         <constraint firstItem="v7v-r8-p6o" firstAttribute="leading" secondItem="oB0-Wp-2gj" secondAttribute="leadingMargin" constant="8" id="3VN-Wy-YNX"/>
                                         <constraint firstItem="v7v-r8-p6o" firstAttribute="top" secondItem="xY9-yd-tZc" secondAttribute="bottom" constant="3" id="Gb9-gf-DKF"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="jEq-aL-0eD" secondAttribute="trailing" constant="8" id="Qiz-NL-6Hs"/>
                                         <constraint firstItem="xY9-yd-tZc" firstAttribute="top" secondItem="oB0-Wp-2gj" secondAttribute="topMargin" constant="-1" id="XkY-2f-ZHA"/>
                                         <constraint firstItem="xY9-yd-tZc" firstAttribute="leading" secondItem="oB0-Wp-2gj" secondAttribute="leadingMargin" constant="8" id="Zbb-Gn-6C1"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="v7v-r8-p6o" secondAttribute="trailing" constant="80" id="afm-Kh-ylR"/>
