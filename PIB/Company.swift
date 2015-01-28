@@ -35,27 +35,9 @@ class Company: NSManagedObject {
     var summaryDownloadError = false
     var financialsDownloadError = false
     var relatedCompaniesDownloadError = false
-    
-    var summaryDownloadComplete: Bool = false {
-        didSet {
-            println("summaryDownloadComplete didSet")
-            setDataDownloadCompleteIfAllComplete()
-        }
-    }
-    
-    var financialsDownloadComplete: Bool = false {
-        didSet {
-            println("financialsDownloadComplete didSet")
-            setDataDownloadCompleteIfAllComplete()
-        }
-    }
-    
-    var relatedCompaniesDownloadComplete: Bool = false {
-        didSet {
-            println("relatedCompaniesDownloadComplete didSet")
-            setDataDownloadCompleteIfAllComplete()
-        }
-    }
+    var summaryDownloadComplete: Bool = false
+    var financialsDownloadComplete: Bool = false
+    var relatedCompaniesDownloadComplete: Bool = false
     
     
     // MARK: - Class Methods
@@ -107,8 +89,27 @@ class Company: NSManagedObject {
         company.dataDownloadComplete = NSNumber(bool: false)
         company.isTarget = NSNumber(bool: true)
         
+        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                company.summaryDownloadComplete = true
+                company.summaryDownloadError = !success
+            })
+        })
+        WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                company.financialsDownloadComplete = true
+                company.financialsDownloadError = !success
+            })
+        })
+        WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                company.relatedCompaniesDownloadComplete = true
+                company.relatedCompaniesDownloadError = !success
+            })
+        })
+        
         // Download fundamentals for newly added company.
-        var scrapeSuccessful: Bool = false
+        /*var scrapeSuccessful: Bool = false
         WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
             scrapeSuccessful = success
             WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
@@ -135,7 +136,7 @@ class Company: NSManagedObject {
                     })
                 })
             })
-        })
+        })*/
     }
     
     class func updateSavedCompany(company: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
@@ -292,14 +293,7 @@ class Company: NSManagedObject {
         }
     }
     
-    class func sendDataNotFoundMessageForCompanyName(companyName: String) {
-        NSNotificationCenter.defaultCenter().postNotificationName("DataNotFoundMessageForCompanyName", object: self, userInfo: ["companyName": companyName])
-    }
-    
-    
-    // MARK: - Instance Methods
-    
-    func setDataDownloadCompleteIfAllComplete() {
+    func setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
         if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
             if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
@@ -309,6 +303,13 @@ class Company: NSManagedObject {
             }
         }
     }
+    
+    class func sendDataNotFoundMessageForCompanyName(companyName: String) {
+        NSNotificationCenter.defaultCenter().postNotificationName("DataNotFoundMessageForCompanyName", object: self, userInfo: ["companyName": companyName])
+    }
+    
+    
+    // MARK: - Instance Methods
     
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
         
