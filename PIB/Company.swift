@@ -93,50 +93,23 @@ class Company: NSManagedObject {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.summaryDownloadComplete = true
                 company.summaryDownloadError = !success
+                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
             })
         })
         WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.financialsDownloadComplete = true
                 company.financialsDownloadError = !success
+                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
             })
         })
         WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.relatedCompaniesDownloadComplete = true
                 company.relatedCompaniesDownloadError = !success
+                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
             })
         })
-        
-        // Download fundamentals for newly added company.
-        /*var scrapeSuccessful: Bool = false
-        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                if scrapeSuccessful { scrapeSuccessful = success }
-                WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
-                    if scrapeSuccessful { scrapeSuccessful = success }
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        if !scrapeSuccessful {
-                            managedObjectContext.deleteObject(company)
-                        } else {
-                            company.dataDownloadComplete = true
-                        }
-                        // Save the context.
-                        var error: NSError? = nil
-                        if !managedObjectContext.save(&error) {
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        if !scrapeSuccessful {
-                            Company.sendDataNotFoundMessageForCompanyName(name)
-                        }
-                    })
-                })
-            })
-        })*/
     }
     
     class func updateSavedCompany(company: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
@@ -151,31 +124,7 @@ class Company: NSManagedObject {
         company.dataDownloadComplete = NSNumber(bool: false)
         
         // Download fundamentals for newly added company.
-        var scrapeSuccessful: Bool = false
-        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-                if scrapeSuccessful { scrapeSuccessful = success }
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    if !scrapeSuccessful {
-                        managedObjectContext.deleteObject(company)
-                    } else {
-                        company.dataDownloadComplete = true
-                    }
-                    // Save the context.
-                    var error: NSError? = nil
-                    if !managedObjectContext.save(&error) {
-                        // Replace this implementation with code to handle the error appropriately.
-                        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                        //println("Unresolved error \(error), \(error.userInfo)")
-                        abort()
-                    }
-                    if !scrapeSuccessful {
-                        Company.sendDataNotFoundMessageForCompanyName(companyName)
-                    }
-                })
-            })
-        })
+        // IMPLEMENTATION NEEDED!!!
     }
     
     class func saveNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
@@ -205,31 +154,8 @@ class Company: NSManagedObject {
             
             let companyName = name   // Used for error message in the event financial data is not found.
             
-            /*
             // Download fundamentals for newly added company.
-            var scrapeSuccessful: Bool = false
-            downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
-            scrapeSuccessful = success
-            self.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
-            if scrapeSuccessful { scrapeSuccessful = success }
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            if !scrapeSuccessful {
-            self.managedObjectContext.deleteObject(company)
-            } else {
-            company.dataDownloadComplete = true
-            }
-            // Save the context.
-            var error: NSError? = nil
-            if !self.managedObjectContext.save(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-            }
-            })
-            })
-            })
-            */
+            // IMPLEMENTATION NEEDED!!!
         }
     }
 
@@ -296,10 +222,20 @@ class Company: NSManagedObject {
     func setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
         if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
+            
             if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
                 dataDownloadCompleteWithError = NSNumber(bool: true)
             } else {
                 dataDownloadComplete = NSNumber(bool: true)
+            }
+            
+            // Save the context.
+            var saveError: NSError? = nil
+            if !managedObjectContext.save(&saveError) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(saveError), \(saveError.userInfo)")
+                abort()
             }
         }
     }

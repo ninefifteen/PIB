@@ -360,7 +360,7 @@ class WebServicesManagerAPI: NSObject {
         for (index: String, subJson: JSON) in json {
             
             if let type = subJson["type"].string {
-                if type == "S" {
+                //if type == "S" {
                     if let tickerSymbol = subJson["symbol"].string {
                         if tickerSymbol.rangeOfString(".") == nil {
                             var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
@@ -379,7 +379,7 @@ class WebServicesManagerAPI: NSObject {
                             companies.append(company)
                         }
                     }
-                }
+                //}
             }
         }
         

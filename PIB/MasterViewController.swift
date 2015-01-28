@@ -23,6 +23,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         struct TableViewCellIdentifiers {
             static let kMasterViewTableCell = "masterViewCell"
+            static let kMasterViewErrorTableCell = "masterViewErrorCell"
         }
     }
     
@@ -219,6 +220,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath)
         return cell
@@ -279,22 +281,28 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 locationLabel.text = " "
             }
             
+            let revenueLabel = cell.viewWithTag(103) as UILabel
+            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+            let noDataLabel = cell.viewWithTag(106) as UILabel
+            
             if company.dataDownloadComplete.boolValue {
-                let revenueLabel = cell.viewWithTag(103) as UILabel
                 revenueLabel.hidden = false
-                let revenueTitleLabel = cell.viewWithTag(104) as UILabel
                 revenueTitleLabel.hidden = false
                 revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
-                let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
                 activityIndicator.hidden = true
-            } else {
-                let revenueLabel = cell.viewWithTag(103) as UILabel
+                noDataLabel.hidden = true
+            } else if company.dataDownloadCompleteWithError.boolValue {
                 revenueLabel.hidden = true
-                let revenueTitleLabel = cell.viewWithTag(104) as UILabel
                 revenueTitleLabel.hidden = true
-                let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+                activityIndicator.hidden = true
+                noDataLabel.hidden = false
+            } else {
+                revenueLabel.hidden = true
+                revenueTitleLabel.hidden = true
                 activityIndicator.hidden = false
                 activityIndicator.startAnimating()
+                noDataLabel.hidden = true
             }
             
             cell.userInteractionEnabled = company.dataDownloadComplete.boolValue ? true : false
