@@ -92,7 +92,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                 })
             } else if isFirstAppearanceOfView {
-                Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
+                //Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
             }
         }
         
@@ -291,9 +291,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
             
             if company.dataDownloadComplete.boolValue {
-                
+                                
                 cell.accessoryView = nil
-                //cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
@@ -309,7 +308,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 activityIndicator.hidden = true
                 noDataAvailableLabel.hidden = false
                 
-                let rawImage = UIImage(named: "trashCan")
+                let rawImage = UIImage(named: "trashCanSmall")
                 if let image = rawImage?.imageByApplyingAlpha(0.5) {
                     let button: UIButton = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
                     let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
@@ -324,7 +323,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             } else {
                 
                 cell.accessoryView = nil
-                //cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
