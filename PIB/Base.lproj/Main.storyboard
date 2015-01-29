@@ -77,6 +77,11 @@
                                             <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="106" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Available" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gig-An-MbX">
+                                            <rect key="frame" x="16" y="31" width="92" height="14"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some City, ST United States" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v7r-fM-3gn">
                                             <rect key="frame" x="16" y="31" width="147" height="14"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="11"/>
@@ -99,12 +104,14 @@
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="wdE-Tj-kZW" secondAttribute="trailing" constant="70" id="5ID-0v-Zgf"/>
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="top" secondItem="3DM-MB-fO4" secondAttribute="topMargin" constant="-1" id="BJ2-yc-2II"/>
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="bottom" secondItem="7jD-uo-l9B" secondAttribute="bottom" id="Czd-wN-WLR"/>
+                                        <constraint firstItem="Gig-An-MbX" firstAttribute="top" secondItem="wdE-Tj-kZW" secondAttribute="bottom" constant="3" id="Gfr-UY-LlO"/>
                                         <constraint firstItem="v7r-fM-3gn" firstAttribute="bottom" secondItem="zrG-yX-aCw" secondAttribute="bottom" id="Q1E-Od-bUV"/>
                                         <constraint firstItem="7jD-uo-l9B" firstAttribute="trailing" secondItem="3DM-MB-fO4" secondAttribute="trailingMargin" constant="-8" id="TIt-hV-NJR"/>
                                         <constraint firstAttribute="centerY" secondItem="Wax-N6-GGW" secondAttribute="centerY" id="Yxr-7y-32z"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Wax-N6-GGW" secondAttribute="trailing" constant="8" id="iIZ-uk-jE0"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="v7r-fM-3gn" secondAttribute="trailing" constant="70" id="iYX-jx-boc"/>
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="leading" secondItem="3DM-MB-fO4" secondAttribute="leadingMargin" constant="8" id="lsG-f4-Fo0"/>
+                                        <constraint firstItem="Gig-An-MbX" firstAttribute="leading" secondItem="3DM-MB-fO4" secondAttribute="leadingMargin" constant="8" id="qCS-DT-SGS"/>
                                         <constraint firstItem="zrG-yX-aCw" firstAttribute="trailing" secondItem="3DM-MB-fO4" secondAttribute="trailingMargin" constant="-8" id="yAe-ZX-7u4"/>
                                     </constraints>
                                 </tableViewCellContentView>
@@ -112,37 +119,6 @@
                                 <connections>
                                     <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="VVC-je-NKy"/>
                                 </connections>
-                            </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="detailButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="masterViewErrorCell" id="DkL-hg-yLA">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DkL-hg-yLA" id="oB0-Wp-2gj">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xY9-yd-tZc">
-                                            <rect key="frame" x="16" y="7" width="46" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some City, ST United States" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v7v-r8-p6o">
-                                            <rect key="frame" x="16" y="31" width="147" height="14"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                            <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="v7v-r8-p6o" firstAttribute="leading" secondItem="oB0-Wp-2gj" secondAttribute="leadingMargin" constant="8" id="3VN-Wy-YNX"/>
-                                        <constraint firstItem="v7v-r8-p6o" firstAttribute="top" secondItem="xY9-yd-tZc" secondAttribute="bottom" constant="3" id="Gb9-gf-DKF"/>
-                                        <constraint firstItem="xY9-yd-tZc" firstAttribute="top" secondItem="oB0-Wp-2gj" secondAttribute="topMargin" constant="-1" id="XkY-2f-ZHA"/>
-                                        <constraint firstItem="xY9-yd-tZc" firstAttribute="leading" secondItem="oB0-Wp-2gj" secondAttribute="leadingMargin" constant="8" id="Zbb-Gn-6C1"/>
-                                        <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="v7v-r8-p6o" secondAttribute="trailing" constant="80" id="afm-Kh-ylR"/>
-                                        <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="xY9-yd-tZc" secondAttribute="trailing" constant="80" id="ftc-aU-jj4"/>
-                                    </constraints>
-                                </tableViewCellContentView>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </tableViewCell>
                         </prototypes>
                         <sections/>

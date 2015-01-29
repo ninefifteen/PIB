@@ -78,10 +78,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let controllers = split.viewControllers
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "showDataNotFoundMessageForCompanyName:", name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -106,12 +102,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
-    }
-    
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: "DataNotFoundMessageForCompanyName", object: nil)
     }
     
     
@@ -298,6 +288,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let revenueLabel = cell.viewWithTag(103) as UILabel
             let revenueTitleLabel = cell.viewWithTag(104) as UILabel
             let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+            let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
             
             if company.dataDownloadComplete.boolValue {
                 
@@ -307,6 +298,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueTitleLabel.hidden = false
                 revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
                 activityIndicator.hidden = true
+                noDataAvailableLabel.hidden = true
                 
             } else if company.dataDownloadCompleteWithError.boolValue {
                 
@@ -314,6 +306,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = true
+                noDataAvailableLabel.hidden = false
                 
                 let rawImage = UIImage(named: "trashCan")
                 if let image = rawImage?.imageByApplyingAlpha(0.5) {
@@ -335,6 +328,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = false
                 activityIndicator.startAnimating()
+                noDataAvailableLabel.hidden = true
             }
         
             cell.userInteractionEnabled = company.dataDownloadComplete.boolValue || company.dataDownloadCompleteWithError.boolValue ? true : false
@@ -503,30 +497,5 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     */
     
-    
-    // MARK: - Notification Response
-    
-    func showWebServicesManagerAPIGeneralErrorMessage() {
-        let message = "Error. Try Again Later."
-        displayErrorMessage(message)
-    }
-    
-    func showWebServicesManagerAPIConnectionErrorMessage() {
-        let message = "No Internet Connection"
-        displayErrorMessage(message)
-    }
-    
-    func showDataNotFoundMessageForCompanyName(notification: NSNotification!) {
-        if let userInfo = notification.userInfo as? Dictionary<String,String> {
-            if let companyName = userInfo["companyName"] {
-                let message = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
-                displayErrorMessage(message)
-            }
-        }
-    }
-    
-    func displayErrorMessage(message: String) {
-        println("MasterViewController displayErrorMessage: \(message)")
-    }
 }
 
