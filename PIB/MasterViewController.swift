@@ -141,8 +141,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
         
-        
-        
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
                 let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
@@ -150,9 +148,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     return true
                 } else if company.dataDownloadCompleteWithError.boolValue {
                     if let tableCell = sender as? UITableViewCell {
-                        //tableCell.setSelected(false, animated: true)
-                        let context = self.fetchedResultsController.managedObjectContext
-                        removeTargetCompany(company, inManagedObjectContext: context)
+                        tableCell.setSelected(false, animated: true)
+                        //let context = self.fetchedResultsController.managedObjectContext
+                        //removeTargetCompany(company, inManagedObjectContext: context)
                     }
                     return false
                 }
@@ -300,31 +298,78 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let revenueLabel = cell.viewWithTag(103) as UILabel
             let revenueTitleLabel = cell.viewWithTag(104) as UILabel
             let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
-            let noDataLabel = cell.viewWithTag(106) as UILabel
             
             if company.dataDownloadComplete.boolValue {
+                
+                cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
                 revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
                 activityIndicator.hidden = true
-                noDataLabel.hidden = true
+                
             } else if company.dataDownloadCompleteWithError.boolValue {
+                
                 cell.contentView.alpha = 0.5
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = true
-                noDataLabel.hidden = false
+                
+                let rawImage = UIImage(named: "trashCan")
+                if let image = rawImage?.imageByApplyingAlpha(0.5) {
+                    let button: UIButton = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+                    let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
+                    button.frame = frame
+                    button.setBackgroundImage(image, forState: .Normal)
+                    button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
+                    button.backgroundColor = UIColor.clearColor()
+                    cell.accessoryView = button
+                    cell.accessoryView?.hidden = false
+                }
+                
             } else {
+                
+                cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = false
                 activityIndicator.startAnimating()
-                noDataLabel.hidden = true
             }
-            
+        
             cell.userInteractionEnabled = company.dataDownloadComplete.boolValue || company.dataDownloadCompleteWithError.boolValue ? true : false
+        }
+    }
+    
+    func checkAccessoryDeleteButtonTapped(sender: UIButton?, event: UIEvent?) {
+        
+        if let uiEvent = event {
+            
+            let touches = uiEvent.allTouches()
+            
+            if let touch = touches?.anyObject() as? UITouch {
+                
+                let currentTouchPosition = touch.locationInView(tableView)
+                
+                if let indexPath = tableView.indexPathForRowAtPoint(currentTouchPosition) {
+                    
+                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                    
+                    if company.dataDownloadCompleteWithError.boolValue {
+                        
+                        let context = self.fetchedResultsController.managedObjectContext
+                        context.deleteObject(company)
+                        
+                        var error: NSError? = nil
+                        if !context.save(&error) {
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                    }
+                }
+            }
         }
     }
     

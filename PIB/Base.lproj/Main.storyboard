@@ -92,12 +92,6 @@
                                         <activityIndicatorView opaque="NO" tag="105" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Wax-N6-GGW">
                                             <rect key="frame" x="564" y="16" width="20" height="20"/>
                                         </activityIndicatorView>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="106" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8Fb-ib-QPP">
-                                            <rect key="frame" x="521" y="15" width="63" height="21"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="v7r-fM-3gn" firstAttribute="top" secondItem="wdE-Tj-kZW" secondAttribute="bottom" constant="3" id="32e-Af-wqT"/>
@@ -110,9 +104,7 @@
                                         <constraint firstAttribute="centerY" secondItem="Wax-N6-GGW" secondAttribute="centerY" id="Yxr-7y-32z"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="Wax-N6-GGW" secondAttribute="trailing" constant="8" id="iIZ-uk-jE0"/>
                                         <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="v7r-fM-3gn" secondAttribute="trailing" constant="70" id="iYX-jx-boc"/>
-                                        <constraint firstAttribute="centerY" secondItem="8Fb-ib-QPP" secondAttribute="centerY" id="ilq-Fk-rfB"/>
                                         <constraint firstItem="wdE-Tj-kZW" firstAttribute="leading" secondItem="3DM-MB-fO4" secondAttribute="leadingMargin" constant="8" id="lsG-f4-Fo0"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="8Fb-ib-QPP" secondAttribute="trailing" constant="8" id="t2e-MD-vSN"/>
                                         <constraint firstItem="zrG-yX-aCw" firstAttribute="trailing" secondItem="3DM-MB-fO4" secondAttribute="trailingMargin" constant="-8" id="yAe-ZX-7u4"/>
                                     </constraints>
                                 </tableViewCellContentView>
@@ -121,7 +113,7 @@
                                     <segue destination="vC3-pB-5Vb" kind="showDetail" identifier="showDetail" id="VVC-je-NKy"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="masterViewErrorCell" id="DkL-hg-yLA">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="detailButton" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="masterViewErrorCell" id="DkL-hg-yLA">
                                 <rect key="frame" x="0.0" y="86" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="DkL-hg-yLA" id="oB0-Wp-2gj">

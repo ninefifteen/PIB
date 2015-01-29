@@ -38,6 +38,7 @@
 		45126A061A435D56005A01CC /* ExpandedDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */; };
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
+		45450B781A79BF05002DCC97 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45450B771A79BF05002DCC97 /* UIImageExtension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -177,6 +178,7 @@
 		45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandedDescriptionViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
+		45450B771A79BF05002DCC97 /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -251,6 +253,7 @@
 				451269481A433020005A01CC /* Info.plist */,
 				451269821A433497005A01CC /* PIB-Bridging-Header.h */,
 				451269FD1A435BF0005A01CC /* PIBHelper.swift */,
+				45450B771A79BF05002DCC97 /* UIImageExtension.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				451269FE1A435BF0005A01CC /* PIBHelper.swift in Sources */,
 				4512694A1A433020005A01CC /* AppDelegate.swift in Sources */,
 				4512694D1A433020005A01CC /* PIB.xcdatamodeld in Sources */,
+				45450B781A79BF05002DCC97 /* UIImageExtension.swift in Sources */,
 				45126A061A435D56005A01CC /* ExpandedDescriptionViewController.swift in Sources */,
 				4512694F1A433020005A01CC /* MasterViewController.swift in Sources */,
 				451269881A433557005A01CC /* MBProgressHUD.m in Sources */,
