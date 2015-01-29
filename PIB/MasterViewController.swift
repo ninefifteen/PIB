@@ -41,7 +41,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     let masterViewTitle = "Companies"
     
-    var isFirstAppearanceOfView: Bool = true
+    var isFirstAppearanceOfView = true
     
     
     // MARK: - View Lifecycle
@@ -310,7 +310,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 
                 let rawImage = UIImage(named: "trashCanSmall")
                 if let image = rawImage?.imageByApplyingAlpha(0.5) {
-                    let button: UIButton = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+                    let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
                     let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
                     button.frame = frame
                     button.setBackgroundImage(image, forState: .Normal)
@@ -373,7 +373,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func revenueLabelStringForCompany(company: Company) -> String {
         
         var totalRevenueArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics = company.financialMetrics.allObjects as [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Revenue" {
                 totalRevenueArray.append(financialMetric)
@@ -392,7 +392,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func ebitdaMarginLabelStringForCompany(company: Company) -> String {
         
         var ebitdaMarginArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics = company.financialMetrics.allObjects as [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "EBITDA Margin" {
                 ebitdaMarginArray.append(financialMetric)
