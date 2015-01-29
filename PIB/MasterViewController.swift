@@ -292,7 +292,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             if company.dataDownloadComplete.boolValue {
                 
-                cell.accessoryView?.hidden = true
+                cell.accessoryView = nil
+                //cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
@@ -322,7 +323,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 
             } else {
                 
-                cell.accessoryView?.hidden = true
+                cell.accessoryView = nil
+                //cell.accessoryView?.hidden = true
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true

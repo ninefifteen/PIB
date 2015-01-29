@@ -984,14 +984,20 @@ class WebServicesManagerAPI: NSObject {
         
         var rawCompaniesInfoStringArray = Array<String>()
         
-        let firstSplit = rawStringData.componentsSeparatedByString("google.finance.data = ")
-        if firstSplit.count > 0 {
-            let secondSplit = firstSplit[1].componentsSeparatedByString(";\ngoogle.finance.data.numberFormat")
-            if secondSplit.count > 0 {
-                rawCompaniesInfoStringArray = secondSplit[0].componentsSeparatedByString("values:")
-                if rawCompaniesInfoStringArray.count > 0 {
-                    rawCompaniesInfoStringArray.removeAtIndex(0)
-                    rawCompaniesInfoStringArray.removeAtIndex(0)
+        if rawStringData.rangeOfString("google.finance.data = ", options: .LiteralSearch, range: nil, locale: nil) != nil {
+            let firstSplit = rawStringData.componentsSeparatedByString("google.finance.data = ")
+            if firstSplit.count > 0 {
+                if firstSplit[1].rangeOfString(";\ngoogle.finance.data.numberFormat", options: .LiteralSearch, range: nil, locale: nil) != nil {
+                    let secondSplit = firstSplit[1].componentsSeparatedByString(";\ngoogle.finance.data.numberFormat")
+                    if secondSplit.count > 0 {
+                        if secondSplit[0].rangeOfString("values:", options: .LiteralSearch, range: nil, locale: nil) != nil {
+                            rawCompaniesInfoStringArray = secondSplit[0].componentsSeparatedByString("values:")
+                            if rawCompaniesInfoStringArray.count > 0 {
+                                rawCompaniesInfoStringArray.removeAtIndex(0)
+                                rawCompaniesInfoStringArray.removeAtIndex(0)
+                            }
+                        }
+                    }
                 }
             }
         }
