@@ -9,6 +9,12 @@
 import Foundation
 import CoreData
 
+enum DataState: Int16 {
+    case DataDownloadInProgress = 0
+    case DataDownloadCompleteWithError = 1
+    case DataDownloadCompleteWithoutError = 2
+}
+
 class Company: NSManagedObject {
 
     @NSManaged var city: String
@@ -26,11 +32,10 @@ class Company: NSManagedObject {
     @NSManaged var webLink: String
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
-    @NSManaged var dataDownloadComplete: NSNumber
-    @NSManaged var dataDownloadCompleteWithError: NSNumber
     @NSManaged var isTarget: NSNumber
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
+    @NSManaged var objectState: Int16
     
     var summaryDownloadError = false
     var financialsDownloadError = false
@@ -38,6 +43,11 @@ class Company: NSManagedObject {
     var summaryDownloadComplete: Bool = false
     var financialsDownloadComplete: Bool = false
     var relatedCompaniesDownloadComplete: Bool = false
+    
+    var dataState: DataState {
+        get { return DataState(rawValue: objectState) ?? .DataDownloadCompleteWithError }
+        set { objectState = newValue.rawValue }
+    }
     
     
     // MARK: - Class Methods
@@ -86,7 +96,7 @@ class Company: NSManagedObject {
             company.employeeCount = 0
         }
         
-        company.dataDownloadComplete = NSNumber(bool: false)
+        company.dataState = .DataDownloadInProgress
         company.isTarget = NSNumber(bool: true)
         
         WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
@@ -121,7 +131,7 @@ class Company: NSManagedObject {
         financialMetrics.removeAllObjects()
         company.financialMetrics = financialMetrics.copy() as NSSet
         
-        company.dataDownloadComplete = NSNumber(bool: false)
+        company.dataState = .DataDownloadInProgress
         
         // Download fundamentals for newly added company.
         // IMPLEMENTATION NEEDED!!!
@@ -224,9 +234,9 @@ class Company: NSManagedObject {
         if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
             
             if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
-                dataDownloadCompleteWithError = NSNumber(bool: true)
+                dataState = .DataDownloadCompleteWithError
             } else {
-                dataDownloadComplete = NSNumber(bool: true)
+                dataState = .DataDownloadCompleteWithoutError
             }
             
             // Save the context.

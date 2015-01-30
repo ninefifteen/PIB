@@ -134,9 +134,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
                 let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-                if company.dataDownloadComplete.boolValue {
+                if company.dataState == .DataDownloadCompleteWithoutError {
                     return true
-                } else if company.dataDownloadCompleteWithError.boolValue {
+                } else if company.dataState == .DataDownloadCompleteWithError {
                     if let tableCell = sender as? UITableViewCell {
                         tableCell.setSelected(false, animated: true)
                         //let context = self.fetchedResultsController.managedObjectContext
@@ -290,7 +290,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
             let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
             
-            if company.dataDownloadComplete.boolValue {
+            if company.dataState == .DataDownloadCompleteWithoutError {
                                 
                 cell.accessoryView = nil
                 cell.contentView.alpha = 1.0
@@ -300,7 +300,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 activityIndicator.hidden = true
                 noDataAvailableLabel.hidden = true
                 
-            } else if company.dataDownloadCompleteWithError.boolValue {
+            } else if company.dataState == .DataDownloadCompleteWithError {
                 
                 cell.contentView.alpha = 0.5
                 revenueLabel.hidden = true
@@ -331,7 +331,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 noDataAvailableLabel.hidden = true
             }
         
-            cell.userInteractionEnabled = company.dataDownloadComplete.boolValue || company.dataDownloadCompleteWithError.boolValue ? true : false
+            cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
         }
     }
     
@@ -349,7 +349,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     
                     let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
                     
-                    if company.dataDownloadCompleteWithError.boolValue {
+                    if company.dataState == .DataDownloadCompleteWithError {
                         
                         let context = self.fetchedResultsController.managedObjectContext
                         context.deleteObject(company)

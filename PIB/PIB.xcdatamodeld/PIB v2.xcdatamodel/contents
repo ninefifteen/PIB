@@ -6,13 +6,12 @@
         <attribute name="country" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="currencyCode" optional="YES" attributeType="String" defaultValueString="-" syncable="YES"/>
         <attribute name="currencySymbol" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="dataDownloadComplete" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
-        <attribute name="dataDownloadCompleteWithError" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="employeeCount" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="exchange" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="exchangeDisplayName" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isTarget" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="objectState" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="tickerSymbol" optional="YES" attributeType="String" syncable="YES"/>
@@ -29,7 +28,7 @@
         <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="financialMetrics" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Company" positionX="-81" positionY="-18" width="128" height="345"/>
+        <element name="Company" positionX="-81" positionY="-18" width="128" height="330"/>
         <element name="FinancialMetric" positionX="189" positionY="180" width="128" height="105"/>
     </elements>
 </model>

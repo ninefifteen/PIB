@@ -28,7 +28,7 @@
         <relationship name="company" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Company" inverseName="financialMetrics" inverseEntity="Company" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Company" positionX="-81" positionY="-18" width="128" height="328"/>
+        <element name="Company" positionX="-81" positionY="-18" width="128" height="330"/>
         <element name="FinancialMetric" positionX="189" positionY="180" width="128" height="105"/>
     </elements>
 </model>
