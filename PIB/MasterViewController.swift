@@ -442,6 +442,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
         
+        println("fetchedResultsController.fetchedObjects.count: \(_fetchedResultsController?.fetchedObjects?.count)")
+        
         var error: NSError? = nil
         if !_fetchedResultsController!.performFetch(&error) {
             // Replace this implementation with code to handle the error appropriately.

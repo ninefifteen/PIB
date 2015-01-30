@@ -35,6 +35,7 @@ class Company: NSManagedObject {
     @NSManaged var isTarget: NSNumber
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
+    @NSManaged var dataDownloadComplete: NSNumber
     @NSManaged var objectState: Int16
     
     var summaryDownloadError = false
@@ -208,7 +209,7 @@ class Company: NSManagedObject {
         
         var requestError: NSError? = nil
         
-        let incompleteCompaniesPredicate = NSPredicate(format: "dataDownloadComplete == 0")
+        let incompleteCompaniesPredicate = NSPredicate(format: "objectState == 0")
         request.predicate = incompleteCompaniesPredicate
         var incompleteCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
         if requestError != nil {
@@ -216,6 +217,7 @@ class Company: NSManagedObject {
         }
         
         for company in incompleteCompaniesArray {
+            println("delete: \(company.name), dataState: \(company.dataState))")
             managedObjectContext.deleteObject(company)
         }
         
