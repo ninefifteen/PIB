@@ -329,7 +329,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - UIPageViewControllerDelegate
     
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-        println("\npageViewController didFinishAnimating previousViewControllers transitionCompleted")
         let currentContentPage = graphPageViewController.viewControllers.last as GraphContentViewController
         let currentPageIndex = currentContentPage.pageIndex
         removeValueView()
