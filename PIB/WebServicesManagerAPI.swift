@@ -653,7 +653,7 @@ class WebServicesManagerAPI: NSObject {
         var keyStatsAndRatiosHeadingFound: Bool = false
         var keyStatsAndRatiosDivIndex: Int = 0
         
-        while !keyStatsAndRatiosHeadingFound {
+        while !keyStatsAndRatiosHeadingFound && keyStatsAndRatiosDivIndex < 200 {
             keyStatsAndRatiosDivIndex++
             let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/h3"
             

@@ -297,6 +297,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
                 revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+                locationLabel.hidden = false
                 activityIndicator.hidden = true
                 noDataAvailableLabel.hidden = true
                 
@@ -306,6 +307,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
                 activityIndicator.hidden = true
+                locationLabel.hidden = true
                 noDataAvailableLabel.hidden = false
                 
                 let rawImage = UIImage(named: "trashCanSmall")
@@ -326,6 +328,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = true
                 revenueTitleLabel.hidden = true
+                locationLabel.hidden = false
                 activityIndicator.hidden = false
                 activityIndicator.startAnimating()
                 noDataAvailableLabel.hidden = true
