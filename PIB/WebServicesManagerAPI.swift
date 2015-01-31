@@ -196,7 +196,12 @@ class WebServicesManagerAPI: NSObject {
                     }
                     self.sendGeneralErrorMessage()
                 }
-            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
+            } else if error.code == -999 {  // Error caused by cancelling of the data task.
+                println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+            } else {  // Any other error.
                 println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
                     completion!(success: false)
@@ -242,8 +247,13 @@ class WebServicesManagerAPI: NSObject {
                     }
                     self.sendGeneralErrorMessage()
                 }
-            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
-                println("Unable To Download Company Financial Data. Connection Error: \(error.localizedDescription)")
+            } else if error.code == -999 {  // Error caused by cancelling of the data task.
+                println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+            } else {  // Any other error.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
                     completion!(success: false)
                 }
@@ -288,8 +298,13 @@ class WebServicesManagerAPI: NSObject {
                     }
                     self.sendGeneralErrorMessage()
                 }
-            } else if error.code != -999 {  // Error not caused by cancelling of the data task.
-                println("Unable To Download Related Companies Data. Connection Error: \(error.localizedDescription)")
+            } else if error.code == -999 {  // Error caused by cancelling of the data task.
+                println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(success: false)
+                }
+            } else {  // Any other error.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
                     completion!(success: false)
                 }
@@ -639,7 +654,6 @@ class WebServicesManagerAPI: NSObject {
         var keyStatsAndRatiosDivIndex: Int = 0
         
         while !keyStatsAndRatiosHeadingFound {
-            
             keyStatsAndRatiosDivIndex++
             let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/h3"
             
