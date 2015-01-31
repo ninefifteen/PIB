@@ -32,10 +32,9 @@ class Company: NSManagedObject {
     @NSManaged var webLink: String
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
-    @NSManaged var isTarget: NSNumber
+    @NSManaged var isTargetCompany: NSNumber
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
-    @NSManaged var dataDownloadComplete: NSNumber
     @NSManaged var objectState: Int16
     
     var summaryDownloadError = false
@@ -59,7 +58,7 @@ class Company: NSManagedObject {
         
         if let savedCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
-            if savedCompany.isTarget.boolValue {   // Company is already saved to app as a target company.
+            if savedCompany.isTargetCompany.boolValue {   // Company is already saved to app as a target company.
                 
                 //updateSavedCompany(savedCompany)
                 return
@@ -98,7 +97,7 @@ class Company: NSManagedObject {
         }
         
         company.dataState = .DataDownloadInProgress
-        company.isTarget = NSNumber(bool: true)
+        company.isTargetCompany = NSNumber(bool: true)
         
         WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
@@ -161,7 +160,7 @@ class Company: NSManagedObject {
             company.currencySymbol = ""
             //company.currencyCode = ""
             company.employeeCount = 0
-            company.isTarget = NSNumber(bool: false)
+            company.isTargetCompany = NSNumber(bool: false)
             
             let companyName = name   // Used for error message in the event financial data is not found.
             
@@ -261,7 +260,7 @@ class Company: NSManagedObject {
     
     func changeFromTargetToPeerInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
-        isTarget = NSNumber(bool: false)
+        isTargetCompany = NSNumber(bool: false)
         var error: NSError? = nil
         if !managedObjectContext.save(&error) {
             // Replace this implementation with code to handle the error appropriately.

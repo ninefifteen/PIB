@@ -427,7 +427,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         fetchRequest.fetchBatchSize = 20
         
         // Only fetch target companies.
-        let predicate = NSPredicate(format: "isTarget == 1")
+        let predicate = NSPredicate(format: "isTargetCompany == 1")
         fetchRequest.predicate = predicate
         
         // Edit the sort key as appropriate.
@@ -441,8 +441,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
         aFetchedResultsController.delegate = self
         _fetchedResultsController = aFetchedResultsController
-        
-        println("fetchedResultsController.fetchedObjects.count: \(_fetchedResultsController?.fetchedObjects?.count)")
         
         var error: NSError? = nil
         if !_fetchedResultsController!.performFetch(&error) {
