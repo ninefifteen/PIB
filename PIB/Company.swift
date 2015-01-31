@@ -166,6 +166,9 @@ class Company: NSManagedObject {
             
             // Download fundamentals for newly added company.
             // IMPLEMENTATION NEEDED!!!
+            
+            // CHANGE THIS ONCE THIS METHOD IS FULLY IMPLEMENTED!!!
+            company.dataState = .DataDownloadCompleteWithoutError
         }
     }
 

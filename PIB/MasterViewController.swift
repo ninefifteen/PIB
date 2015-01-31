@@ -92,7 +92,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                 })
             } else if isFirstAppearanceOfView {
-                //Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
+                Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
             }
         }
         
