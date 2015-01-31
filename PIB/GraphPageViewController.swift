@@ -19,6 +19,10 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     weak var graphContentViewControllerDelegate: DetailViewController!
     
+    var currentViewController: GraphContentViewController?
+    var viewControllerBeforeCurrentViewController: GraphContentViewController?
+    var viewControllerAfterCurrentViewController: GraphContentViewController?
+    
     
     // MARK: - View Lifecycle
     
@@ -26,7 +30,11 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         super.viewDidLoad()
         
-        let graphContentViewController = self.viewControllerAtIndex(0, storyboard: storyboard!)
+        currentViewController = viewControllerAtIndex(0, storyboard: storyboard!)
+        viewControllerBeforeCurrentViewController = viewControllerAtIndex(-1, storyboard: storyboard!)
+        viewControllerAfterCurrentViewController = viewControllerAtIndex(1, storyboard: storyboard!)
+        
+        let graphContentViewController = currentViewController
         
         if graphContentViewController != nil {
             self.dataSource = self
@@ -37,15 +45,17 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     // MARK: - General Methods
     
-    
     func viewControllerAtIndex(index: Int, storyboard: UIStoryboard) -> GraphContentViewController? {
+        
+        println("\nviewControllerAtIndex")
 
-        if pageIndices.count == 0 || index >= pageIndices.count {
+        if pageIndices.count == 0 || index < 0 || index >= pageIndices.count {
             return nil
         }
         
         // Create a new view controller and pass suitable data.
         if  company != nil {
+            println("creating \(pageIdentifiers[index]) ViewController")
             let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as GraphContentViewController
             graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
@@ -59,6 +69,9 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }
     
     func scrollToViewControllerAtIndex(index: Int) {
+        
+         println("\nscrollToViewControllerAtIndex")
+        
         let graphContentViewController = self.viewControllerAtIndex(index, storyboard: storyboard!)
         if graphContentViewController != nil {
             setViewControllers([graphContentViewController!], direction: UIPageViewControllerNavigationDirection.Forward, animated: true, completion: nil)
@@ -75,14 +88,24 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
             return nil
         }
         
-        index--
-        return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)
+        viewControllerAfterCurrentViewController = currentViewController
+        currentViewController = viewControllerBeforeCurrentViewController
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            self.viewControllerBeforeCurrentViewController = self.viewControllerAtIndex(index - 2, storyboard: self.storyboard!)
+        })
+        
+        return currentViewController
+        
+        /*index--
+        println("\nviewControllerBeforeViewController: \(pageIdentifiers[index])")
+        return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)*/
     }
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-        
+                
         var index = (viewController as GraphContentViewController).pageIndex
         if index == NSNotFound {
+            println("\nviewControllerBeforeViewController: nil)")
             return nil
         }
         
@@ -90,7 +113,17 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         if index == self.pageIndices.count {
             return nil
         }
-        return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)
+        
+        viewControllerBeforeCurrentViewController = currentViewController
+        currentViewController = viewControllerAfterCurrentViewController
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
+            self.viewControllerAfterCurrentViewController = self.viewControllerAtIndex(index + 1, storyboard: self.storyboard!)
+        })
+        
+        return currentViewController
+        
+        /*println("\nviewControllerAfterViewController: \(pageIdentifiers[index])")
+        return self.viewControllerAtIndex(index, storyboard: viewController.storyboard!)*/
     }
 
 }
