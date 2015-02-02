@@ -99,7 +99,7 @@ class WebServicesManagerAPI: NSObject {
                     
                     let paddingStrippedData = self.stripJsonPaddingFromData(data)
                     
-                    companies = self.companiesFromData(paddingStrippedData)
+                    companies = self.companiesFromYahooData(paddingStrippedData)
                     
                     if completion != nil {
                         completion!(companies: companies, success: true)
@@ -284,10 +284,9 @@ class WebServicesManagerAPI: NSObject {
                 
                 if httpResponse.statusCode == 200 {
                     
-                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        let parseSuccess = self.parseAndAddGoogleRelatedCompaniesData(data, forCompany: company)
+                    self.addGoogleRelatedCompaniesFromData(data, forCompany: company, withCompletion: { (success) -> Void in
                         if completion != nil {
-                            completion!(success: parseSuccess)
+                            completion!(success: success)
                         }
                     })
                     
@@ -363,44 +362,6 @@ class WebServicesManagerAPI: NSObject {
         range.location++
         range.length = dataString.length - range.location - 1
         return dataString.substringWithRange(range).dataUsingEncoding(NSUTF8StringEncoding)!
-    }
-    
-    func companiesFromData(data: NSData) -> [Company] {
-        
-        var companies = [Company]()
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        
-        // Use SwiftyJSON for handling JSON.
-        let json = JSON(data: data)["ResultSet"]["Result"]
-        //println(json.description)
-        
-        for (index: String, subJson: JSON) in json {
-            
-            if let type = subJson["type"].string {
-                if type == "S" {
-                    if let tickerSymbol = subJson["symbol"].string {
-                        if tickerSymbol.rangeOfString(".") == nil {
-                            var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
-                            company.tickerSymbol = tickerSymbol
-                            if var exchDisp = subJson["exchDisp"].string {
-                                if exchDisp == "OTC Markets" { exchDisp = "OTCMKTS" }
-                                company.exchangeDisplayName = exchDisp
-                            }
-                            if let exch = subJson["exch"].string {
-                                company.exchange = exch
-                            }
-                            if let name = subJson["name"].string {
-                                company.name = name
-                            }
-                            
-                            companies.append(company)
-                        }
-                    }
-                }
-            }
-        }
-        
-        return companies
     }
     
     func currencySymbolForCurrencyCode(currencyCode: String) -> String {
@@ -506,7 +467,7 @@ class WebServicesManagerAPI: NSObject {
     }
     
     
-    // MARK: - HTML Parsing
+    // MARK: - Parsing
     
     func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) -> Bool {
         
@@ -991,10 +952,41 @@ class WebServicesManagerAPI: NSObject {
         return true
     }
     
-    func parseAndAddGoogleRelatedCompaniesData(data: NSData, forCompany company: Company) -> Bool {
+    func addGoogleRelatedCompaniesFromData(data: NSData, forCompany company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        let dispatchGroup = dispatch_group_create()
+        
+        let relatedCompanies = parseGoogleRelatedCompaniesData(data)
+        
+        for relatedCompany in relatedCompanies {
+            
+            dispatch_group_enter(dispatchGroup)
+            
+            if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                dispatch_group_leave(dispatchGroup)
+            } else {
+                Company.saveNewPeerCompanyWithName(relatedCompany.name, tickerSymbol: relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                    company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+                    dispatch_group_leave(dispatchGroup)
+                })
+            }
+        }
+        
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+            if completion != nil {
+                completion!(success: true)
+            }
+        }
+    }
+    
+    func parseGoogleRelatedCompaniesData(data: NSData) -> Array<Company> {
+        
+        var companies = [Company]()
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
         
         let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-        //println("WebServicesManagerAPI parseAndAddGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
+        //println("WebServicesManagerAPI parseGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
         
         var rawCompaniesInfoStringArray = Array<String>()
         
@@ -1018,8 +1010,6 @@ class WebServicesManagerAPI: NSObject {
         
         for rawCompanyInfoString in rawCompaniesInfoStringArray {
             
-            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-            
             var companyInfoString = rawCompanyInfoString.componentsSeparatedByString("}")[0]
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("[", withString: "", options: .LiteralSearch, range: nil)
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("]", withString: "", options: .LiteralSearch, range: nil)
@@ -1038,16 +1028,54 @@ class WebServicesManagerAPI: NSObject {
                 let companyName = cleanedCompanyInfoArray[1]
                 //println("tickerSymbol: \(tickerSymbol), companyName: \(companyName), exchangeDisplayName: \(exchangeDisplayName)")
                 
-                if Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    company.addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-                } else {
-                    Company.saveNewPeerCompanyWithName(companyName, tickerSymbol: tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-                    company.addPeerCompanyWithTickerSymbol(tickerSymbol, withExchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+                company.exchangeDisplayName = exchangeDisplayName
+                company.tickerSymbol = tickerSymbol
+                company.name = companyName
+                
+                companies.append(company)
+            }
+        }
+        
+        return companies
+    }
+    
+    func companiesFromYahooData(data: NSData) -> [Company] {
+        
+        var companies = [Company]()
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        
+        // Use SwiftyJSON for handling JSON.
+        let json = JSON(data: data)["ResultSet"]["Result"]
+        //println(json.description)
+        
+        for (index: String, subJson: JSON) in json {
+            
+            if let type = subJson["type"].string {
+                if type == "S" {
+                    if let tickerSymbol = subJson["symbol"].string {
+                        if tickerSymbol.rangeOfString(".") == nil {
+                            var company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: nil)
+                            company.tickerSymbol = tickerSymbol
+                            if var exchDisp = subJson["exchDisp"].string {
+                                if exchDisp == "OTC Markets" { exchDisp = "OTCMKTS" }
+                                company.exchangeDisplayName = exchDisp
+                            }
+                            if let exch = subJson["exch"].string {
+                                company.exchange = exch
+                            }
+                            if let name = subJson["name"].string {
+                                company.name = name
+                            }
+                            
+                            companies.append(company)
+                        }
+                    }
                 }
             }
         }
         
-        return true
+        return companies
     }
     
 }

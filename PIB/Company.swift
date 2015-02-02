@@ -99,27 +99,44 @@ class Company: NSManagedObject {
         company.dataState = .DataDownloadInProgress
         company.isTargetCompany = NSNumber(bool: true)
         
+        let dispatchGroup = dispatch_group_create()
+        
+        dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.summaryDownloadComplete = true
                 company.summaryDownloadError = !success
-                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
+                println("downloadGoogleSummaryForCompany")
+                dispatch_group_leave(dispatchGroup)
             })
         })
+        
+        dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.financialsDownloadComplete = true
                 company.financialsDownloadError = !success
-                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
+                println("downloadGoogleFinancialsForCompany")
+                dispatch_group_leave(dispatchGroup)
             })
         })
+        
+        dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.relatedCompaniesDownloadComplete = true
                 company.relatedCompaniesDownloadError = !success
-                company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
+                println("downloadGoogleRelatedCompaniesForCompany")
+                dispatch_group_leave(dispatchGroup)
             })
         })
+        
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+            println("All groups complete!")
+            company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
+        }
+        
+        println("See you at the BOTTOM!!!")
     }
     
     class func updateSavedCompany(company: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
@@ -137,7 +154,7 @@ class Company: NSManagedObject {
         // IMPLEMENTATION NEEDED!!!
     }
     
-    class func saveNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
+    class func saveNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!, withCompletion completion: ((success: Bool) -> Void)?) {
         
         if !Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
@@ -169,6 +186,10 @@ class Company: NSManagedObject {
             
             // CHANGE THIS ONCE THIS METHOD IS FULLY IMPLEMENTED!!!
             company.dataState = .DataDownloadCompleteWithoutError
+            
+            if completion != nil {
+                completion!(success: true)
+            }
         }
     }
 
