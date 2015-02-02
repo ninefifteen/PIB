@@ -60,7 +60,7 @@ class Company: NSManagedObject {
             
             if savedCompany.isTargetCompany.boolValue {   // Company is already saved to app as a target company.
                 
-                //updateSavedCompany(savedCompany)
+                //updateSavedCompany(savedCompany)  // Method not yet implemented.
                 return
                 
             } else {    // Company is saved to app but is only a peer.
@@ -106,7 +106,6 @@ class Company: NSManagedObject {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.summaryDownloadComplete = true
                 company.summaryDownloadError = !success
-                println("downloadGoogleSummaryForCompany")
                 dispatch_group_leave(dispatchGroup)
             })
         })
@@ -116,7 +115,6 @@ class Company: NSManagedObject {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.financialsDownloadComplete = true
                 company.financialsDownloadError = !success
-                println("downloadGoogleFinancialsForCompany")
                 dispatch_group_leave(dispatchGroup)
             })
         })
@@ -126,32 +124,19 @@ class Company: NSManagedObject {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 company.relatedCompaniesDownloadComplete = true
                 company.relatedCompaniesDownloadError = !success
-                println("downloadGoogleRelatedCompaniesForCompany")
                 dispatch_group_leave(dispatchGroup)
             })
         })
         
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
-            println("All groups complete!")
-            company.setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext)
+            company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
         }
-        
-        println("See you at the BOTTOM!!!")
     }
     
     class func updateSavedCompany(company: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
         
-        let companyName = company.name  // Needed for alert in the event the data not able to be downloaded.
-        
-        // Remove old finacial metrics to prepare for update.
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-        financialMetrics.removeAllObjects()
-        company.financialMetrics = financialMetrics.copy() as NSSet
-        
-        company.dataState = .DataDownloadInProgress
-        
-        // Download fundamentals for newly added company.
         // IMPLEMENTATION NEEDED!!!
+        println("!!!Company.swift updateSavedCompany(_:inManagedObjectContext:) not implemented!!!")
     }
     
     class func saveNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!, withCompletion completion: ((success: Bool) -> Void)?) {
@@ -179,16 +164,49 @@ class Company: NSManagedObject {
             company.employeeCount = 0
             company.isTargetCompany = NSNumber(bool: false)
             
-            let companyName = name   // Used for error message in the event financial data is not found.
+            company.dataState = .DataDownloadInProgress
+            company.isTargetCompany = NSNumber(bool: false)
             
-            // Download fundamentals for newly added company.
-            // IMPLEMENTATION NEEDED!!!
+            let dispatchGroup = dispatch_group_create()
             
-            // CHANGE THIS ONCE THIS METHOD IS FULLY IMPLEMENTED!!!
-            company.dataState = .DataDownloadCompleteWithoutError
+            dispatch_group_enter(dispatchGroup)
+            WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    company.summaryDownloadComplete = true
+                    company.summaryDownloadError = !success
+                    dispatch_group_leave(dispatchGroup)
+                })
+            })
+            
+            dispatch_group_enter(dispatchGroup)
+            WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    company.financialsDownloadComplete = true
+                    company.financialsDownloadError = !success
+                    dispatch_group_leave(dispatchGroup)
+                })
+            })
+            
+            dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                
+                company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
+                
+                if company.dataState == .DataDownloadCompleteWithoutError {
+                    if completion != nil {
+                        completion!(success: true)
+                    }
+                } else {
+                    managedObjectContext.deleteObject(company)
+                    if completion != nil {
+                        completion!(success: false)
+                    }
+                }
+            }
+            
+        } else {    // Company already saved.
             
             if completion != nil {
-                completion!(success: true)
+                completion!(success: false)
             }
         }
     }
@@ -223,7 +241,7 @@ class Company: NSManagedObject {
     }
     
     class func removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
-        
+                
         // Delete companies with incomplete data (download interrupted).
         
         let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
@@ -254,16 +272,18 @@ class Company: NSManagedObject {
         }
     }
     
-    func setDataDownloadCompleteIfAllCompleteForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
+    
+    // MARK: - Instance Methods
+    
+    func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
-        if summaryDownloadComplete && financialsDownloadComplete && relatedCompaniesDownloadComplete {
-            
-            if summaryDownloadError || financialsDownloadError || relatedCompaniesDownloadError {
-                dataState = .DataDownloadCompleteWithError
-            } else {
-                dataState = .DataDownloadCompleteWithoutError
-            }
-            
+        if summaryDownloadError || financialsDownloadError /*|| relatedCompaniesDownloadError*/ {
+            dataState = .DataDownloadCompleteWithError
+        } else {
+            dataState = .DataDownloadCompleteWithoutError
+        }
+        
+        if isTargetCompany.boolValue {
             // Save the context.
             var saveError: NSError? = nil
             if !managedObjectContext.save(&saveError) {
@@ -274,13 +294,6 @@ class Company: NSManagedObject {
             }
         }
     }
-    
-    class func sendDataNotFoundMessageForCompanyName(companyName: String) {
-        NSNotificationCenter.defaultCenter().postNotificationName("DataNotFoundMessageForCompanyName", object: self, userInfo: ["companyName": companyName])
-    }
-    
-    
-    // MARK: - Instance Methods
     
     func changeFromTargetToPeerInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         

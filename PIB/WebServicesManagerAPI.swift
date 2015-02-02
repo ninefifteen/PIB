@@ -517,7 +517,7 @@ class WebServicesManagerAPI: NSObject {
         }
         company.financialMetrics = financialMetrics.copy() as NSSet
         
-        
+        var isDescriptionSet = false
         let descriptionPath = "//div[@class='companySummary']"
         if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
             if companyDescription.count > 0 {
@@ -526,14 +526,13 @@ class WebServicesManagerAPI: NSObject {
                         rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
                         let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                         company.companyDescription = companyDescriptionString
+                        isDescriptionSet = true
                     }
                 }
-            } else {
-                println("\nDescription data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
-                return false
             }
-        } else {
-            println("\nDescription data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
+        }
+        if !isDescriptionSet {
+            println("Description data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
             return false
         }
         
@@ -606,7 +605,7 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
         } else {
-            println("\nAddress data not found at URL: \(googleSummaryUrlString).\nReturn false.\n")
+            println("Address data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
             return false
         }
         
@@ -628,29 +627,33 @@ class WebServicesManagerAPI: NSObject {
         }
         keyStatsAndRatiosDivIndex++
         
+        var isEmployeeCountSet = false
         let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/table/tr[6]/td[2]"
         if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
             for node in employeeCount {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
                     let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
-                    company.employeeCount = employeeCountString.toInt()!
+                    if let employeeCountInt = employeeCountString.toInt() {
+                        company.employeeCount = employeeCountInt
+                        isEmployeeCountSet = true
+                    }
                 }
             }
-        } else {
-            println("Employee count data not found.")
         }
+        if !isEmployeeCountSet { println("Employee count data not found for company name: \(company.name).") }
         
+        var isWebLinkSet = false
         let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
         if let webLink = parser.searchWithXPathQuery(webLinkPath) {
             for node in webLink {
                 if let rawWebLinkString: String = node.firstChild?.content {
                     let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                     company.webLink = webLinkString
+                    isWebLinkSet = true
                 }
             }
-        } else {
-            println("Web link not found.")
         }
+        if !isWebLinkSet { println("Web link not found.") }
         
         return true
     }
@@ -687,6 +690,7 @@ class WebServicesManagerAPI: NSObject {
         let parser = NDHpple(HTMLData: html!)
         
         // Currency type.
+        var isCurrencySet = false
         let currencyTypePath = "//th[@class='lm lft nwp']"
         if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
             if currencyTypeArray.count > 0 {
@@ -694,13 +698,12 @@ class WebServicesManagerAPI: NSObject {
                     var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
                     company.currencyCode = spaceSplit[3]
                     company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                    isCurrencySet = true
                 }
-            } else {
-                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
-                return false
             }
-        } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+        }
+        if !isCurrencySet {
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
             return false
         }
         
@@ -730,14 +733,14 @@ class WebServicesManagerAPI: NSObject {
                         if let date = dateFormatter.dateFromString(cleanedDateString) {
                             datesArray.append(date)
                         } else {
-                            println("\nUnable to read data found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                            println("Unable to read data found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
                             return false
                         }
                     }
                 }
             }
         } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
             return false
         }
         
@@ -938,14 +941,14 @@ class WebServicesManagerAPI: NSObject {
             }
             
             if financialMetrics.count < 1 {
-                println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+                println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
                 return false
             }
             
             company.financialMetrics = financialMetrics.copy() as NSSet
             
         } else {
-            println("\nFinancial metrics not found at URL: \(googleFinancialMetricsUrlString).\nReturn false.\n")
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
             return false
         }
         
@@ -958,22 +961,33 @@ class WebServicesManagerAPI: NSObject {
         
         let relatedCompanies = parseGoogleRelatedCompaniesData(data)
         
-        for relatedCompany in relatedCompanies {
+        if relatedCompanies.count > 0 {
             
-            dispatch_group_enter(dispatchGroup)
-            
-            if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-                dispatch_group_leave(dispatchGroup)
-            } else {
-                Company.saveNewPeerCompanyWithName(relatedCompany.name, tickerSymbol: relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                    company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+            for relatedCompany in relatedCompanies {
+                
+                dispatch_group_enter(dispatchGroup)
+                
+                if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                    company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                     dispatch_group_leave(dispatchGroup)
-                })
+                } else {
+                    Company.saveNewPeerCompanyWithName(relatedCompany.name, tickerSymbol: relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                        if success {
+                            company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+                        }
+                        dispatch_group_leave(dispatchGroup)
+                    })
+                }
             }
-        }
-        
-        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+            
+            dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                if completion != nil {
+                    completion!(success: true)
+                }
+            }
+            
+        } else {
+            
             if completion != nil {
                 completion!(success: true)
             }
