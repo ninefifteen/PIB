@@ -143,6 +143,9 @@ class Company: NSManagedObject {
         
         if !Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
+            //println("saveNewPeerCompanyWithName: \(name), tickerSymbol: \(tickerSymbol), exchangeDisplayName: \(exchangeDisplayName)")
+            //println(tickerSymbol)
+            
             // Create new company managed object.
             let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
             let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
@@ -196,6 +199,7 @@ class Company: NSManagedObject {
                         completion!(success: true)
                     }
                 } else {
+                    let theName = company.name
                     managedObjectContext.deleteObject(company)
                     if completion != nil {
                         completion!(success: false)
@@ -205,6 +209,8 @@ class Company: NSManagedObject {
             
         } else {    // Company already saved.
             
+            println("\(name) already saved.")
+            
             if completion != nil {
                 completion!(success: false)
             }
@@ -213,7 +219,10 @@ class Company: NSManagedObject {
 
     class func savedCompanyWithTickerSymbol(tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company? {
         
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let backgroundContext = NSManagedObjectContext()
+        backgroundContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: backgroundContext)
         let request = NSFetchRequest()
         request.entity = entityDescription
         
@@ -221,14 +230,16 @@ class Company: NSManagedObject {
         
         let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
         request.predicate = predicate
-        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        var matchingCompaniesArray = backgroundContext.executeFetchRequest(request, error: &requestError) as [Company]
         if requestError != nil {
             println("Fetch request error: \(requestError?.description)")
             return nil
         }
         
         if matchingCompaniesArray.count > 0 {
-            return matchingCompaniesArray[0]
+            let savedCompany = matchingCompaniesArray[0]
+            let savedCompanyId = savedCompany.objectID
+            return managedObjectContext.objectWithID(savedCompanyId) as? Company
         } else {
             return nil
         }
@@ -319,23 +330,9 @@ class Company: NSManagedObject {
 
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
         
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
-        let request = NSFetchRequest()
-        request.entity = entityDescription
+        let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
-        var requestError: NSError? = nil
-        
-        let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
-        request.predicate = predicate
-        
-        var matchingCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
-        if requestError != nil {
-            println("Fetch request error: \(requestError?.description)")
-            return
-        }
-        
-        if matchingCompaniesArray.count > 0 {
-            let peerCompany = matchingCompaniesArray[0]
+        if let peerCompany = savedPeerCompany {
             var peers = self.peers.mutableCopy() as NSMutableSet
             peers.addObject(peerCompany)
             self.peers = peers.copy() as NSSet

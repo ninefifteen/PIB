@@ -957,27 +957,37 @@ class WebServicesManagerAPI: NSObject {
     
     func addGoogleRelatedCompaniesFromData(data: NSData, forCompany company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
-        let dispatchGroup = dispatch_group_create()
-        
         let relatedCompanies = parseGoogleRelatedCompaniesData(data)
+        var savedRelatedCompanies = [Company]()
+        var unsavedRelatedCompanies = [Company]()
         
         if relatedCompanies.count > 0 {
             
             for relatedCompany in relatedCompanies {
-                
-                dispatch_group_enter(dispatchGroup)
-                
                 if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-                    dispatch_group_leave(dispatchGroup)
+                    savedRelatedCompanies.append(relatedCompany)
                 } else {
-                    Company.saveNewPeerCompanyWithName(relatedCompany.name, tickerSymbol: relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                        if success {
-                            company.addPeerCompanyWithTickerSymbol(relatedCompany.tickerSymbol, withExchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
-                        }
-                        dispatch_group_leave(dispatchGroup)
-                    })
+                    unsavedRelatedCompanies.append(relatedCompany)
                 }
+            }
+            
+            for savedRelatedCompany in savedRelatedCompanies {
+                company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+            }
+            
+            let dispatchGroup = dispatch_group_create()
+            
+            let count = unsavedRelatedCompanies.count
+            var index = 1
+            for unsavedRelatedCompany in unsavedRelatedCompanies {
+                dispatch_group_enter(dispatchGroup)
+                Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                    if success {
+                        company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+                    }
+                    dispatch_group_leave(dispatchGroup)
+                })
+                index++
             }
             
             dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
