@@ -32,13 +32,13 @@
 		4512699E1A4336DA005A01CC /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4512699D1A4336DA005A01CC /* libGoogleAnalyticsServices.a */; };
 		451269FA1A435A76005A01CC /* FinancialMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451269F91A435A76005A01CC /* FinancialMetric.swift */; };
 		451269FC1A435A77005A01CC /* Company.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451269FB1A435A77005A01CC /* Company.swift */; };
-		451269FE1A435BF0005A01CC /* PIBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451269FD1A435BF0005A01CC /* PIBHelper.swift */; };
 		45126A001A435C43005A01CC /* WebServicesManagerAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 451269FF1A435C43005A01CC /* WebServicesManagerAPI.swift */; };
 		45126A051A435D56005A01CC /* AddCompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */; };
 		45126A061A435D56005A01CC /* ExpandedDescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */; };
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
-		45450B781A79BF05002DCC97 /* UIImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45450B771A79BF05002DCC97 /* UIImageExtension.swift */; };
+		45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DD81A83D16B001AB107 /* PeersTableViewController.swift */; };
+		45914DE11A83D955001AB107 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE01A83D955001AB107 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -172,14 +172,14 @@
 		451269F81A433918005A01CC /* GAITracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
 		451269F91A435A76005A01CC /* FinancialMetric.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FinancialMetric.swift; sourceTree = "<group>"; };
 		451269FB1A435A77005A01CC /* Company.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Company.swift; sourceTree = "<group>"; };
-		451269FD1A435BF0005A01CC /* PIBHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PIBHelper.swift; sourceTree = "<group>"; };
 		451269FF1A435C43005A01CC /* WebServicesManagerAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebServicesManagerAPI.swift; sourceTree = "<group>"; };
 		45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCompanyTableViewController.swift; sourceTree = "<group>"; };
 		45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpandedDescriptionViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
-		45450B771A79BF05002DCC97 /* UIImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageExtension.swift; sourceTree = "<group>"; };
 		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
+		45914DD81A83D16B001AB107 /* PeersTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeersTableViewController.swift; sourceTree = "<group>"; };
+		45914DE01A83D955001AB107 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,8 +252,7 @@
 			children = (
 				451269481A433020005A01CC /* Info.plist */,
 				451269821A433497005A01CC /* PIB-Bridging-Header.h */,
-				451269FD1A435BF0005A01CC /* PIBHelper.swift */,
-				45450B771A79BF05002DCC97 /* UIImageExtension.swift */,
+				45914DE01A83D955001AB107 /* Extensions.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -285,6 +284,7 @@
 				45126A031A435D56005A01CC /* GraphContentViewController.swift */,
 				45126A021A435D56005A01CC /* ExpandedDescriptionViewController.swift */,
 				45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */,
+				45914DD81A83D16B001AB107 /* PeersTableViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -567,10 +567,8 @@
 			files = (
 				45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */,
 				4512697D1A43340A005A01CC /* NDHppleElement.swift in Sources */,
-				451269FE1A435BF0005A01CC /* PIBHelper.swift in Sources */,
 				4512694A1A433020005A01CC /* AppDelegate.swift in Sources */,
 				4512694D1A433020005A01CC /* PIB.xcdatamodeld in Sources */,
-				45450B781A79BF05002DCC97 /* UIImageExtension.swift in Sources */,
 				45126A061A435D56005A01CC /* ExpandedDescriptionViewController.swift in Sources */,
 				4512694F1A433020005A01CC /* MasterViewController.swift in Sources */,
 				451269881A433557005A01CC /* MBProgressHUD.m in Sources */,
@@ -580,9 +578,11 @@
 				4512697C1A43340A005A01CC /* NDHpple.swift in Sources */,
 				451269FC1A435A77005A01CC /* Company.swift in Sources */,
 				451269781A433277005A01CC /* SwiftyJSON.swift in Sources */,
+				45914DE11A83D955001AB107 /* Extensions.swift in Sources */,
 				4512697E1A43340A005A01CC /* XPathQuery.swift in Sources */,
 				45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */,
 				451269511A433020005A01CC /* DetailViewController.swift in Sources */,
+				45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

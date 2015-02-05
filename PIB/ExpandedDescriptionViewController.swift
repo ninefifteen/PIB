@@ -15,6 +15,10 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
     
     struct MainStoryboard {
         
+        struct SegueIdentifiers {
+            static let kShowPeersTable = "showPeersTable"
+        }
+        
         struct TableViewCellIdentifiers {
             static let kPeerTableCell = "peerTableCell"
         }
@@ -76,12 +80,12 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
             }
             
             if company.employeeCount > 0 {
-                employeeCountLabel.text = PIBHelper.pibStandardStyleValueStringFromDoubleValue(company.employeeCount.doubleValue)
+                employeeCountLabel.text = company.employeeCount.doubleValue.pibStandardStyleValueString()
             } else {
                 employeeCountLabel.text = "-"
             }
             
-            revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+            revenueLabel.text = company.currencySymbol + company.revenueLabelString()
             profitMarginLabel.text = profitMarginLabelStringForCompany(company)
             marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
             
@@ -153,7 +157,7 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
             locationLabel.text = " "
         }
         
-        revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+        revenueLabel.text = company.currencySymbol + company.revenueLabelString()
         
         return cell
     }
@@ -170,26 +174,20 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         }
     }
     
-    // MARK: - Helper Methods
     
-    func revenueLabelStringForCompany(company: Company) -> String {
+    // MARK: - Segues
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        var totalRevenueArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
-        for (index, financialMetric) in enumerate(financialMetrics) {
-            if financialMetric.type == "Revenue" {
-                totalRevenueArray.append(financialMetric)
-            }
-        }
-        
-        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-        
-        if totalRevenueArray.count > 0 {
-            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
-        } else {
-            return "-"
+        if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTable {
+            let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
+            controller.peers = peers
+            controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }
+    
+    
+    // MARK: - Helper Methods
     
     func ebitdaLabelStringForCompany(company: Company) -> String {
         
@@ -204,7 +202,7 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         ebitdaArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if ebitdaArray.count > 0 {
-            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(ebitdaArray.last!.value))
+            return Double(ebitdaArray.last!.value).pibStandardStyleValueString()
         } else {
             return "-"
         }
@@ -223,7 +221,7 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         ebitdaMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if ebitdaMarginArray.count > 0 {
-            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
+            return Double(ebitdaMarginArray.last!.value).pibPercentageStyleValueString()
         } else {
             return "-"
         }
@@ -242,7 +240,7 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         profitMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if profitMarginArray.count > 0 {
-            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(profitMarginArray.last!.value))
+            return Double(profitMarginArray.last!.value).pibPercentageStyleValueString()
         } else {
             return "-"
         }
@@ -259,7 +257,7 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         }
         
         if marketCapArray.count > 0 {
-            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(marketCapArray.last!.value))
+            return Double(marketCapArray.last!.value).pibStandardStyleValueString()
         } else {
             return "-"
         }

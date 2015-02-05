@@ -308,7 +308,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
-                revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+                revenueLabel.text = company.currencySymbol + company.revenueLabelString()
                 locationLabel.hidden = false
                 activityIndicator.hidden = true
                 noDataAvailableLabel.hidden = true
@@ -379,47 +379,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                 }
             }
-        }
-    }
-    
-    
-    // MARK: - Helper Methods
-    
-    func revenueLabelStringForCompany(company: Company) -> String {
-        
-        var totalRevenueArray = Array<FinancialMetric>()
-        var financialMetrics = company.financialMetrics.allObjects as [FinancialMetric]
-        for (index, financialMetric) in enumerate(financialMetrics) {
-            if financialMetric.type == "Revenue" {
-                totalRevenueArray.append(financialMetric)
-            }
-        }
-        
-        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-        
-        if totalRevenueArray.count > 0 {
-            return PIBHelper.pibStandardStyleValueStringFromDoubleValue(Double(totalRevenueArray.last!.value))
-        } else {
-            return "-"
-        }
-    }
-    
-    func ebitdaMarginLabelStringForCompany(company: Company) -> String {
-        
-        var ebitdaMarginArray = Array<FinancialMetric>()
-        var financialMetrics = company.financialMetrics.allObjects as [FinancialMetric]
-        for (index, financialMetric) in enumerate(financialMetrics) {
-            if financialMetric.type == "EBITDA Margin" {
-                ebitdaMarginArray.append(financialMetric)
-            }
-        }
-        
-        ebitdaMarginArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-        
-        if ebitdaMarginArray.count > 0 {
-            return PIBHelper.pibPercentageStyleValueStringFromDoubleValue(Double(ebitdaMarginArray.last!.value))
-        } else {
-            return "-"
         }
     }
     

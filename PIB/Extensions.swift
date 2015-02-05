@@ -1,18 +1,20 @@
 //
-//  PIBHelper.swift
+//  Extensions.swift
 //  PIB
 //
-//  Created by Shawn Seals on 11/10/14.
-//  Copyright (c) 2014 Shawn Seals. All rights reserved.
+//  Created by Shawn Seals on 2/5/15.
+//  Copyright (c) 2015 Scoutly. All rights reserved.
 //
 
+import Foundation
 import UIKit
 
-class PIBHelper: NSObject {
-   
-    class func pibStandardStyleValueStringFromDoubleValue(value: Double) -> String {
+
+extension Double {
+    
+    func pibStandardStyleValueString() -> String {
         
-        var modifiedValue = value
+        var modifiedValue = self
         var returnString = String()
         
         let formatter = NSNumberFormatter()
@@ -40,9 +42,9 @@ class PIBHelper: NSObject {
         return returnString
     }
     
-    class func pibGraphYAxisStyleValueStringFromDoubleValue(value: Double) -> String {
+    func pibGraphYAxisStyleValueString() -> String {
         
-        var modifiedValue = value
+        var modifiedValue = self
         var returnString = String()
         
         let formatter = NSNumberFormatter()
@@ -72,9 +74,9 @@ class PIBHelper: NSObject {
         return returnString
     }
     
-    class func pibPercentageStyleValueStringFromDoubleValue(value: Double) -> String {
+    func pibPercentageStyleValueString() -> String {
         
-        var modifiedValue = value
+        var modifiedValue = self
         var returnString = String()
         
         let formatter = NSNumberFormatter()
@@ -101,4 +103,55 @@ class PIBHelper: NSObject {
         
         return returnString + "%"
     }
+}
+
+
+extension Company {
+    
+    func revenueLabelString() -> String {
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics = self.financialMetrics.allObjects as [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Revenue" {
+                totalRevenueArray.append(financialMetric)
+            }
+        }
+        
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+        
+        if totalRevenueArray.count > 0 {
+            return Double(totalRevenueArray.last!.value).pibStandardStyleValueString()
+        } else {
+            return "-"
+        }
+    }
+}
+
+
+extension UIImage {
+    
+    func imageByApplyingAlpha(alpha: CGFloat) -> UIImage? {
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        
+        let contextRef = UIGraphicsGetCurrentContext()
+        let area = CGRectMake(0.0, 0.0, size.width, size.height)
+        
+        CGContextScaleCTM(contextRef, 1.0, -1.0)
+        CGContextTranslateCTM(contextRef, 0.0, -area.size.height)
+        
+        CGContextSetBlendMode(contextRef, kCGBlendModeMultiply)
+        
+        CGContextSetAlpha(contextRef, alpha)
+        
+        CGContextDrawImage(contextRef, area, CGImage)
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
 }
