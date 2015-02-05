@@ -8,10 +8,17 @@
 
 import UIKit
 
-class ExpandedDescriptionViewController: UIViewController {
+class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
     // MARK: - Types
+    
+    struct MainStoryboard {
+        
+        struct TableViewCellIdentifiers {
+            static let kPeerTableCell = "peerTableCell"
+        }
+    }
     
     struct GoogleAnalytics {
         static let kExpandedDescriptionScreenName = "Expanded Description"
@@ -27,7 +34,11 @@ class ExpandedDescriptionViewController: UIViewController {
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
-    var company: Company!    
+    @IBOutlet weak var peersTableView: UITableView!
+    
+    var company: Company!
+    
+    var peers = [Company]()
     
     // MARK: - View Lifecycle
 
@@ -41,6 +52,9 @@ class ExpandedDescriptionViewController: UIViewController {
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kExpandedDescriptionScreenName)
             tracker.send(GAIDictionaryBuilder.createAppView().build())
         }
+        
+        peersTableView.dataSource = self
+        peersTableView.delegate = self
         
         updateLabels()
     }
@@ -84,6 +98,11 @@ class ExpandedDescriptionViewController: UIViewController {
                     println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
                 }
             }
+            
+            if company.peers.count > 0 {
+                peers = company.peers.allObjects as [Company]
+                peersTableView.reloadData()
+            }
         }
     }
     
@@ -99,6 +118,57 @@ class ExpandedDescriptionViewController: UIViewController {
         })
     }
     
+    
+    // MARK: - Table View
+    
+    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return peers.count
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as UITableViewCell
+        
+        let company = peers[indexPath.row] as Company
+        
+        let nameLabel = cell.viewWithTag(101) as UILabel
+        let locationLabel = cell.viewWithTag(102) as UILabel
+        let revenueLabel = cell.viewWithTag(103) as UILabel
+        
+        nameLabel.text = company.name
+        
+        if company.city != "" {
+            if company.country != "" && company.state != "" {
+                locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+            } else if company.country != "" {
+                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+            } else {
+                locationLabel.text = company.city.capitalizedString
+            }
+        } else {
+            locationLabel.text = " "
+        }
+        
+        revenueLabel.text = company.currencySymbol + revenueLabelStringForCompany(company)
+        
+        return cell
+    }
+    
+    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        if cell.respondsToSelector("setSeparatorInset:") {
+            cell.separatorInset = UIEdgeInsetsZero
+        }
+        if cell.respondsToSelector("setPreservesSuperviewLayoutMargins:") {
+            cell.preservesSuperviewLayoutMargins = false
+        }
+        if cell.respondsToSelector("setLayoutMargins:") {
+            cell.layoutMargins = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0)
+        }
+    }
     
     // MARK: - Helper Methods
     
