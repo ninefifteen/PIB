@@ -17,6 +17,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         struct SegueIdentifiers {
             static let kShowPeersTable = "showPeersTable"
+            static let kShowDescriptionView = "showDescriptionView"
         }
         
         struct TableViewCellIdentifiers {
@@ -43,6 +44,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     var company: Company!
     
     var peers = [Company]()
+    
     
     // MARK: - View Lifecycle
     
@@ -173,6 +175,12 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTable {
             let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
             controller.peers = peers
+            controller.navigationItem.leftItemsSupplementBackButton = true
+        }
+        
+        if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+            let controller = (segue.destinationViewController as UINavigationController).topViewController as DescriptionViewController
+            controller.company = company
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
     }

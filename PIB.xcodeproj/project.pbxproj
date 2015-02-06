@@ -39,6 +39,7 @@
 		45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DD81A83D16B001AB107 /* PeersTableViewController.swift */; };
 		45914DE11A83D955001AB107 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE01A83D955001AB107 /* Extensions.swift */; };
 		45914DE31A845904001AB107 /* CompanyOverviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE21A845904001AB107 /* CompanyOverviewViewController.swift */; };
+		45B619151A850FDB00643C1B /* DescriptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45B619141A850FDB00643C1B /* DescriptionViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -180,6 +181,7 @@
 		45914DD81A83D16B001AB107 /* PeersTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeersTableViewController.swift; sourceTree = "<group>"; };
 		45914DE01A83D955001AB107 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		45914DE21A845904001AB107 /* CompanyOverviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyOverviewViewController.swift; sourceTree = "<group>"; };
+		45B619141A850FDB00643C1B /* DescriptionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DescriptionViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,11 +281,12 @@
 			children = (
 				451269491A433020005A01CC /* AppDelegate.swift */,
 				4512694E1A433020005A01CC /* MasterViewController.swift */,
+				45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */,
 				451269501A433020005A01CC /* DetailViewController.swift */,
 				45126A041A435D56005A01CC /* GraphPageViewController.swift */,
 				45126A031A435D56005A01CC /* GraphContentViewController.swift */,
 				45914DE21A845904001AB107 /* CompanyOverviewViewController.swift */,
-				45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */,
+				45B619141A850FDB00643C1B /* DescriptionViewController.swift */,
 				45914DD81A83D16B001AB107 /* PeersTableViewController.swift */,
 			);
 			name = Controller;
@@ -571,6 +574,7 @@
 				4512694D1A433020005A01CC /* PIB.xcdatamodeld in Sources */,
 				4512694F1A433020005A01CC /* MasterViewController.swift in Sources */,
 				451269881A433557005A01CC /* MBProgressHUD.m in Sources */,
+				45B619151A850FDB00643C1B /* DescriptionViewController.swift in Sources */,
 				451269FA1A435A76005A01CC /* FinancialMetric.swift in Sources */,
 				45126A051A435D56005A01CC /* AddCompanyTableViewController.swift in Sources */,
 				45126A001A435C43005A01CC /* WebServicesManagerAPI.swift in Sources */,
