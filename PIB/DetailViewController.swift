@@ -89,27 +89,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         super.viewWillLayoutSubviews()
         
-        if descriptionViewHeightConstraint.constant > 0 && company != nil {
-            
-            let fullDescription: String = company.companyDescription
-            let fullDescriptionCharacterCount = countElements(fullDescription)
-            
-            descriptionTextView.text = fullDescription
-            
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
-            })
-            
-            /*let visibleRange: NSRange = descriptionTextView.visibleRange()
-            let trimLength = visibleRange.length - 8
-            
-            if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 8 {
-            let index: String.Index = advance(fullDescription.startIndex, trimLength)
-            let shortDescription: String = fullDescription.substringToIndex(index) + "..."
-            descriptionTextView.text = shortDescription
-            }*/
-        }
-        
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
             
             let orientation = UIApplication.sharedApplication().statusBarOrientation

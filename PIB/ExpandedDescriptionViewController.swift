@@ -76,6 +76,9 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
         if company != nil {
             
             if company.companyDescription != "" {
+                descriptionTextView.scrollEnabled = false
+                descriptionTextView.textContainer.maximumNumberOfLines = 0
+                descriptionTextView.textContainer.lineBreakMode = NSLineBreakMode.ByTruncatingTail
                 descriptionTextView.text = company.companyDescription
             }
             
@@ -108,18 +111,6 @@ class ExpandedDescriptionViewController: UIViewController, UITableViewDelegate, 
                 peersTableView.reloadData()
             }
         }
-    }
-    
-    
-    // MARK: - Subview Size Modification
-    
-    override func viewWillLayoutSubviews() {
-        
-        super.viewWillLayoutSubviews()
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
-        })
     }
     
     
