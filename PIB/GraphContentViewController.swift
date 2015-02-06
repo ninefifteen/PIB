@@ -149,17 +149,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Do any additional setup after loading the view.
         
-        if pageIdentifier == "Description" {
+        if pageIdentifier == "CompanyOverview" {
             
             doubleTapGestureRecognizer.enabled = false
             graphView.hidden = true
             
-            let expandedDescriptionViewController = storyboard?.instantiateViewControllerWithIdentifier("ExpandedDescriptionViewController") as ExpandedDescriptionViewController
-            expandedDescriptionViewController.company = company
-            addChildViewController(expandedDescriptionViewController)
-            expandedDescriptionViewController.view.frame = descriptionView.frame
-            descriptionView.addSubview(expandedDescriptionViewController.view)
-            //expandedDescriptionViewController.didMoveToParentViewController(self)
+            let companyOverviewViewController = storyboard?.instantiateViewControllerWithIdentifier("CompanyOverviewViewController") as CompanyOverviewViewController
+            companyOverviewViewController.company = company
+            addChildViewController(companyOverviewViewController)
+            companyOverviewViewController.view.frame = descriptionView.frame
+            descriptionView.addSubview(companyOverviewViewController.view)
+            //companyOverviewViewController.didMoveToParentViewController(self)
             
         } else {
             

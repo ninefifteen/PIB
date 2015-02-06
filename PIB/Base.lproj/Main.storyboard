@@ -449,10 +449,10 @@
             </objects>
             <point key="canvasLocation" x="1488" y="840"/>
         </scene>
-        <!--Expanded Description View Controller-->
+        <!--Company Overview View Controller-->
         <scene sceneID="QeK-Nj-rFu">
             <objects>
-                <viewController storyboardIdentifier="ExpandedDescriptionViewController" id="KIJ-pe-UDa" customClass="ExpandedDescriptionViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CompanyOverviewViewController" id="KIJ-pe-UDa" customClass="CompanyOverviewViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="XML-7F-t06"/>
                         <viewControllerLayoutGuide type="bottom" id="Xew-ao-Lv0"/>
@@ -720,12 +720,12 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
-                        <outlet property="descriptionTextView" destination="PLZ-cq-ZNe" id="Q2E-PU-Rp3"/>
-                        <outlet property="employeeCountLabel" destination="JrW-vQ-RGe" id="O6f-lf-Hcz"/>
-                        <outlet property="marketCapLabel" destination="lsV-oY-fwI" id="fJu-BG-DIj"/>
-                        <outlet property="peersTableView" destination="1i7-pV-Y9g" id="ZCS-uB-51R"/>
-                        <outlet property="profitMarginLabel" destination="fys-Z2-NVc" id="VSW-gG-aE4"/>
-                        <outlet property="revenueLabel" destination="mUA-lM-qsu" id="lcM-uj-Mvm"/>
+                        <outlet property="descriptionTextView" destination="PLZ-cq-ZNe" id="Pgz-15-GVe"/>
+                        <outlet property="employeeCountLabel" destination="JrW-vQ-RGe" id="LIv-EL-o0C"/>
+                        <outlet property="marketCapLabel" destination="lsV-oY-fwI" id="mjq-9B-F5U"/>
+                        <outlet property="peersTableView" destination="1i7-pV-Y9g" id="3Eg-3v-uoX"/>
+                        <outlet property="profitMarginLabel" destination="fys-Z2-NVc" id="I2U-hv-P0P"/>
+                        <outlet property="revenueLabel" destination="mUA-lM-qsu" id="A1A-oy-NfV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZDE-ta-pvH" userLabel="First Responder" sceneMemberID="firstResponder"/>

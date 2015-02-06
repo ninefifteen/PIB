@@ -16,7 +16,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     struct MainStoryboard {
         struct SegueIdentifiers {
-            static let kShowExpandedDescription = "showExpandedDescription"
+            static let kShowCompanyOverView = "showCompanyOverview"
             static let kEmbedGraph = "embedGraph"
         }
     }
@@ -164,7 +164,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             
-            pageIdentifiers.append("Description")
+            pageIdentifiers.append("CompanyOverview")
             
             let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
             let request = NSFetchRequest()
@@ -339,9 +339,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self
             graphPageViewController.graphContentViewControllerDelegate = self
-        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowExpandedDescription {
-            let expandedDescriptionViewController = segue.destinationViewController as ExpandedDescriptionViewController
-            expandedDescriptionViewController.company = company
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowCompanyOverView {
+            let companyOverviewViewController = segue.destinationViewController as CompanyOverviewViewController
+            companyOverviewViewController.company = company
         }
     }
 }
