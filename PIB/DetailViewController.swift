@@ -100,7 +100,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
             })
             
-            /*let visibleRange: NSRange = visibleRangeOfTextView(descriptionTextView)
+            /*let visibleRange: NSRange = descriptionTextView.visibleRange()
             let trimLength = visibleRange.length - 8
             
             if trimLength > 0 && trimLength < fullDescriptionCharacterCount - 8 {
@@ -281,17 +281,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     
     // MARK: - Helper Methods
-    
-    func visibleRangeOfTextView(textView: UITextView) -> NSRange {
-        let bounds: CGRect = textView.bounds
-        let start: UITextPosition = textView.beginningOfDocument
-        if let textRange: UITextRange = textView.characterRangeAtPoint(CGPointMake(CGRectGetMaxX(bounds), CGRectGetMaxY(bounds))) {
-            let end: UITextPosition = textRange.end
-            return NSMakeRange(0, textView.offsetFromPosition(start, toPosition: end))
-        } else {
-            return NSMakeRange(0, 0)
-        }
-    }
     
     func minimumValueInFinancialMetricArray(financialMetrics: Array<FinancialMetric>) -> Double {
         

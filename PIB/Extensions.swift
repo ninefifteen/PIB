@@ -106,6 +106,21 @@ extension Double {
 }
 
 
+extension UITextView {
+    
+    func visibleRange() -> NSRange {
+        let bounds: CGRect = self.bounds
+        let start: UITextPosition = self.beginningOfDocument
+        if let textRange: UITextRange = self.characterRangeAtPoint(CGPointMake(CGRectGetMaxX(bounds), CGRectGetMaxY(bounds))) {
+            let end: UITextPosition = textRange.end
+            return NSMakeRange(0, self.offsetFromPosition(start, toPosition: end))
+        } else {
+            return NSMakeRange(0, 0)
+        }
+    }
+}
+
+
 extension Company {
     
     func revenueLabelString() -> String {
