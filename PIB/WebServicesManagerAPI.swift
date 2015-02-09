@@ -662,6 +662,7 @@ class WebServicesManagerAPI: NSObject {
         
         // Arrays for calculating data.
         var revenueArray = Array<FinancialMetric>()
+        var totalRevenueArray = Array<FinancialMetric>()
         var netIncomeArray = Array<FinancialMetric>()
         var operatingIncomeArray = Array<FinancialMetric>()
         var interestExpenseArray = Array<FinancialMetric>()
@@ -788,6 +789,8 @@ class WebServicesManagerAPI: NSObject {
                             switch financialMetric.type {
                             case "Revenue":
                                 revenueArray.append(financialMetric)
+                            case "Total Revenue":
+                                totalRevenueArray.append(financialMetric)
                             case "Net Income":
                                 netIncomeArray.append(financialMetric)
                             case "Operating Income":
@@ -815,6 +818,7 @@ class WebServicesManagerAPI: NSObject {
             
             // Sort arrays for calculations by date.
             revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
             interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
@@ -853,35 +857,35 @@ class WebServicesManagerAPI: NSObject {
                 let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 ebitdaMarginMetric.type = "EBITDA Margin"
                 ebitdaMarginMetric.date = date
-                ebitdaMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                ebitdaMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 ebitdaMarginArray.append(ebitdaMarginMetric)
                 financialMetrics.addObject(ebitdaMarginMetric)
                 
                 let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 profitMarginMetric.type = "Profit Margin"
                 profitMarginMetric.date = date
-                profitMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                profitMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 profitMarginArray.append(profitMarginMetric)
                 financialMetrics.addObject(profitMarginMetric)
                 
                 let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 grossMarginMetric.type = "Gross Margin"
                 grossMarginMetric.date = date
-                grossMarginMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                grossMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 grossMarginArray.append(grossMarginMetric)
                 financialMetrics.addObject(grossMarginMetric)
                 
                 let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
                 sgAndAPercentOfRevenueMetric.date = date
-                sgAndAPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                sgAndAPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
                 financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
                 
                 let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                 rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
                 rAndDPercentOfRevenueMetric.date = date
-                rAndDPercentOfRevenueMetric.value = Double(revenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(revenueArray[index].value)) * 100.0 : 0.0
+                rAndDPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
                 financialMetrics.addObject(rAndDPercentOfRevenueMetric)
                 
@@ -891,7 +895,7 @@ class WebServicesManagerAPI: NSObject {
                     let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
                     revenueGrowthMetric.type = "Revenue Growth"
                     revenueGrowthMetric.date = date
-                    revenueGrowthMetric.value = Double(revenueArray[index - 1].value) != 0.0 ? ((Double(revenueArray[index].value) - Double(revenueArray[index - 1].value)) / Double(revenueArray[index - 1].value)) * 100.0 : 0.0
+                    revenueGrowthMetric.value = Double(totalRevenueArray[index - 1].value) != 0.0 ? ((Double(totalRevenueArray[index].value) - Double(totalRevenueArray[index - 1].value)) / Double(totalRevenueArray[index - 1].value)) * 100.0 : 0.0
                     revenueGrowthArray.append(revenueGrowthMetric)
                     financialMetrics.addObject(revenueGrowthMetric)
                     

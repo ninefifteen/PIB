@@ -128,7 +128,7 @@ extension Company {
         var totalRevenueArray = Array<FinancialMetric>()
         var financialMetrics = self.financialMetrics.allObjects as [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
-            if financialMetric.type == "Revenue" {
+            if financialMetric.type == "Total Revenue" {
                 totalRevenueArray.append(financialMetric)
             }
         }

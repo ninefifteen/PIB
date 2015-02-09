@@ -182,7 +182,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 var error: NSError? = nil
                 
-                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue')", company)
+                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Total Revenue')", company)
                 request.predicate = totalRevenuePredicate
                 totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
