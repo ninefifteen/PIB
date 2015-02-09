@@ -79,7 +79,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         let buffer: CGFloat = 46.0
         
         if let screenHeight = view.window?.bounds.height {
-                        
+            
             if screenHeight >= 1024 {
                 maxCellsToDisplay = 7
             } else if screenHeight >= 736 {
@@ -139,6 +139,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             
             if company.peers.count > 0 {
                 peers = company.peers.allObjects as [Company]
+                peers.sort({ $0.name < $1.name })
                 peersTableView.reloadData()
             }
         }
