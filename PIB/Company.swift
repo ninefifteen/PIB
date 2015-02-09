@@ -294,7 +294,8 @@ class Company: NSManagedObject {
             dataState = .DataDownloadCompleteWithoutError
         }
         
-        if isTargetCompany.boolValue {
+        // Save all companies that are target companies or peers that download without error. Other peers deleted later.
+        if isTargetCompany.boolValue || dataState == .DataDownloadCompleteWithoutError {
             // Save the context.
             var saveError: NSError? = nil
             if !managedObjectContext.save(&saveError) {
@@ -329,7 +330,7 @@ class Company: NSManagedObject {
     }
 
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
-        
+                
         let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
         if let peerCompany = savedPeerCompany {
