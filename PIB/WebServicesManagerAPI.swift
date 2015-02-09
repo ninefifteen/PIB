@@ -27,6 +27,12 @@ class WebServicesManagerAPI: NSObject {
     var networkActivityCount: Int = 0
     var activeDataTask: NSURLSessionDataTask?
     
+    var customAllowedCharacterSet: NSCharacterSet {
+        var _customAllowedCharacterSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as NSMutableCharacterSet
+        _customAllowedCharacterSet.formIntersectionWithCharacterSet(NSCharacterSet.URLHostAllowedCharacterSet())
+        return _customAllowedCharacterSet
+    }
+    
     // Debugging properties.
     var logMetricsToConsole: Bool = false
     var googleSummaryUrlString = String()
@@ -324,9 +330,7 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForSearchString(searchString: String) -> String {
-        var customAllowedSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as NSMutableCharacterSet
-        customAllowedSet.formIntersectionWithCharacterSet(NSCharacterSet.URLHostAllowedCharacterSet())
-        var escapedSearchString = searchString.stringByAddingPercentEncodingWithAllowedCharacters(customAllowedSet)!
+        var escapedSearchString = searchString.stringByAddingPercentEncodingWithAllowedCharacters(customAllowedCharacterSet)!
         let urlString = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query=" + escapedSearchString + "&callback=YAHOO.Finance.SymbolSuggest.ssCallback"
         //println("urlStringForSearchString: \(urlString)")
         return urlString
@@ -1013,7 +1017,7 @@ class WebServicesManagerAPI: NSObject {
         var companies = [Company]()
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
         
-        let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+        let rawStringData = NSString(data: data, encoding: NSNonLossyASCIIStringEncoding)! as String
         //println("WebServicesManagerAPI parseGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
         
         var rawCompaniesInfoStringArray = Array<String>()
@@ -1043,6 +1047,7 @@ class WebServicesManagerAPI: NSObject {
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("]", withString: "", options: .LiteralSearch, range: nil)
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString(" \"", withString: "", options: .LiteralSearch, range: nil)
             companyInfoString = companyInfoString.stringByReplacingOccurrencesOfString("\"", withString: "", options: .LiteralSearch, range: nil)
+            
             var cleanedCompanyInfoArray = companyInfoString.componentsSeparatedByString(",")
             
             //println("cleanedCompanyInfoArray count: \(cleanedCompanyInfoArray.count) content: \(cleanedCompanyInfoArray)")
