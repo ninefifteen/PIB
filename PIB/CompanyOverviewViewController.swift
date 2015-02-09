@@ -41,9 +41,11 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     
     @IBOutlet weak var peersTableView: UITableView!
     
-    var company: Company!
+    @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
+    var company: Company!
     var peers = [Company]()
+    var peersTableCellCount = 0
     
     
     // MARK: - View Lifecycle
@@ -68,6 +70,33 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillLayoutSubviews() {
+        
+        var maxCellsToDisplay = 0
+        let rowHeight = peersTableView.rowHeight
+        let buffer: CGFloat = 46.0
+        
+        if let screenHeight = view.window?.bounds.height {
+                        
+            if screenHeight >= 1024 {
+                maxCellsToDisplay = 7
+            } else if screenHeight >= 736 {
+                maxCellsToDisplay = 5
+            } else if screenHeight >= 667 {
+                maxCellsToDisplay = 4
+            } else if screenHeight >= 568 {
+                maxCellsToDisplay = 3
+            } else if screenHeight >= 480 {
+                maxCellsToDisplay = 2
+            } else {
+                maxCellsToDisplay = 1
+            }
+            
+            peersTableContainerHeightConstraint.constant = CGFloat(maxCellsToDisplay) * rowHeight + buffer
+            peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
+        }
     }
     
     
@@ -123,7 +152,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peers.count
+        return peersTableCellCount
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {

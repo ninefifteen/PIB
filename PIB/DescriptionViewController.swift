@@ -43,7 +43,7 @@ class DescriptionViewController: UIViewController {
     }
     
     
-    // MARK: - View Lifecycle
+    // MARK: - Populate Labels
     
     func updateLabels() {
         
