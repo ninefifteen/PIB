@@ -188,8 +188,9 @@ class WebServicesManagerAPI: NSObject {
                 
                 if httpResponse.statusCode == 200 {
                     
+                    let parseSuccess = self.parseAndAddGoogleSummaryData(data, forCompany: company)
+                    
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        let parseSuccess = self.parseAndAddGoogleSummaryData(data, forCompany: company)
                         if completion != nil {
                             completion!(success: parseSuccess)
                         }
@@ -239,8 +240,9 @@ class WebServicesManagerAPI: NSObject {
                 
                 if httpResponse.statusCode == 200 {
                     
+                    let parseSuccess = self.parseAndAddGoogleFinancialData(data, forCompany: company)
+                    
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
-                        let parseSuccess = self.parseAndAddGoogleFinancialData(data, forCompany: company)
                         if completion != nil {
                             completion!(success: parseSuccess)
                         }
