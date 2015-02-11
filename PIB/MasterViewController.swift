@@ -139,8 +139,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 } else if company.dataState == .DataDownloadCompleteWithError {
                     if let tableCell = sender as? UITableViewCell {
                         tableCell.setSelected(false, animated: true)
-                        //let context = self.fetchedResultsController.managedObjectContext
-                        //removeTargetCompany(company, inManagedObjectContext: context)
                     }
                     return false
                 }
@@ -152,9 +150,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
         let controller = segue.sourceViewController as AddCompanyTableViewController
+        
         if let companyToAdd = controller.companyToAdd? {
-            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+            
+            if let savedCompany = Company.savedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                if savedCompany.isTargetCompany.boolValue {
+                    if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
+                        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
+                    } else {
+                        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                    }
+                } else {
+                    controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                    Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                }
+            } else {
+                controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+            }
         } else {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
         }
