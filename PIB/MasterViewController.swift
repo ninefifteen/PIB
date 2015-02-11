@@ -242,7 +242,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects
+        return sectionInfo.numberOfObjects + 25 // 25 dummy cells added to enable newly added company to scroll to top.
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -281,72 +281,94 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
         
-        if let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company {
-            let nameLabel = cell.viewWithTag(101) as UILabel
-            nameLabel.text = company.name
-            let locationLabel = cell.viewWithTag(102) as UILabel
-            if company.city != "" {
-                if company.country != "" && company.state != "" {
-                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-                } else if company.country != "" {
-                    locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
-                } else {
-                    locationLabel.text = company.city.capitalizedString
-                }
-            } else {
-                locationLabel.text = " "
-            }
-            
-            let revenueLabel = cell.viewWithTag(103) as UILabel
-            let revenueTitleLabel = cell.viewWithTag(104) as UILabel
-            let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
-            let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
-            
-            if company.dataState == .DataDownloadCompleteWithoutError {
-                                
-                cell.accessoryView = nil
-                cell.contentView.alpha = 1.0
-                revenueLabel.hidden = false
-                revenueTitleLabel.hidden = false
-                revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-                locationLabel.hidden = false
-                activityIndicator.hidden = true
-                noDataAvailableLabel.hidden = true
-                
-            } else if company.dataState == .DataDownloadCompleteWithError {
-                
-                cell.contentView.alpha = 0.5
-                revenueLabel.hidden = true
-                revenueTitleLabel.hidden = true
-                activityIndicator.hidden = true
-                locationLabel.hidden = true
-                noDataAvailableLabel.hidden = false
-                
-                let rawImage = UIImage(named: "trashCanSmall")
-                if let image = rawImage?.imageByApplyingAlpha(0.5) {
-                    let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
-                    let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
-                    button.frame = frame
-                    button.setBackgroundImage(image, forState: .Normal)
-                    button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
-                    button.backgroundColor = UIColor.clearColor()
-                    cell.accessoryView = button
-                    cell.accessoryView?.hidden = false
-                }
-                
-            } else {
-                
-                cell.accessoryView = nil
-                cell.contentView.alpha = 1.0
-                revenueLabel.hidden = true
-                revenueTitleLabel.hidden = true
-                locationLabel.hidden = false
-                activityIndicator.hidden = false
-                activityIndicator.startAnimating()
-                noDataAvailableLabel.hidden = true
-            }
+        let nameLabel = cell.viewWithTag(101) as UILabel
+        let locationLabel = cell.viewWithTag(102) as UILabel
+        let revenueLabel = cell.viewWithTag(103) as UILabel
+        let revenueTitleLabel = cell.viewWithTag(104) as UILabel
+        let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
+        let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
         
-            cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
+        if indexPath.row < fetchedResultsController.fetchedObjects?.count {
+            
+            if let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company {
+                
+                nameLabel.hidden = false
+                nameLabel.text = company.name
+                
+                if company.city != "" {
+                    if company.country != "" && company.state != "" {
+                        locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                    } else if company.country != "" {
+                        locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+                    } else {
+                        locationLabel.text = company.city.capitalizedString
+                    }
+                } else {
+                    locationLabel.text = " "
+                }
+                
+                if company.dataState == .DataDownloadCompleteWithoutError {
+                    
+                    cell.accessoryView = nil
+                    cell.contentView.alpha = 1.0
+                    revenueLabel.hidden = false
+                    revenueTitleLabel.hidden = false
+                    revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                    locationLabel.hidden = false
+                    activityIndicator.hidden = true
+                    noDataAvailableLabel.hidden = true
+                    
+                } else if company.dataState == .DataDownloadCompleteWithError {
+                    
+                    cell.contentView.alpha = 0.5
+                    revenueLabel.hidden = true
+                    revenueTitleLabel.hidden = true
+                    activityIndicator.hidden = true
+                    locationLabel.hidden = true
+                    noDataAvailableLabel.hidden = false
+                    
+                    let rawImage = UIImage(named: "trashCanSmall")
+                    if let image = rawImage?.imageByApplyingAlpha(0.5) {
+                        let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+                        let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
+                        button.frame = frame
+                        button.setBackgroundImage(image, forState: .Normal)
+                        button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
+                        button.backgroundColor = UIColor.clearColor()
+                        cell.accessoryView = button
+                        cell.accessoryView?.hidden = false
+                    }
+                    
+                } else {
+                    
+                    cell.accessoryView = nil
+                    cell.contentView.alpha = 1.0
+                    revenueLabel.hidden = true
+                    revenueTitleLabel.hidden = true
+                    locationLabel.hidden = false
+                    activityIndicator.hidden = false
+                    activityIndicator.startAnimating()
+                    noDataAvailableLabel.hidden = true
+                }
+                
+                cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
+            }
+            
+        } else {
+            
+            nameLabel.text = ""
+            nameLabel.hidden = true
+            locationLabel.text = ""
+            locationLabel.hidden = true
+            revenueLabel.text = ""
+            revenueLabel.hidden = true
+            revenueTitleLabel.hidden = true
+            activityIndicator.hidden = true
+            noDataAvailableLabel.hidden = true
+            cell.contentView.alpha = 1.0
+            cell.accessoryView = nil
+            
+            cell.userInteractionEnabled = false
         }
     }
     
@@ -447,7 +469,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
             tableView.endUpdates()
-            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         case .Update:
