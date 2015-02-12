@@ -401,7 +401,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     func addDummyCellsToTable() {
-    
         let screenHeight = UIScreen.mainScreen().bounds.height
         let rowHeight = tableView.rowHeight
         dummyCellCount = Int((screenHeight - rowHeight) / rowHeight)
