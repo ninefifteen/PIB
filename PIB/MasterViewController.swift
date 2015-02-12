@@ -43,6 +43,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     var isFirstAppearanceOfView = true
     
+    var dummyCellCount = 0
+    
     
     // MARK: - View Lifecycle
     
@@ -157,6 +159,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 if savedCompany.isTargetCompany.boolValue {
                     if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                        addDummyCellsToTable()
+                        tableView.reloadData()
                         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
                     } else {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
@@ -256,7 +260,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects + 25 // 25 dummy cells added to enable newly added company to scroll to top.
+        return sectionInfo.numberOfObjects + dummyCellCount
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -272,6 +276,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+        
         if cell.respondsToSelector("setSeparatorInset:") {
             cell.separatorInset = UIEdgeInsetsZero
         }
@@ -282,6 +287,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             cell.layoutMargins = UIEdgeInsetsMake(0.0, 15.0, 0.0, 0.0)
         }
     }
+    
+    /*override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+
+        let fetchedResultsControllerFetchedObjectsCount = fetchedResultsController.fetchedObjects?.count ?? 0
+        if dummyCellCount > 0 && indexPath.row == fetchedResultsControllerFetchedObjectsCount {
+            dummyCellCount = 0
+            tableView.reloadData()
+        }
+    }*/
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
@@ -386,6 +400,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
+    func addDummyCellsToTable() {
+    
+        let screenHeight = UIScreen.mainScreen().bounds.height
+        let rowHeight = tableView.rowHeight
+        dummyCellCount = Int((screenHeight - rowHeight) / rowHeight)
+        tableView.reloadData()
+    }
+    
     func checkAccessoryDeleteButtonTapped(sender: UIButton?, event: UIEvent?) {
         
         if let uiEvent = event {
@@ -483,6 +505,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
             tableView.endUpdates()
+            addDummyCellsToTable()
+            tableView.reloadData()
             tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
