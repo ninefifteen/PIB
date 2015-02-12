@@ -119,14 +119,15 @@ class Company: NSManagedObject {
             })
         })
         
-        dispatch_group_enter(dispatchGroup)
+        /*dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in*/
                 company.relatedCompaniesDownloadComplete = true
-                company.relatedCompaniesDownloadError = !success
-                dispatch_group_leave(dispatchGroup)
+                //company.relatedCompaniesDownloadError = !success
+                company.relatedCompaniesDownloadError = false
+                /*dispatch_group_leave(dispatchGroup)
             })
-        })
+        })*/
         
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
             company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)

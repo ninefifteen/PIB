@@ -159,18 +159,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 if savedCompany.isTargetCompany.boolValue {
                     if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                        addDummyCellsToTable()
-                        tableView.reloadData()
-                        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
+                        //addDummyCellsToTable()
+                        //tableView.reloadData()
+                        //tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
                     } else {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                     }
                 } else {
                     controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                    //addDummyCellsToTable()
+                    //tableView.reloadData()
                     Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                 }
             } else {
                 controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+                //addDummyCellsToTable()
+                //tableView.reloadData()
                 Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
             }
         } else {
@@ -503,10 +507,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         switch type {
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-            tableView.endUpdates()
-            addDummyCellsToTable()
-            tableView.reloadData()
-            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
+            //tableView.endUpdates()
+            //tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         case .Update:

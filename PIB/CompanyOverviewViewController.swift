@@ -39,9 +39,9 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
-    @IBOutlet weak var peersTableView: UITableView!
+    //@IBOutlet weak var peersTableView: UITableView!
     
-    @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
+    //@IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
     var company: Company!
     var peers = [Company]()
@@ -61,8 +61,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             tracker.send(GAIDictionaryBuilder.createAppView().build())
         }
         
-        peersTableView.dataSource = self
-        peersTableView.delegate = self
+        //peersTableView.dataSource = self
+        //peersTableView.delegate = self
         
         updateLabels()
     }
@@ -74,7 +74,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     
     override func viewWillLayoutSubviews() {
         
-        var maxCellsToDisplay = 0
+        /*var maxCellsToDisplay = 0
         let rowHeight = peersTableView.rowHeight
         let buffer: CGFloat = 46.0
         
@@ -96,7 +96,11 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             
             peersTableContainerHeightConstraint.constant = CGFloat(maxCellsToDisplay) * rowHeight + buffer
             peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
-        }
+        }*/
+        
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
+        })
     }
     
     
@@ -107,9 +111,9 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         if company != nil {
             
             if company.companyDescription != "" {
-                descriptionTextView.scrollEnabled = false
+                /*descriptionTextView.scrollEnabled = false
                 descriptionTextView.textContainer.maximumNumberOfLines = 0
-                descriptionTextView.textContainer.lineBreakMode = NSLineBreakMode.ByTruncatingTail
+                descriptionTextView.textContainer.lineBreakMode = NSLineBreakMode.ByTruncatingTail*/
                 descriptionTextView.text = company.companyDescription
             }
             
@@ -130,11 +134,11 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
                 }
             }*/
             
-            if company.peers.count > 0 {
+            /*if company.peers.count > 0 {
                 peers = company.peers.allObjects as [Company]
                 peers.sort({ $0.name < $1.name })
                 peersTableView.reloadData()
-            }
+            }*/
         }
     }
     
