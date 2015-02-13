@@ -49,7 +49,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let navigationBarBarHeight = navigationController?.navigationBar.frame.height ?? 0
             let tableHeight = applicationHeight - navigationBarBarHeight
             let rowHeight = tableView.rowHeight
-            return Int((tableHeight + (rowHeight * 0.5)) / rowHeight)
+            return Int((tableHeight + rowHeight) / rowHeight)
         }
     }
     
