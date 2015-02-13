@@ -43,7 +43,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     var isFirstAppearanceOfView = true
     
-    var dummyCellCount = 0
+    var dummyCellCount: Int {
+        get {
+            let applicationHeight = UIScreen.mainScreen().applicationFrame.height
+            let navigationBarBarHeight = navigationController?.navigationBar.frame.height ?? 0
+            let tableHeight = applicationHeight - navigationBarBarHeight
+            let rowHeight = tableView.rowHeight
+            return Int((tableHeight + rowHeight) / rowHeight)
+        }
+    }
     
     
     // MARK: - View Lifecycle
@@ -159,8 +167,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 if savedCompany.isTargetCompany.boolValue {
                     if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                        addDummyCellsToTable()
-                        tableView.reloadData()
                         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
                     } else {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
@@ -288,15 +294,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    /*override func tableView(tableView: UITableView, didEndDisplayingCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-
-        let fetchedResultsControllerFetchedObjectsCount = fetchedResultsController.fetchedObjects?.count ?? 0
-        if dummyCellCount > 0 && indexPath.row == fetchedResultsControllerFetchedObjectsCount {
-            dummyCellCount = 0
-            tableView.reloadData()
-        }
-    }*/
-    
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             
@@ -400,13 +397,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    func addDummyCellsToTable() {
-        let screenHeight = UIScreen.mainScreen().bounds.height
-        let rowHeight = tableView.rowHeight
-        dummyCellCount = Int((screenHeight - rowHeight) / rowHeight)
-        tableView.reloadData()
-    }
-    
     func checkAccessoryDeleteButtonTapped(sender: UIButton?, event: UIEvent?) {
         
         if let uiEvent = event {
@@ -503,9 +493,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         switch type {
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-            tableView.endUpdates()
-            addDummyCellsToTable()
-            tableView.reloadData()
             tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
