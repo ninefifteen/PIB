@@ -167,19 +167,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 if savedCompany.isTargetCompany.boolValue {
                     if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                        tableView.reloadData()
                         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
                     } else {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                     }
                 } else {
                     controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                    tableView.reloadData()
                     Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                 }
             } else {
                 controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                tableView.reloadData()
                 Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
             }
         } else {
