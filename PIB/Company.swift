@@ -219,10 +219,10 @@ class Company: NSManagedObject {
 
     class func savedCompanyWithTickerSymbol(tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company? {
         
-        let backgroundContext = NSManagedObjectContext()
-        backgroundContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
         
-        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: backgroundContext)
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
         let request = NSFetchRequest()
         request.entity = entityDescription
         
@@ -230,7 +230,7 @@ class Company: NSManagedObject {
         
         let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
         request.predicate = predicate
-        var matchingCompaniesArray = backgroundContext.executeFetchRequest(request, error: &requestError) as [Company]
+        var matchingCompaniesArray = alternateContext.executeFetchRequest(request, error: &requestError) as [Company]
         if requestError != nil {
             println("Fetch request error: \(requestError?.description)")
             return nil
@@ -276,6 +276,7 @@ class Company: NSManagedObject {
         // Save the context.
         var saveError: NSError? = nil
         if !managedObjectContext.save(&saveError) {
+            println("Save Error in removeIncompleteDataCompaniesInManagedObjectContext(_:).")
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             //println("Unresolved error \(saveError), \(saveError.userInfo)")
@@ -299,6 +300,7 @@ class Company: NSManagedObject {
             // Save the context.
             var saveError: NSError? = nil
             if !managedObjectContext.save(&saveError) {
+                println("Save Error in setDataStatusForCompanyInManagedObjectContext(_:).")
                 // Replace this implementation with code to handle the error appropriately.
                 // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
                 //println("Unresolved error \(saveError), \(saveError.userInfo)")
@@ -312,6 +314,7 @@ class Company: NSManagedObject {
         isTargetCompany = NSNumber(bool: false)
         var error: NSError? = nil
         if !managedObjectContext.save(&error) {
+            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while changing isTargetCompany.")
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             //println("Unresolved error \(error), \(error.userInfo)")
@@ -322,6 +325,7 @@ class Company: NSManagedObject {
         peers = companyPeers.copy() as NSSet
         
         if !managedObjectContext.save(&error) {
+            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
             // Replace this implementation with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             //println("Unresolved error \(error), \(error.userInfo)")

@@ -1078,7 +1078,9 @@ class WebServicesManagerAPI: NSObject {
     func companiesFromYahooData(data: NSData) -> [Company] {
         
         var companies = [Company]()
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
         
         // Use SwiftyJSON for handling JSON.
         let json = JSON(data: data)["ResultSet"]["Result"]

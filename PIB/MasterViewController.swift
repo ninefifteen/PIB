@@ -164,18 +164,18 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if let companyToAdd = controller.companyToAdd? {
             
             if let savedCompany = Company.savedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                if savedCompany.isTargetCompany.boolValue {
+                if savedCompany.isTargetCompany.boolValue { // companyToAdd already exists as a target in persistent storage.
                     if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                         tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
                     } else {
                         controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                     }
-                } else {
+                } else {    // companyToAdd exists in persistent storage as a peer.
                     controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                     Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
                 }
-            } else {
+            } else {    // companyToAdd does not currently exist in persistent storage.
                 controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
                 Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
             }
