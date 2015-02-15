@@ -43,16 +43,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     var isFirstAppearanceOfView = true
     
-    var dummyCellCount: Int {
-        get {
-            let applicationHeight = UIScreen.mainScreen().applicationFrame.height
-            let navigationBarBarHeight = navigationController?.navigationBar.frame.height ?? 0
-            let tableHeight = applicationHeight - navigationBarBarHeight
-            let rowHeight = tableView.rowHeight
-            return Int((tableHeight + rowHeight) / rowHeight)
-        }
-    }
-    
     
     // MARK: - View Lifecycle
     
@@ -162,23 +152,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let controller = segue.sourceViewController as AddCompanyTableViewController
         
         if let companyToAdd = controller.companyToAdd? {
-            
-            if let savedCompany = Company.savedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                if savedCompany.isTargetCompany.boolValue {
-                    if let indexPath = fetchedResultsController.indexPathForObject(savedCompany) {
-                        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                        tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Top, animated: true)
-                    } else {
-                        controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                    }
-                } else {
-                    controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                    Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-                }
-            } else {
-                controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-                Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-            }
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         } else {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
         }
@@ -266,7 +241,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects + dummyCellCount
+        return sectionInfo.numberOfObjects
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -493,7 +468,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         switch type {
         case .Insert:
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-            tableView.scrollToRowAtIndexPath(newIndexPath, atScrollPosition: .Top, animated: true)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         case .Update:
