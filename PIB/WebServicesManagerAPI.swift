@@ -477,530 +477,594 @@ class WebServicesManagerAPI: NSObject {
     
     func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) -> Bool {
         
-        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
         
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        let companyId = company.objectID
         
-        var marketCapHeadingFound: Bool = false
-        var marketCapTableRowIndex: Int = 0
-        
-        while !marketCapHeadingFound && marketCapTableRowIndex < 10 {
-            marketCapTableRowIndex++
-            let potentialHeadingPath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[1]"
+        if let altContextCompany = alternateContext.objectWithID(companyId) as? Company {
             
-            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+            let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+            let parser = NDHpple(HTMLData: html!)
+            
+            let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: alternateContext)
+            var financialMetrics = altContextCompany.financialMetrics.mutableCopy() as NSMutableSet
+            
+            var marketCapHeadingFound: Bool = false
+            var marketCapTableRowIndex: Int = 0
+            
+            while !marketCapHeadingFound && marketCapTableRowIndex < 10 {
+                marketCapTableRowIndex++
+                let potentialHeadingPath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[1]"
                 
-                for node in potentialHeadingArray {
+                if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
                     
-                    if let rawPotentialHeading: String = node.firstChild?.content {
-                        let cleanedPotentialHeading = rawPotentialHeading.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                    for node in potentialHeadingArray {
                         
-                        if cleanedPotentialHeading == "Mkt cap" {
-                            let valuePath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[2]"
+                        if let rawPotentialHeading: String = node.firstChild?.content {
+                            let cleanedPotentialHeading = rawPotentialHeading.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
                             
-                            if let valuePathArray = parser.searchWithXPathQuery(valuePath) {
+                            if cleanedPotentialHeading == "Mkt cap" {
+                                let valuePath = "//table[@class='snap-data']/tr[" + String(marketCapTableRowIndex) + "]/td[2]"
                                 
-                                for node in valuePathArray {
+                                if let valuePathArray = parser.searchWithXPathQuery(valuePath) {
                                     
-                                    if let rawValueString: String = node.firstChild?.content {
-                                        let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                                        financialMetric.type = "Market Cap"
-                                        financialMetric.date = NSDate()
-                                        financialMetric.value = marketCapDoubleValueFromRawString(rawValueString)
-                                        financialMetrics.addObject(financialMetric)
-                                        marketCapHeadingFound = true
-                                        break
+                                    for node in valuePathArray {
+                                        
+                                        if let rawValueString: String = node.firstChild?.content {
+                                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                                            financialMetric.type = "Market Cap"
+                                            financialMetric.date = NSDate()
+                                            financialMetric.value = marketCapDoubleValueFromRawString(rawValueString)
+                                            financialMetrics.addObject(financialMetric)
+                                            marketCapHeadingFound = true
+                                            break
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    if marketCapHeadingFound { break }
-                }
-            }
-        }
-        company.financialMetrics = financialMetrics.copy() as NSSet
-        
-        var isDescriptionSet = false
-        let descriptionPath = "//div[@class='companySummary']"
-        if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
-            if companyDescription.count > 0 {
-                for node in companyDescription {
-                    if var rawCompanyDescriptionString: String = node.firstChild?.content {
-                        rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                        let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                        company.companyDescription = companyDescriptionString
-                        isDescriptionSet = true
+                        if marketCapHeadingFound { break }
                     }
                 }
             }
-        }
-        if !isDescriptionSet {
-            println("Description data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
-            return false
-        }
-        
-        // Determine Address div index.
-        var addressHeadingFound: Bool = false
-        var addressDivIndex: Int = 0
-        
-        while !addressHeadingFound && addressDivIndex < 100 {
+            altContextCompany.financialMetrics = financialMetrics.copy() as NSSet
             
-            addressDivIndex++
-            let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]/h3"
-            
-            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
-                for node in potentialHeadingArray {
-                    if let potentialHeading: String = node.firstChild?.content {
-                        if potentialHeading == "Address" { addressHeadingFound = true }
+            var isDescriptionSet = false
+            let descriptionPath = "//div[@class='companySummary']"
+            if let companyDescription = parser.searchWithXPathQuery(descriptionPath) {
+                if companyDescription.count > 0 {
+                    for node in companyDescription {
+                        if var rawCompanyDescriptionString: String = node.firstChild?.content {
+                            rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                            altContextCompany.companyDescription = companyDescriptionString
+                            isDescriptionSet = true
+                        }
                     }
                 }
             }
-        }
-        addressDivIndex++
-        
-        let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]"
-        if let address = parser.searchWithXPathQuery(addressPath) {
-            for node in address {
+            if !isDescriptionSet {
+                println("Description data not found at URL: \(googleSummaryUrlString), for company name: \(altContextCompany.name). Return false.")
+                return false
+            }
+            
+            // Determine Address div index.
+            var addressHeadingFound: Bool = false
+            var addressDivIndex: Int = 0
+            
+            while !addressHeadingFound && addressDivIndex < 100 {
                 
-                for (index, addressLine) in enumerate(node.children!) {
-                    
-                    switch index {
-                        
-                    case 0:
-                        if let rawStreetString: String = addressLine.content {
-                            company.street = rawStreetString
+                addressDivIndex++
+                let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]/h3"
+                
+                if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+                    for node in potentialHeadingArray {
+                        if let potentialHeading: String = node.firstChild?.content {
+                            if potentialHeading == "Address" { addressHeadingFound = true }
                         }
-                        
-                    case 2:
-                        if let rawCityStateZipString: String = addressLine.content {
-                            
-                            var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
-                            
-                            if commaSplit.count > 0 {
-                                
-                                company.city = commaSplit[0]
-                                
-                                if commaSplit.count > 1 {
-                                    var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
-                                    if spaceSplit.count > 2 {
-                                        company.state = spaceSplit[1]
-                                        company.zipCode = spaceSplit[2]
-                                    } else if spaceSplit.count > 1 {
-                                        company.state = ""
-                                        company.zipCode = spaceSplit[1]
-                                    }
-                                }
-                                
-                            } else {
-                                company.city = "NA"
-                            }
-                        }
-                        
-                    case 4:
-                        if let rawCountryString: String = addressLine.content {
-                            let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            company.country = countryString
-                        }
-                        
-                    default:
-                        break
                     }
                 }
             }
+            addressDivIndex++
+            
+            let addressPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(addressDivIndex) + "]"
+            if let address = parser.searchWithXPathQuery(addressPath) {
+                for node in address {
+                    
+                    for (index, addressLine) in enumerate(node.children!) {
+                        
+                        switch index {
+                            
+                        case 0:
+                            if let rawStreetString: String = addressLine.content {
+                                altContextCompany.street = rawStreetString
+                            }
+                            
+                        case 2:
+                            if let rawCityStateZipString: String = addressLine.content {
+                                
+                                var commaSplit = rawCityStateZipString.componentsSeparatedByString(",")
+                                
+                                if commaSplit.count > 0 {
+                                    
+                                    altContextCompany.city = commaSplit[0]
+                                    
+                                    if commaSplit.count > 1 {
+                                        var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
+                                        if spaceSplit.count > 2 {
+                                            altContextCompany.state = spaceSplit[1]
+                                            altContextCompany.zipCode = spaceSplit[2]
+                                        } else if spaceSplit.count > 1 {
+                                            altContextCompany.state = ""
+                                            altContextCompany.zipCode = spaceSplit[1]
+                                        }
+                                    }
+                                    
+                                } else {
+                                    altContextCompany.city = "NA"
+                                }
+                            }
+                            
+                        case 4:
+                            if let rawCountryString: String = addressLine.content {
+                                let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                                altContextCompany.country = countryString
+                            }
+                            
+                        default:
+                            break
+                        }
+                    }
+                }
+            } else {
+                println("Address data not found at URL: \(googleSummaryUrlString), for company name: \(altContextCompany.name). Return false.")
+                return false
+            }
+            
+            // Determine Key Stats and Ratios div index.
+            var keyStatsAndRatiosHeadingFound: Bool = false
+            var keyStatsAndRatiosDivIndex: Int = 0
+            
+            while !keyStatsAndRatiosHeadingFound && keyStatsAndRatiosDivIndex < 200 {
+                keyStatsAndRatiosDivIndex++
+                let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/h3"
+                
+                if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
+                    for node in potentialHeadingArray {
+                        if let potentialHeading: String = node.firstChild?.content {
+                            if potentialHeading == "Key stats and ratios" { keyStatsAndRatiosHeadingFound = true }
+                        }
+                    }
+                }
+            }
+            keyStatsAndRatiosDivIndex++
+            
+            var isEmployeeCountSet = false
+            let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/table/tr[6]/td[2]"
+            if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
+                for node in employeeCount {
+                    if let rawEmployeeCountString: String = node.firstChild?.content {
+                        let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
+                        if let employeeCountInt = employeeCountString.toInt() {
+                            altContextCompany.employeeCount = employeeCountInt
+                            isEmployeeCountSet = true
+                        }
+                    }
+                }
+            }
+            if !isEmployeeCountSet { println("Employee count data not found for company name: \(altContextCompany.name).") }
+            
+            var isWebLinkSet = false
+            let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
+            if let webLink = parser.searchWithXPathQuery(webLinkPath) {
+                for node in webLink {
+                    if let rawWebLinkString: String = node.firstChild?.content {
+                        let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                        altContextCompany.webLink = webLinkString
+                        isWebLinkSet = true
+                    }
+                }
+            }
+            if !isWebLinkSet { println("Web link not found.") }
+            
+            var saveError: NSError? = nil
+            if !alternateContext.save(&saveError) {
+                println("Save Error in parseAndAddGoogleSummaryData(_:forCompany:).")
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(saveError), \(saveError.userInfo)")
+                abort()
+            }
+            
+            return true
+            
         } else {
-            println("Address data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
+            
             return false
         }
-        
-        // Determine Key Stats and Ratios div index.
-        var keyStatsAndRatiosHeadingFound: Bool = false
-        var keyStatsAndRatiosDivIndex: Int = 0
-        
-        while !keyStatsAndRatiosHeadingFound && keyStatsAndRatiosDivIndex < 200 {
-            keyStatsAndRatiosDivIndex++
-            let potentialHeadingPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/h3"
-            
-            if let potentialHeadingArray = parser.searchWithXPathQuery(potentialHeadingPath) {
-                for node in potentialHeadingArray {
-                    if let potentialHeading: String = node.firstChild?.content {
-                        if potentialHeading == "Key stats and ratios" { keyStatsAndRatiosHeadingFound = true }
-                    }
-                }
-            }
-        }
-        keyStatsAndRatiosDivIndex++
-        
-        var isEmployeeCountSet = false
-        let employeeCountPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[" + String(keyStatsAndRatiosDivIndex) + "]/table/tr[6]/td[2]"
-        if let employeeCount = parser.searchWithXPathQuery(employeeCountPath) {
-            for node in employeeCount {
-                if let rawEmployeeCountString: String = node.firstChild?.content {
-                    let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
-                    if let employeeCountInt = employeeCountString.toInt() {
-                        company.employeeCount = employeeCountInt
-                        isEmployeeCountSet = true
-                    }
-                }
-            }
-        }
-        if !isEmployeeCountSet { println("Employee count data not found for company name: \(company.name).") }
-        
-        var isWebLinkSet = false
-        let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
-        if let webLink = parser.searchWithXPathQuery(webLinkPath) {
-            for node in webLink {
-                if let rawWebLinkString: String = node.firstChild?.content {
-                    let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    company.webLink = webLinkString
-                    isWebLinkSet = true
-                }
-            }
-        }
-        if !isWebLinkSet { println("Web link not found.") }
-        
-        return true
     }
     
     func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) -> Bool {
         
-        // Arrays for calculating data.
-        var revenueArray = Array<FinancialMetric>()
-        var totalRevenueArray = Array<FinancialMetric>()
-        var netIncomeArray = Array<FinancialMetric>()
-        var operatingIncomeArray = Array<FinancialMetric>()
-        var interestExpenseArray = Array<FinancialMetric>()
-        var netOperatingIncomeArray = Array<FinancialMetric>()
-        var unusualExpenseArray = Array<FinancialMetric>()
-        var ebitArray = Array<FinancialMetric>()
-        var depreciationAmortizationArray = Array<FinancialMetric>()
-        var ebitdaArray = Array<FinancialMetric>()
-        var ebitdaMarginArray = Array<FinancialMetric>()
-        var profitMarginArray = Array<FinancialMetric>()
-        var revenueGrowthArray = Array<FinancialMetric>()
-        var netIncomeGrowthArray = Array<FinancialMetric>()
-        var grossProfitArray = Array<FinancialMetric>()
-        var grossMarginArray = Array<FinancialMetric>()
-        var sgAndAArray = Array<FinancialMetric>()
-        var sgAndAPercentOfRevenueArray = Array<FinancialMetric>()
-        var rAndDArray = Array<FinancialMetric>()
-        var rAndDPercentOfRevenueArray = Array<FinancialMetric>()
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
         
-        let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
+        let companyId = company.objectID
         
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
-        
-        let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
-        
-        // Currency type.
-        var isCurrencySet = false
-        let currencyTypePath = "//th[@class='lm lft nwp']"
-        if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
-            if currencyTypeArray.count > 0 {
-                if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
-                    var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
-                    company.currencyCode = spaceSplit[3]
-                    company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
-                    isCurrencySet = true
+        if let altContextCompany = alternateContext.objectWithID(companyId) as? Company {
+            
+            // Arrays for calculating data.
+            var revenueArray = Array<FinancialMetric>()
+            var totalRevenueArray = Array<FinancialMetric>()
+            var netIncomeArray = Array<FinancialMetric>()
+            var operatingIncomeArray = Array<FinancialMetric>()
+            var interestExpenseArray = Array<FinancialMetric>()
+            var netOperatingIncomeArray = Array<FinancialMetric>()
+            var unusualExpenseArray = Array<FinancialMetric>()
+            var ebitArray = Array<FinancialMetric>()
+            var depreciationAmortizationArray = Array<FinancialMetric>()
+            var ebitdaArray = Array<FinancialMetric>()
+            var ebitdaMarginArray = Array<FinancialMetric>()
+            var profitMarginArray = Array<FinancialMetric>()
+            var revenueGrowthArray = Array<FinancialMetric>()
+            var netIncomeGrowthArray = Array<FinancialMetric>()
+            var grossProfitArray = Array<FinancialMetric>()
+            var grossMarginArray = Array<FinancialMetric>()
+            var sgAndAArray = Array<FinancialMetric>()
+            var sgAndAPercentOfRevenueArray = Array<FinancialMetric>()
+            var rAndDArray = Array<FinancialMetric>()
+            var rAndDPercentOfRevenueArray = Array<FinancialMetric>()
+            
+            let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
+            
+            let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: alternateContext)
+            var financialMetrics = altContextCompany.financialMetrics.mutableCopy() as NSMutableSet
+            
+            let html = NSString(data: data, encoding: NSUTF8StringEncoding)
+            let parser = NDHpple(HTMLData: html!)
+            
+            // Currency type.
+            var isCurrencySet = false
+            let currencyTypePath = "//th[@class='lm lft nwp']"
+            if let currencyTypeArray = parser.searchWithXPathQuery(currencyTypePath) {
+                if currencyTypeArray.count > 0 {
+                    if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
+                        var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
+                        altContextCompany.currencyCode = spaceSplit[3]
+                        altContextCompany.currencySymbol = currencySymbolForCurrencyCode(altContextCompany.currencyCode)
+                        isCurrencySet = true
+                    }
                 }
             }
-        }
-        if !isCurrencySet {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-            return false
-        }
-        
-        // Download currency exchange rate if necessary.
-        var exchangeRate: Double = 1.0
-        if company.currencyCode != "USD" {
-            exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
-            if exchangeRate < 0.0 { // Exchange rate was not available.
-                exchangeRate = 1.0
+            if !isCurrencySet {
+                println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(altContextCompany.name). Return false.")
+                return false
+            }
+            
+            // Download currency exchange rate if necessary.
+            var exchangeRate: Double = 1.0
+            if altContextCompany.currencyCode != "USD" {
+                exchangeRate = downloadCurrencyExchangeRateFrom(altContextCompany.currencyCode, to: "USD")
+                if exchangeRate < 0.0 { // Exchange rate was not available.
+                    exchangeRate = 1.0
+                } else {
+                    altContextCompany.currencyCode = "USD"
+                    altContextCompany.currencySymbol = currencySymbolForCurrencyCode(altContextCompany.currencyCode)
+                }
+            }
+            
+            // Dates for Google Finance metrics.
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            var datesArray = Array<NSDate>()
+            let datesPath = "//div[@id='incannualdiv']/table/thead/tr/th"
+            if let dates = parser.searchWithXPathQuery(datesPath) {
+                for (thIndex, tableHeading) in enumerate(dates) {
+                    if thIndex > 0 {
+                        if var rawDateString: String = tableHeading.firstChild?.content {
+                            var spaceSplit = rawDateString.componentsSeparatedByString(" ")
+                            var cleanedDateString: String = spaceSplit[3].stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+                            if let date = dateFormatter.dateFromString(cleanedDateString) {
+                                datesArray.append(date)
+                            } else {
+                                println("Unable to read data found at URL: \(googleFinancialMetricsUrlString), for company name: \(altContextCompany.name). Return false.")
+                                return false
+                            }
+                        }
+                    }
+                }
             } else {
-                company.currencyCode = "USD"
-                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(altContextCompany.name). Return false.")
+                return false
             }
-        }
-        
-        // Dates for Google Finance metrics.
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        var datesArray = Array<NSDate>()
-        let datesPath = "//div[@id='incannualdiv']/table/thead/tr/th"
-        if let dates = parser.searchWithXPathQuery(datesPath) {
-            for (thIndex, tableHeading) in enumerate(dates) {
-                if thIndex > 0 {
-                    if var rawDateString: String = tableHeading.firstChild?.content {
-                        var spaceSplit = rawDateString.componentsSeparatedByString(" ")
-                        var cleanedDateString: String = spaceSplit[3].stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
-                        if let date = dateFormatter.dateFromString(cleanedDateString) {
-                            datesArray.append(date)
+            
+            // Metrics from Google Finance.
+            let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
+            if let allValues = parser.searchWithXPathQuery(valuesPath) {
+                
+                for (trIndex, tableRow) in enumerate(allValues) {
+                    
+                    var tdIndex: Int = 0
+                    var financialMetricType = String()
+                    
+                    for tableData in tableRow.children! {
+                        
+                        if tdIndex == 0 {
+                            if var rawValueString: String = tableData.firstChild?.content {
+                                financialMetricType = rawValueString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                                tdIndex++
+                            }
                         } else {
-                            println("Unable to read data found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-                            return false
-                        }
-                    }
-                }
-            }
-        } else {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-            return false
-        }
-        
-        // Metrics from Google Finance.
-        let valuesPath = "//div[@id='incannualdiv']/table/tbody/tr"
-        if let allValues = parser.searchWithXPathQuery(valuesPath) {
-            
-            for (trIndex, tableRow) in enumerate(allValues) {
-                
-                var tdIndex: Int = 0
-                var financialMetricType = String()
-                
-                for tableData in tableRow.children! {
-                    
-                    if tdIndex == 0 {
-                        if var rawValueString: String = tableData.firstChild?.content {
-                            financialMetricType = rawValueString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            tdIndex++
-                        }
-                    } else {
-                        var rawValueString = String()
-                        var rawValueStringSet: Bool = false
-                        
-                        if let contentString: String = tableData.firstChild?.content {
-                            rawValueString = contentString
-                            rawValueStringSet = true
-                        } else if let contentString: String = tableData.firstChild?.firstChild?.content {
-                            rawValueString = contentString
-                            rawValueStringSet = true
-                        }
-                        
-                        if rawValueStringSet {
-                            if rawValueString == "-" || rawValueString == "" {
-                                rawValueString = "0.0"
-                            }
-                            let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                            financialMetric.date = datesArray[tdIndex - 1]
-                            financialMetric.type = financialMetricType
-                            financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
-                            financialMetrics.addObject(financialMetric)
-                            if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
+                            var rawValueString = String()
+                            var rawValueStringSet: Bool = false
                             
-                            // Populate arrays for calculating metrics.
-                            switch financialMetric.type {
-                            case "Revenue":
-                                revenueArray.append(financialMetric)
-                            case "Total Revenue":
-                                totalRevenueArray.append(financialMetric)
-                            case "Net Income":
-                                netIncomeArray.append(financialMetric)
-                            case "Operating Income":
-                                operatingIncomeArray.append(financialMetric)
-                            case "Interest Expense(Income) - Net Operating":
-                                interestExpenseArray.append(financialMetric)
-                            case "Unusual Expense (Income)":
-                                unusualExpenseArray.append(financialMetric)
-                            case "Depreciation/Amortization":
-                                depreciationAmortizationArray.append(financialMetric)
-                            case "Gross Profit":
-                                grossProfitArray.append(financialMetric)
-                            case "Selling/General/Admin. Expenses, Total":
-                                sgAndAArray.append(financialMetric)
-                            case "Research & Development":
-                                rAndDArray.append(financialMetric)
-                            default:
-                                break
+                            if let contentString: String = tableData.firstChild?.content {
+                                rawValueString = contentString
+                                rawValueStringSet = true
+                            } else if let contentString: String = tableData.firstChild?.firstChild?.content {
+                                rawValueString = contentString
+                                rawValueStringSet = true
                             }
-                            tdIndex++
+                            
+                            if rawValueStringSet {
+                                if rawValueString == "-" || rawValueString == "" {
+                                    rawValueString = "0.0"
+                                }
+                                let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
+                                let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                                financialMetric.date = datesArray[tdIndex - 1]
+                                financialMetric.type = financialMetricType
+                                financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
+                                financialMetrics.addObject(financialMetric)
+                                if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
+                                
+                                // Populate arrays for calculating metrics.
+                                switch financialMetric.type {
+                                case "Revenue":
+                                    revenueArray.append(financialMetric)
+                                case "Total Revenue":
+                                    totalRevenueArray.append(financialMetric)
+                                case "Net Income":
+                                    netIncomeArray.append(financialMetric)
+                                case "Operating Income":
+                                    operatingIncomeArray.append(financialMetric)
+                                case "Interest Expense(Income) - Net Operating":
+                                    interestExpenseArray.append(financialMetric)
+                                case "Unusual Expense (Income)":
+                                    unusualExpenseArray.append(financialMetric)
+                                case "Depreciation/Amortization":
+                                    depreciationAmortizationArray.append(financialMetric)
+                                case "Gross Profit":
+                                    grossProfitArray.append(financialMetric)
+                                case "Selling/General/Admin. Expenses, Total":
+                                    sgAndAArray.append(financialMetric)
+                                case "Research & Development":
+                                    rAndDArray.append(financialMetric)
+                                default:
+                                    break
+                                }
+                                tdIndex++
+                            }
                         }
                     }
                 }
-            }
-            
-            // Sort arrays for calculations by date.
-            revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            unusualExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            depreciationAmortizationArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            grossProfitArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
-            
-            // Add calculated metrics.
-            for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
                 
-                let date = operatingIncomeMetric.date
+                // Sort arrays for calculations by date.
+                revenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                netIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                operatingIncomeArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                interestExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                unusualExpenseArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                depreciationAmortizationArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                grossProfitArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                sgAndAArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+                rAndDArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
                 
-                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                netOperatingIncomeMetric.type = "EBIT"
-                netOperatingIncomeMetric.date = date
-                netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
-                netOperatingIncomeArray.append(netOperatingIncomeMetric)
-                financialMetrics.addObject(netOperatingIncomeMetric)
-                
-                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitMetric.type = "Normal Net Operating Income"
-                ebitMetric.date = date
-                ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
-                ebitArray.append(ebitMetric)
-                financialMetrics.addObject(ebitMetric)
-                
-                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitdaMetric.type = "EBITDA"
-                ebitdaMetric.date = date
-                ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
-                ebitdaArray.append(ebitdaMetric)
-                financialMetrics.addObject(ebitdaMetric)
-                
-                let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                ebitdaMarginMetric.type = "EBITDA Margin"
-                ebitdaMarginMetric.date = date
-                ebitdaMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
-                ebitdaMarginArray.append(ebitdaMarginMetric)
-                financialMetrics.addObject(ebitdaMarginMetric)
-                
-                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                profitMarginMetric.type = "Profit Margin"
-                profitMarginMetric.date = date
-                profitMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
-                profitMarginArray.append(profitMarginMetric)
-                financialMetrics.addObject(profitMarginMetric)
-                
-                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                grossMarginMetric.type = "Gross Margin"
-                grossMarginMetric.date = date
-                grossMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
-                grossMarginArray.append(grossMarginMetric)
-                financialMetrics.addObject(grossMarginMetric)
-                
-                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
-                sgAndAPercentOfRevenueMetric.date = date
-                sgAndAPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
-                sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
-                financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
-                
-                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
-                rAndDPercentOfRevenueMetric.date = date
-                rAndDPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
-                rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
-                financialMetrics.addObject(rAndDPercentOfRevenueMetric)
-                
-                // Calculate and add growth metrics after first date has been iterated.
-                if index > 0 {
+                // Add calculated metrics.
+                for (index, operatingIncomeMetric) in enumerate(operatingIncomeArray) {
                     
-                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                    revenueGrowthMetric.type = "Revenue Growth"
-                    revenueGrowthMetric.date = date
-                    revenueGrowthMetric.value = Double(totalRevenueArray[index - 1].value) != 0.0 ? ((Double(totalRevenueArray[index].value) - Double(totalRevenueArray[index - 1].value)) / Double(totalRevenueArray[index - 1].value)) * 100.0 : 0.0
-                    revenueGrowthArray.append(revenueGrowthMetric)
-                    financialMetrics.addObject(revenueGrowthMetric)
+                    let date = operatingIncomeMetric.date
                     
-                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                    netIncomeGrowthMetric.type = "Net Income Growth"
-                    netIncomeGrowthMetric.date = date
-                    netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
-                    netIncomeGrowthArray.append(netIncomeGrowthMetric)
-                    financialMetrics.addObject(netIncomeGrowthMetric)
+                    let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    netOperatingIncomeMetric.type = "EBIT"
+                    netOperatingIncomeMetric.date = date
+                    netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
+                    netOperatingIncomeArray.append(netOperatingIncomeMetric)
+                    financialMetrics.addObject(netOperatingIncomeMetric)
+                    
+                    let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    ebitMetric.type = "Normal Net Operating Income"
+                    ebitMetric.date = date
+                    ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
+                    ebitArray.append(ebitMetric)
+                    financialMetrics.addObject(ebitMetric)
+                    
+                    let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    ebitdaMetric.type = "EBITDA"
+                    ebitdaMetric.date = date
+                    ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
+                    ebitdaArray.append(ebitdaMetric)
+                    financialMetrics.addObject(ebitdaMetric)
+                    
+                    let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    ebitdaMarginMetric.type = "EBITDA Margin"
+                    ebitdaMarginMetric.date = date
+                    ebitdaMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
+                    ebitdaMarginArray.append(ebitdaMarginMetric)
+                    financialMetrics.addObject(ebitdaMarginMetric)
+                    
+                    let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    profitMarginMetric.type = "Profit Margin"
+                    profitMarginMetric.date = date
+                    profitMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
+                    profitMarginArray.append(profitMarginMetric)
+                    financialMetrics.addObject(profitMarginMetric)
+                    
+                    let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    grossMarginMetric.type = "Gross Margin"
+                    grossMarginMetric.date = date
+                    grossMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
+                    grossMarginArray.append(grossMarginMetric)
+                    financialMetrics.addObject(grossMarginMetric)
+                    
+                    let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
+                    sgAndAPercentOfRevenueMetric.date = date
+                    sgAndAPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
+                    sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
+                    financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
+                    
+                    let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                    rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
+                    rAndDPercentOfRevenueMetric.date = date
+                    rAndDPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
+                    rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
+                    financialMetrics.addObject(rAndDPercentOfRevenueMetric)
+                    
+                    // Calculate and add growth metrics after first date has been iterated.
+                    if index > 0 {
+                        
+                        let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                        revenueGrowthMetric.type = "Revenue Growth"
+                        revenueGrowthMetric.date = date
+                        revenueGrowthMetric.value = Double(totalRevenueArray[index - 1].value) != 0.0 ? ((Double(totalRevenueArray[index].value) - Double(totalRevenueArray[index - 1].value)) / Double(totalRevenueArray[index - 1].value)) * 100.0 : 0.0
+                        revenueGrowthArray.append(revenueGrowthMetric)
+                        financialMetrics.addObject(revenueGrowthMetric)
+                        
+                        let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+                        netIncomeGrowthMetric.type = "Net Income Growth"
+                        netIncomeGrowthMetric.date = date
+                        netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
+                        netIncomeGrowthArray.append(netIncomeGrowthMetric)
+                        financialMetrics.addObject(netIncomeGrowthMetric)
+                    }
                 }
-            }
-            
-            if logMetricsToConsole {
-                for metric in netOperatingIncomeArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                
+                if logMetricsToConsole {
+                    for metric in netOperatingIncomeArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in ebitArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in ebitdaArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in ebitdaMarginArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in profitMarginArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in revenueGrowthArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in netIncomeGrowthArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in grossProfitArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in grossMarginArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in sgAndAPercentOfRevenueArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
+                    for metric in rAndDPercentOfRevenueArray {
+                        println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                    }
                 }
-                for metric in ebitArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
+                
+                if financialMetrics.count < 1 {
+                    println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(altContextCompany.name). Return false.")
+                    return false
                 }
-                for metric in ebitdaArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in ebitdaMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in profitMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in revenueGrowthArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in netIncomeGrowthArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in grossProfitArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in grossMarginArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in sgAndAPercentOfRevenueArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-                for metric in rAndDPercentOfRevenueArray {
-                    println("Type: \(metric.type), Date: \(dateFormatter.stringFromDate(metric.date)), Value: \(metric.value)")
-                }
-            }
-            
-            if financialMetrics.count < 1 {
+                
+                altContextCompany.financialMetrics = financialMetrics.copy() as NSSet
+                
+            } else {
                 println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
                 return false
             }
             
-            company.financialMetrics = financialMetrics.copy() as NSSet
+            var saveError: NSError? = nil
+            if !alternateContext.save(&saveError) {
+                println("Save Error in parseAndAddGoogleSummaryData(_:forCompany:).")
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(saveError), \(saveError.userInfo)")
+                abort()
+            }
+            
+            return true
             
         } else {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
+            
             return false
         }
-        
-        return true
     }
     
     func addGoogleRelatedCompaniesFromData(data: NSData, forCompany company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
-        let relatedCompanies = parseGoogleRelatedCompaniesData(data)
-        var savedRelatedCompanies = [Company]()
-        var unsavedRelatedCompanies = [Company]()
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
         
-        if relatedCompanies.count > 0 {
+        let companyId = company.objectID
+        
+        if let altContextCompany = alternateContext.objectWithID(companyId) as? Company {
             
-            for relatedCompany in relatedCompanies {
-                if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    savedRelatedCompanies.append(relatedCompany)
-                } else {
-                    unsavedRelatedCompanies.append(relatedCompany)
-                }
-            }
+            let relatedCompanies = parseGoogleRelatedCompaniesData(data)
+            var savedRelatedCompanies = [Company]()
+            var unsavedRelatedCompanies = [Company]()
             
-            for savedRelatedCompany in savedRelatedCompanies {
-                company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-            }
-            
-            let dispatchGroup = dispatch_group_create()
-            
-            let count = unsavedRelatedCompanies.count
-            var index = 1
-            for unsavedRelatedCompany in unsavedRelatedCompanies {
-                dispatch_group_enter(dispatchGroup)
-                Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                    if success {
-                        company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+            if relatedCompanies.count > 0 {
+                
+                for relatedCompany in relatedCompanies {
+                    if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: alternateContext) {
+                        savedRelatedCompanies.append(relatedCompany)
+                    } else {
+                        unsavedRelatedCompanies.append(relatedCompany)
                     }
-                    dispatch_group_leave(dispatchGroup)
-                })
-                index++
-            }
-            
-            dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                }
+                
+                for savedRelatedCompany in savedRelatedCompanies {
+                    company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: alternateContext)
+                }
+                
+                let dispatchGroup = dispatch_group_create()
+                
+                let count = unsavedRelatedCompanies.count
+                var index = 1
+                for unsavedRelatedCompany in unsavedRelatedCompanies {
+                    dispatch_group_enter(dispatchGroup)
+                    Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: alternateContext, withCompletion: { (success) -> Void in
+                        if success {
+                            company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: alternateContext)
+                            var saveError: NSError? = nil
+                            if !alternateContext.save(&saveError) {
+                                println("Save Error in parseAndAddGoogleSummaryData(_:forCompany:).")
+                                // Replace this implementation with code to handle the error appropriately.
+                                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                                //println("Unresolved error \(saveError), \(saveError.userInfo)")
+                                abort()
+                            }
+                        }
+                        dispatch_group_leave(dispatchGroup)
+                    })
+                    index++
+                }
+                
+                dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                    if completion != nil {
+                        completion!(success: true)
+                    }
+                }
+                
+            } else {
+                
                 if completion != nil {
                     completion!(success: true)
                 }
@@ -1009,15 +1073,18 @@ class WebServicesManagerAPI: NSObject {
         } else {
             
             if completion != nil {
-                completion!(success: true)
+                completion!(success: false)
             }
         }
     }
     
     func parseGoogleRelatedCompaniesData(data: NSData) -> Array<Company> {
         
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        
         var companies = [Company]()
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
         
         let rawStringData = NSString(data: data, encoding: NSNonLossyASCIIStringEncoding)! as String
         //println("WebServicesManagerAPI parseGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
