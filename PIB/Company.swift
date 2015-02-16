@@ -141,17 +141,14 @@ class Company: NSManagedObject {
     
     class func saveNewPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!, withCompletion completion: ((success: Bool) -> Void)?) {
         
-        let alternateContext = NSManagedObjectContext()
-        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
-        
-        if !Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: alternateContext) {
+        if !Company.isSavedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
             
             //println("saveNewPeerCompanyWithName: \(name), tickerSymbol: \(tickerSymbol), exchangeDisplayName: \(exchangeDisplayName)")
             //println(tickerSymbol)
             
             // Create new company managed object.
-            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
-            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: alternateContext)
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+            let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
             
             // Set attributes.
             company.name = name
@@ -195,7 +192,7 @@ class Company: NSManagedObject {
             
             dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
                 
-                company.setDataStatusForCompanyInManagedObjectContext(alternateContext)
+                company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
                 
                 if company.dataState == .DataDownloadCompleteWithoutError {
                     if completion != nil {
@@ -203,7 +200,7 @@ class Company: NSManagedObject {
                     }
                 } else {
                     let theName = company.name
-                    alternateContext.deleteObject(company)
+                    managedObjectContext.deleteObject(company)
                     if completion != nil {
                         completion!(success: false)
                     }
@@ -337,24 +334,13 @@ class Company: NSManagedObject {
     }
 
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
-        
-        let alternateContext = NSManagedObjectContext()
-        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
                 
-        let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: alternateContext)
+        let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
         if let peerCompany = savedPeerCompany {
             var peers = self.peers.mutableCopy() as NSMutableSet
             peers.addObject(peerCompany)
             self.peers = peers.copy() as NSSet
-            var error: NSError? = nil
-            if !alternateContext.save(&error) {
-                println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while changing isTargetCompany.")
-                // Replace this implementation with code to handle the error appropriately.
-                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                //println("Unresolved error \(error), \(error.userInfo)")
-                abort()
-            }
         }
     }
     
