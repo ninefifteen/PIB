@@ -169,6 +169,61 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
+    func downloadGoogleSummaryForCompanyWithTickerSymbol(tickerSymbol: String, onExchange exchangeDisplayName: String, withCompletion completion: ((summaryDictionary: [String: String], success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        
+        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(tickerSymbol, onExchange: exchangeDisplayName)
+        let url = NSURL(string: googleSummaryUrlString)
+        //println("Google Finance Summary URL: \(url!)")
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            var summaryDictionary = [String: String]()
+            
+            if error == nil {
+                
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    summaryDictionary = self.parseGoogleSummaryData(data)
+                    let parseSuccess = summaryDictionary.count > 0 ? true : false
+                    
+                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                        if completion != nil {
+                            completion!(summaryDictionary: summaryDictionary, success: parseSuccess)
+                        }
+                    })
+                    
+                } else {
+                    println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(summaryDictionary: summaryDictionary, success: false)
+                    }
+                    self.sendGeneralErrorMessage()
+                }
+            } else if error.code == -999 {  // Error caused by cancelling of the data task.
+                println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(summaryDictionary: summaryDictionary, success: false)
+                }
+            } else {  // Any other error.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(summaryDictionary: summaryDictionary, success: false)
+                }
+                self.sendConnectionErrorMessage()
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        dataTask.resume()
+    }
+    
     func downloadGoogleSummaryForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
@@ -212,6 +267,61 @@ class WebServicesManagerAPI: NSObject {
                 println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
                     completion!(success: false)
+                }
+                self.sendConnectionErrorMessage()
+            }
+            self.decrementNetworkActivityCount()
+        })
+        
+        dataTask.resume()
+    }
+    
+    func downloadGoogleFinancialsForCompanyWithTickerSymbol(tickerSymbol: String, onExchange exchangeDisplayName: String, withCompletion completion: ((financialDictionary: [String: AnyObject], success: Bool) -> Void)?) {
+        
+        incrementNetworkActivityCount()
+        
+        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(tickerSymbol, onExchange: exchangeDisplayName)
+        let url = NSURL(string: googleFinancialMetricsUrlString)
+        //println("Google Finance Financials URL: \(url!)")
+        
+        let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            var financialDictionary = [String: AnyObject]()
+            
+            if error == nil {
+                
+                //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
+                //println("WebServicesManagerAPI downloadGoogleFinancialsForCompany rawStringData:\n\(rawStringData)")
+                
+                let httpResponse = response as NSHTTPURLResponse
+                
+                if httpResponse.statusCode == 200 {
+                    
+                    let financialDictionary = self.parseGoogleFinancialData(data)
+                    let parseSuccess = financialDictionary.count > 0 ? true : false
+                    
+                    dispatch_sync(dispatch_get_main_queue(), { () -> Void in
+                        if completion != nil {
+                            completion!(financialDictionary: financialDictionary, success: parseSuccess)
+                        }
+                    })
+                    
+                } else {
+                    println("Unable To Download Company Financial Data. HTTP Response Status Code: \(httpResponse.statusCode)")
+                    if completion != nil {
+                        completion!(financialDictionary: financialDictionary, success: false)
+                    }
+                    self.sendGeneralErrorMessage()
+                }
+            } else if error.code == -999 {  // Error caused by cancelling of the data task.
+                println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(financialDictionary: financialDictionary, success: false)
+                }
+            } else {  // Any other error.
+                println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
+                if completion != nil {
+                    completion!(financialDictionary: financialDictionary, success: false)
                 }
                 self.sendConnectionErrorMessage()
             }
@@ -274,6 +384,11 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func downloadGoogleRelatedCompaniesForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        if completion != nil {
+            completion!(success: true)
+            return
+        }
         
         incrementNetworkActivityCount()
         

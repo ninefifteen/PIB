@@ -102,22 +102,24 @@ class Company: NSManagedObject {
         let dispatchGroup = dispatch_group_create()
         
         dispatch_group_enter(dispatchGroup)
-        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (summaryDictionary, success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                company.addSummaryDataFromDictionary(summaryDictionary)
                 company.summaryDownloadComplete = true
                 company.summaryDownloadError = !success
                 dispatch_group_leave(dispatchGroup)
             })
-        })
+        }
         
         dispatch_group_enter(dispatchGroup)
-        WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+        WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (financialDictionary, success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                company.addFinancialDataFromDictionary(financialDictionary)
                 company.financialsDownloadComplete = true
                 company.financialsDownloadError = !success
                 dispatch_group_leave(dispatchGroup)
             })
-        })
+        }
         
         dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
@@ -286,6 +288,14 @@ class Company: NSManagedObject {
     
     
     // MARK: - Instance Methods
+    
+    func addSummaryDataFromDictionary(summaryDictionary: [String: String]) {
+        
+    }
+    
+    func addFinancialDataFromDictionary(financialDictionary: [String: AnyObject]) {
+        
+    }
     
     func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
