@@ -527,6 +527,29 @@ class WebServicesManagerAPI: NSObject {
         }
     }
     
+    func marketCapValueStringFromRawString(rawString: String) -> String {
+        
+        var cleanedString = rawString.stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+        var value: Double = 0.0
+        if cleanedString.hasSuffix("T") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("T", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000000
+        } else if cleanedString.hasSuffix("B") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("B", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000
+        } else if cleanedString.hasSuffix("M") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("M", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000
+        } else if cleanedString.hasSuffix("K") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("K", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000
+        } else {
+            value = NSString(string: cleanedString).doubleValue
+        }
+        
+        return toString(value)
+    }
+    
     func marketCapDoubleValueFromRawString(rawString: String) -> Double {
         
         var cleanedString = rawString.stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
@@ -620,7 +643,7 @@ class WebServicesManagerAPI: NSObject {
                                 for node in valuePathArray {
                                     
                                     if let rawValueString: String = node.firstChild?.content {
-                                        summaryDictionary["Market Cap"] = rawValueString
+                                        summaryDictionary["Market Cap"] = marketCapValueStringFromRawString(rawValueString)
                                         marketCapHeadingFound = true
                                         break
                                     }
@@ -1092,8 +1115,7 @@ class WebServicesManagerAPI: NSObject {
                                 rawValueString = "0.0"
                             }
                             let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            //let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
-                            let financialMetric: FinancialMetric! = FinancialMetric()
+                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                             financialMetric.date = datesArray[tdIndex - 1]
                             financialMetric.type = financialMetricType
                             financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
