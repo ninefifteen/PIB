@@ -104,7 +104,7 @@ class Company: NSManagedObject {
         dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (summaryDictionary, success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                company.addSummaryDataForCompanyInManagedObjectContext(managedObjectContext, fromSummaryDictionary: summaryDictionary)
+                if success { company.addSummaryDataForCompanyInManagedObjectContext(managedObjectContext, fromSummaryDictionary: summaryDictionary) }
                 company.summaryDownloadComplete = true
                 company.summaryDownloadError = !success
                 dispatch_group_leave(dispatchGroup)
@@ -114,7 +114,7 @@ class Company: NSManagedObject {
         dispatch_group_enter(dispatchGroup)
         WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (financialDictionary, success) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                company.addFinancialDataForCompanyInManagedObjectContext(managedObjectContext, fromFinancialDictionary: financialDictionary)
+                if success { company.addFinancialDataForCompanyInManagedObjectContext(managedObjectContext, fromFinancialDictionary: financialDictionary) }
                 company.financialsDownloadComplete = true
                 company.financialsDownloadError = !success
                 dispatch_group_leave(dispatchGroup)
@@ -319,14 +319,36 @@ class Company: NSManagedObject {
     }
     
     func addFinancialDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, fromFinancialDictionary financialDictionary: [String: AnyObject]) {
-        
-        println(financialDictionary)
-        
+                
         if NSThread.isMainThread() {
             println("isMainThead addFinancialDataForCompanyInManagedObjectContext(_:fromFinancialDictionary:)")
         } else {
             println("!isMainThead addFinancialDataForCompanyInManagedObjectContext(_:fromFinancialDictionary:)")
         }
+        
+        if let companyCurrencyCode = financialDictionary["currencyCode"] as? String {
+            currencyCode = companyCurrencyCode
+        }
+        
+        if let companyCurrencySymbol = financialDictionary["currencySymbol"] as? String {
+            currencySymbol = companyCurrencySymbol
+        }
+        
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+        var mutableFinancialMetrics = financialMetrics.mutableCopy() as NSMutableSet
+        
+        if let financialMetricArray = financialDictionary["financialMetrics"] as? [FinancialMetric] {
+            for financialMetric in financialMetricArray {
+                let newFinancialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                newFinancialMetric.date = financialMetric.date
+                newFinancialMetric.type = financialMetric.type
+                newFinancialMetric.value = financialMetric.value
+                mutableFinancialMetrics.addObject(newFinancialMetric)
+            }
+        }
+        
+        
+        financialMetrics = mutableFinancialMetrics.copy() as NSSet
     }
     
     func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
