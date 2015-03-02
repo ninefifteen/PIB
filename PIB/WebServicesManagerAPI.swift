@@ -1064,55 +1064,6 @@ class WebServicesManagerAPI: NSObject {
         return companies
     }
     
-    func addGoogleRelatedCompaniesFromData(data: NSData, forCompany company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
-        
-        let relatedCompanies = parseGoogleRelatedCompaniesData(data)
-        var savedRelatedCompanies = [Company]()
-        var unsavedRelatedCompanies = [Company]()
-        
-        if relatedCompanies.count > 0 {
-            
-            for relatedCompany in relatedCompanies {
-                if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    savedRelatedCompanies.append(relatedCompany)
-                } else {
-                    unsavedRelatedCompanies.append(relatedCompany)
-                }
-            }
-            
-            for savedRelatedCompany in savedRelatedCompanies {
-                company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-            }
-            
-            let dispatchGroup = dispatch_group_create()
-            
-            let count = unsavedRelatedCompanies.count
-            var index = 1
-            for unsavedRelatedCompany in unsavedRelatedCompanies {
-                dispatch_group_enter(dispatchGroup)
-                Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                    if success {
-                        company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
-                    }
-                    dispatch_group_leave(dispatchGroup)
-                })
-                index++
-            }
-            
-            dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
-                if completion != nil {
-                    completion!(success: true)
-                }
-            }
-            
-        } else {
-            
-            if completion != nil {
-                completion!(success: true)
-            }
-        }
-    }
-    
     func companiesFromYahooData(data: NSData) -> [Company] {
         
         var companies = [Company]()
