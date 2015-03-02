@@ -122,13 +122,57 @@ class Company: NSManagedObject {
         }
         
         dispatch_group_enter(dispatchGroup)
-        WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
+        WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (peerCompanies, success) -> Void in
+            
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                company.relatedCompaniesDownloadComplete = true
-                company.relatedCompaniesDownloadError = !success
-                dispatch_group_leave(dispatchGroup)
+                
+                var savedRelatedCompanies = [Company]()
+                var unsavedRelatedCompanies = [Company]()
+                
+                for peerCompany in peerCompanies {
+                    if Company.isSavedCompanyWithTickerSymbol(peerCompany.tickerSymbol, exchangeDisplayName: peerCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                        let savedCompany = Company.savedCompanyWithTickerSymbol(peerCompany.tickerSymbol, exchangeDisplayName: peerCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                        savedRelatedCompanies.append(savedCompany!)
+                    } else {
+                        unsavedRelatedCompanies.append(peerCompany)
+                    }
+                }
+                
+                for savedRelatedCompany in savedRelatedCompanies {
+                    company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                }
+                
+                if unsavedRelatedCompanies.count > 0 {
+                    
+                    let innerDispatchGroup = dispatch_group_create()
+                    
+                    for unsavedRelatedCompany in unsavedRelatedCompanies {
+                        
+                        dispatch_group_enter(innerDispatchGroup)
+                        
+                        Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                if success {
+                                    company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                                }
+                                dispatch_group_leave(innerDispatchGroup)
+                            })
+                        })
+                    }
+                    
+                    dispatch_group_notify(innerDispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                        company.relatedCompaniesDownloadComplete = true
+                        company.relatedCompaniesDownloadError = !success
+                        dispatch_group_leave(dispatchGroup)
+                    }
+                    
+                } else {
+                    company.relatedCompaniesDownloadComplete = true
+                    company.relatedCompaniesDownloadError = !success
+                    dispatch_group_leave(dispatchGroup)
+                }
             })
-        })
+        }
         
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
             company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
@@ -175,22 +219,24 @@ class Company: NSManagedObject {
             let dispatchGroup = dispatch_group_create()
             
             dispatch_group_enter(dispatchGroup)
-            WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompany(company, withCompletion: { (success) -> Void in
+            WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (summaryDictionary, success) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    if success { company.addSummaryDataForCompanyInManagedObjectContext(managedObjectContext, fromSummaryDictionary: summaryDictionary) }
                     company.summaryDownloadComplete = true
                     company.summaryDownloadError = !success
                     dispatch_group_leave(dispatchGroup)
                 })
-            })
+            }
             
             dispatch_group_enter(dispatchGroup)
-            WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompany(company, withCompletion: { (success) -> Void in
+            WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (financialDictionary, success) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    if success { company.addFinancialDataForCompanyInManagedObjectContext(managedObjectContext, fromFinancialDictionary: financialDictionary) }
                     company.financialsDownloadComplete = true
                     company.financialsDownloadError = !success
                     dispatch_group_leave(dispatchGroup)
                 })
-            })
+            }
             
             dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
                 
@@ -291,12 +337,6 @@ class Company: NSManagedObject {
     
     func addSummaryDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, fromSummaryDictionary summaryDictionary: [String: String]) {
         
-        if NSThread.isMainThread() {
-            println("isMainThead addSummaryDataForCompanyInManagedObjectContext(_:fromSummaryDictionary:)")
-        } else {
-            println("!isMainThead addSummaryDataForCompanyInManagedObjectContext(_:fromSummaryDictionary:)")
-        }
-        
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
         var mutableFinancialMetrics = financialMetrics.mutableCopy() as NSMutableSet
         
@@ -319,12 +359,6 @@ class Company: NSManagedObject {
     }
     
     func addFinancialDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, fromFinancialDictionary financialDictionary: [String: AnyObject]) {
-                
-        if NSThread.isMainThread() {
-            println("isMainThead addFinancialDataForCompanyInManagedObjectContext(_:fromFinancialDictionary:)")
-        } else {
-            println("!isMainThead addFinancialDataForCompanyInManagedObjectContext(_:fromFinancialDictionary:)")
-        }
         
         if let companyCurrencyCode = financialDictionary["currencyCode"] as? String {
             currencyCode = companyCurrencyCode
@@ -353,12 +387,6 @@ class Company: NSManagedObject {
     
     func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
         
-        if NSThread.isMainThread() {
-            println("isMainThead setDataStatusForCompanyInManagedObjectContext(_:)")
-        } else {
-            println("!isMainThead setDataStatusForCompanyInManagedObjectContext(_:)")
-        }
-        
         if summaryDownloadError || financialsDownloadError /*|| relatedCompaniesDownloadError*/ {
             dataState = .DataDownloadCompleteWithError
         } else {
@@ -380,12 +408,6 @@ class Company: NSManagedObject {
     }
     
     func changeFromTargetToPeerInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
-        
-        if NSThread.isMainThread() {
-            println("isMainThead changeFromTargetToPeerInManagedObjectContext(_:)")
-        } else {
-            println("!isMainThead changeFromTargetToPeerInManagedObjectContext(_:)")
-        }
         
         isTargetCompany = NSNumber(bool: false)
         var error: NSError? = nil
@@ -410,12 +432,6 @@ class Company: NSManagedObject {
     }
 
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
-        
-        if NSThread.isMainThread() {
-            println("isMainThead addPeerCompanyWithTickerSymbol(_:withExchangeDisplayName:inManagedObjectContext:)")
-        } else {
-            println("!isMainThead addPeerCompanyWithTickerSymbol(_:withExchangeDisplayName:inManagedObjectContext:)")
-        }
                 
         let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
