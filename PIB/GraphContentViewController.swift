@@ -994,6 +994,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue: Double, initialRevenueYAxisMinimum yAxisMinimum: Double, initialRevenueYAxisMaximum yAxisMaximum: Double, profitMarginMinimumPercentageValue profitMarginMinimumValue: Double) {
         
+        println("\n\n")
+        
         var minY: Double = yAxisMinimum
         var maxY: Double = yAxisMaximum
         
@@ -1017,14 +1019,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         yAxisRange = yAxisIntervals * interval
         
         y2AxisMax = 100.0
-        y2AxisMin = (yAxisMin / yAxisMax) * 100.0
+        
+        while profitMarginMinimumValue < -2.75 * y2AxisMax {
+            y2AxisMax *= 2.0
+        }
+        
+        y2AxisMin = (yAxisMin / yAxisMax) * y2AxisMax
         y2AxisRange = y2AxisMax - y2AxisMin
         y2AxisInterval = y2AxisRange / yAxisIntervals
         
+        let minimumValueRangePercentageLowerLimit = 0.05
         let minimumValueRangePercentage = (profitMarginMinimumValue + abs(y2AxisMin)) / y2AxisRange
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
         
-        let minimumValueRangePercentageLowerLimit = 0.05
         //let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95    // Values to use for 1 line annotations.
         let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.87 : 0.92  // Values to use for 2 line annotations.
         
