@@ -347,7 +347,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleSummaryForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol!
         //println("urlStringForGoogleSummaryForCompanyWithTickerSymbol: \(urlString)")
@@ -355,7 +356,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleFinancialsForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol! + "&fstype=ii"
         //println("urlStringForGoogleFinancialsForCompanyWithTickerSymbol: \(urlString)")
@@ -363,7 +365,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance/related?q=" + escapedExchange! + "%3A" + escapedSymbol!
         //println("urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol: \(urlString)")
