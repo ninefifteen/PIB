@@ -81,13 +81,21 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var pageIdentifier: String = ""
     
     var totalRevenueArray = Array<FinancialMetric>()
+    var peersTotalRevenueArray = Array<FinancialMetric>()
     var profitMarginArray = Array<FinancialMetric>()
+    var peersProfitMarginArray = Array<FinancialMetric>()
     var revenueGrowthArray = Array<FinancialMetric>()
+    var peersRevenueGrowthArray = Array<FinancialMetric>()
     var netIncomeGrowthArray = Array<FinancialMetric>()
+    var peersNetIncomeGrowthArray = Array<FinancialMetric>()
     var grossProfitArray = Array<FinancialMetric>()
+    var peersGrossProfitArray = Array<FinancialMetric>()
     var grossMarginArray = Array<FinancialMetric>()
+    var peersGrossMarginArray = Array<FinancialMetric>()
     var rAndDArray = Array<FinancialMetric>()
+    var peersRAndDArray = Array<FinancialMetric>()
     var sgAndAArray = Array<FinancialMetric>()
+    var peersSgAndAArray = Array<FinancialMetric>()
     
     var numberOfDataPointPerPlot: Int = 0
     
@@ -189,6 +197,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
+                
                 let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
                 profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
@@ -196,12 +206,16 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
+                
                 let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
                 request.predicate = revenueGrowthPredicate
                 revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
+                
+                peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
                 
                 numberOfDataPointPerPlot = totalRevenueArray.count
                 
@@ -234,12 +248,16 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+                
                 let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
                 profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
+                
+                peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
                 
                 if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
                 
@@ -273,6 +291,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
+                
                 var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
                 var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
                 
@@ -303,6 +323,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
+                
                 numberOfDataPointPerPlot = sgAndAArray.count
                 
                 var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
@@ -332,6 +354,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
+                
+                peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
                 
                 numberOfDataPointPerPlot = rAndDArray.count
                 
@@ -1103,6 +1127,74 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         plotSpaceLength = Double(numberOfDataPointPerPlot)
         
         return xAxisLabels
+    }
+    
+    func averageValueForFinancialMetrics(financialMetrics: Array<FinancialMetric>) -> Double {
+        
+        var sum = 0.0
+        
+        for financialMetric in financialMetrics {
+            sum += financialMetric.value as Double
+        }
+        
+        return sum / Double(financialMetrics.count)
+    }
+    
+    func correspondingPeersAverageArrayForTargetFinancialMetrics(targetFinancialMetrics: Array<FinancialMetric>) -> Array<FinancialMetric> {
+        
+        var peersAverageArray = Array<FinancialMetric>()
+        
+        if targetFinancialMetrics.count > 0 {
+            
+            let type = targetFinancialMetrics[0].type
+            
+            var peersAverageCalculationArray = Array<Array<FinancialMetric>>()
+            let reversedTargetFinancialMetrics = targetFinancialMetrics.reverse()
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: false)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            for index in 1...reversedTargetFinancialMetrics.count {
+                var metricArray = [FinancialMetric]()
+                peersAverageCalculationArray.append(metricArray)
+            }
+            
+            let peerCompanies = company.peers.allObjects as [Company]
+            for peerCompany in peerCompanies {
+                
+                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == '%@')", peerCompany, type)
+                request.predicate = totalRevenuePredicate
+                let peerTotalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                for (index, peerMetric) in enumerate(peerTotalRevenueArray) {
+                    if index < peersAverageCalculationArray.count {
+                        peersAverageCalculationArray[index].append(peerMetric)
+                    }
+                }
+            }
+            
+            for (index, metricArray) in enumerate(peersAverageCalculationArray) {
+                
+                let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
+                financialMetric.date = reversedTargetFinancialMetrics[index].date
+                financialMetric.type = reversedTargetFinancialMetrics[index].type
+                financialMetric.value = averageValueForFinancialMetrics(peersAverageCalculationArray[index])
+                
+                peersAverageArray.append(financialMetric)
+            }
+        }
+        
+        return peersAverageArray.reverse()
     }
     
     
