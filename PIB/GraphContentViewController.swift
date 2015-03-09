@@ -219,10 +219,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 numberOfDataPointPerPlot = totalRevenueArray.count
                 
-                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
-                
-                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
-                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
+                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray + peersProfitMarginArray)
+                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
+                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
                 
                 calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
                 
@@ -263,8 +262,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 numberOfDataPointPerPlot = revenueGrowthArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
+                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -293,8 +292,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
                 
-                var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
+                var minValue = minimumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
                 
                 numberOfDataPointPerPlot = grossMarginArray.count
                 
@@ -327,8 +326,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 numberOfDataPointPerPlot = sgAndAArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
-                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
+                var minValue = minimumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
+                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -359,8 +358,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 numberOfDataPointPerPlot = rAndDArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(rAndDArray)
-                var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
+                var minValue = minimumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
+                var maxValue = maximumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -1018,8 +1017,6 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maximumValue: Double, initialRevenueYAxisMinimum yAxisMinimum: Double, initialRevenueYAxisMaximum yAxisMaximum: Double, profitMarginMinimumPercentageValue profitMarginMinimumValue: Double) {
         
-        println("\n\n")
-        
         var minY: Double = yAxisMinimum
         var maxY: Double = yAxisMaximum
         
@@ -1168,14 +1165,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let peerCompanies = company.peers.allObjects as [Company]
             for peerCompany in peerCompanies {
                 
-                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == '%@')", peerCompany, type)
-                request.predicate = totalRevenuePredicate
-                let peerTotalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                let predicate = NSPredicate(format: "(company == %@) AND (type == %@)", peerCompany, type)
+                request.predicate = predicate
+                let peerMetricArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                for (index, peerMetric) in enumerate(peerTotalRevenueArray) {
+                for (index, peerMetric) in enumerate(peerMetricArray) {
                     if index < peersAverageCalculationArray.count {
                         peersAverageCalculationArray[index].append(peerMetric)
                     }
