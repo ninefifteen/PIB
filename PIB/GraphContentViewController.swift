@@ -373,7 +373,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             }
             
             plotLabelState = 0  // All plots labeled.
-            addRemoveAnnotationsAllPlots()
+            //addRemoveAnnotationsAllPlots()
             
         }
     }
@@ -647,6 +647,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //configureTitleForGraph(graphTitle)
         
         let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        let isDataForPeersProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0
         
         if isDataForProfitMarginPlot {
             
@@ -744,6 +745,37 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
             plots.append(profitMarginLinePlot)
+            
+            if isDataForPeersProfitMarginPlot {
+                
+                // Peers Profit Margin line plot.
+                let peersProfitMarginPlotColor = CPTColor.orangeColor()
+                
+                let peersProfitMarginPlotLineStyle = CPTMutableLineStyle()
+                peersProfitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+                peersProfitMarginPlotLineStyle.lineColor = peersProfitMarginPlotColor
+                
+                let peersProfitMarginLinePlot = CPTScatterPlot()
+                peersProfitMarginLinePlot.delegate = self
+                peersProfitMarginLinePlot.dataSource = self
+                peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+                peersProfitMarginLinePlot.dataLineStyle = peersProfitMarginPlotLineStyle
+                peersProfitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+                peersProfitMarginLinePlot.identifier = "Peers Profit Margin"
+                
+                let peersSymbolLineStyle = CPTMutableLineStyle()
+                peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
+                peersSymbolLineStyle.lineWidth = scatterPlotLineWidth
+                let peersPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+                //peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+                peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+                peersPlotSymbol.lineStyle = peersSymbolLineStyle
+                peersPlotSymbol.size = scatterPlotSymbolSize
+                peersProfitMarginLinePlot.plotSymbol = peersPlotSymbol
+                
+                graph.addPlot(peersProfitMarginLinePlot, toPlotSpace:plotSpace2)
+                plots.append(peersProfitMarginLinePlot)
+            }
         }
         
         // Add legend.
@@ -1242,6 +1274,27 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     
                     if plotID == "Profit Margin" {
                         return profitMarginArray[Int(recordIndex)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
+            } else if plotID == "Peers Profit Margin" {
+                
+                switch CPTScatterPlotField(rawValue: Int(field))! {
+                    
+                case .X:
+                    let x = Double(recordIndex) + 0.50
+                    return x as NSNumber
+                    
+                case .Y:
+                    let plotID = plot.identifier as String
+                    
+                    if plotID == "Peers Profit Margin" {
+                        return peersProfitMarginArray[Int(recordIndex)].value
                     } else {
                         return nil
                     }
