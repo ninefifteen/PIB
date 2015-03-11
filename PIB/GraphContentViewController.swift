@@ -728,7 +728,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             peersRevenueBarPlot.baseValue = 0.0
             peersRevenueBarPlot.barOffset = 0.75
             peersRevenueBarPlot.barCornerRadius = 2.0
-            let peersRevenueBarPlotIdentifier = "Competitors' Revenue (" + company.currencyCode + ")"
+            let peersRevenueBarPlotIdentifier = "Peers Revenue (" + company.currencyCode + ")"
             peersRevenueBarPlot.identifier = peersRevenueBarPlotIdentifier
             peersRevenueBarPlot.delegate = self
             peersRevenueBarPlot.dataSource = self
@@ -781,7 +781,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
                 peersProfitMarginLinePlot.dataLineStyle = peersProfitMarginPlotLineStyle
                 peersProfitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
-                peersProfitMarginLinePlot.identifier = "Competitors' Profit Margin"
+                peersProfitMarginLinePlot.identifier = "Peers Profit Margin"
                 
                 let peersSymbolLineStyle = CPTMutableLineStyle()
                 peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
@@ -885,6 +885,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("Gross Margin")
         
+        let isDataForPeersGrossMarginPlot: Bool = minimumValueInFinancialMetricArray(peersGrossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(peersGrossMarginArray) != 0.0
+        
         let grossMarginPlotColor = GraphContent.Color.kGrossMarginPlotColor
         
         let grossMarginPlotLineStyle = CPTMutableLineStyle()
@@ -911,6 +913,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.addPlot(grossMarginPlot, toPlotSpace:plotSpace)
         plots.append(grossMarginPlot)
         
+        if isDataForPeersGrossMarginPlot {
+            
+            let peersGrossMarginPlotColor = CPTColor.orangeColor()
+            
+            let peersGrossMarginPlotLineStyle = CPTMutableLineStyle()
+            peersGrossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersGrossMarginPlotLineStyle.lineColor = peersGrossMarginPlotColor
+            
+            let peersGrossMarginPlot = CPTScatterPlot()
+            peersGrossMarginPlot.delegate = self
+            peersGrossMarginPlot.dataSource = self
+            peersGrossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersGrossMarginPlot.dataLineStyle = peersGrossMarginPlotLineStyle
+            peersGrossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersGrossMarginPlot.identifier = "Peers Gross Margin"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersGrossMarginPlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersGrossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersGrossMarginPlotSymbol.lineStyle = symbolLineStyle
+            peersGrossMarginPlotSymbol.size = scatterPlotSymbolSize
+            peersGrossMarginPlot.plotSymbol = peersGrossMarginPlotSymbol
+            
+            graph.addPlot(peersGrossMarginPlot, toPlotSpace:plotSpace)
+            plots.append(peersGrossMarginPlot)
+        }
+        
         // Add legend.
         graph.legend = legendForGraph()
         graph.legendAnchor = graphLegendAnchor
@@ -923,6 +954,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("R & D")
+        
+        let isDataForPeersRAndDLinePlot: Bool = minimumValueInFinancialMetricArray(peersRAndDArray) != 0.0 || maximumValueInFinancialMetricArray(peersRAndDArray) != 0.0
         
         let rAndDLinePlotColor = GraphContent.Color.kRAndDPlotColor
         
@@ -950,6 +983,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
         plots.append(rAndDLinePlot)
         
+        if isDataForPeersRAndDLinePlot {
+            
+            let peersRAndDLinePlotColor = CPTColor.greenColor()
+            
+            let peersRAndDLinePlotLineStyle = CPTMutableLineStyle()
+            peersRAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersRAndDLinePlotLineStyle.lineColor = peersRAndDLinePlotColor
+            
+            let peersRAndDLinePlot = CPTScatterPlot()
+            peersRAndDLinePlot.delegate = self
+            peersRAndDLinePlot.dataSource = self
+            peersRAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersRAndDLinePlot.dataLineStyle = peersRAndDLinePlotLineStyle
+            peersRAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersRAndDLinePlot.identifier = "Peers R&D"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersRAndDLinePlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersRAndDLinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRAndDLinePlotSymbol.lineStyle = symbolLineStyle
+            peersRAndDLinePlotSymbol.size = scatterPlotSymbolSize
+            peersRAndDLinePlot.plotSymbol = peersRAndDLinePlotSymbol
+            
+            graph.addPlot(peersRAndDLinePlot, toPlotSpace:plotSpace)
+            plots.append(peersRAndDLinePlot)
+        }
+        
         // Add legend.
         graph.legend = legendForGraph()
         graph.legendAnchor = graphLegendAnchor
@@ -962,6 +1024,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("SG & A")
+        
+        let isDataForPeersSgAndALinePlot: Bool = minimumValueInFinancialMetricArray(peersSgAndAArray) != 0.0 || maximumValueInFinancialMetricArray(peersSgAndAArray) != 0.0
         
         let sgAndAPlotColor = GraphContent.Color.kSgAndAPlotColor
         
@@ -988,6 +1052,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         graph.addPlot(sgAndAPlot, toPlotSpace:plotSpace)
         plots.append(sgAndAPlot)
+        
+        if isDataForPeersSgAndALinePlot {
+            
+            let peersSgAndALinePlotColor = CPTColor.greenColor()
+            
+            let peersSgAndALinePlotLineStyle = CPTMutableLineStyle()
+            peersSgAndALinePlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersSgAndALinePlotLineStyle.lineColor = peersSgAndALinePlotColor
+            
+            let peersSgAndALinePlot = CPTScatterPlot()
+            peersSgAndALinePlot.delegate = self
+            peersSgAndALinePlot.dataSource = self
+            peersSgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersSgAndALinePlot.dataLineStyle = peersSgAndALinePlotLineStyle
+            peersSgAndALinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersSgAndALinePlot.identifier = "Peers SG&A"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersSgAndALinePlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersSgAndALinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersSgAndALinePlotSymbol.lineStyle = symbolLineStyle
+            peersSgAndALinePlotSymbol.size = scatterPlotSymbolSize
+            peersSgAndALinePlot.plotSymbol = peersSgAndALinePlotSymbol
+            
+            graph.addPlot(peersSgAndALinePlot, toPlotSpace:plotSpace)
+            plots.append(peersSgAndALinePlot)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -1261,7 +1354,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             let plotID = plot.identifier as String
             let revenuePlotIdentifier = "Revenue (" + company.currencyCode + ")"
-            let peersRevenuePlotIdentifier = "Competitors' Revenue (" + company.currencyCode + ")"
+            let peersRevenuePlotIdentifier = "Peers Revenue (" + company.currencyCode + ")"
             
             if plotID == revenuePlotIdentifier {
                 
@@ -1322,7 +1415,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     return nil
                 }
                 
-            } else if plotID == "Competitors' Profit Margin" {
+            } else if plotID == "Peers Profit Margin" {
                 
                 switch CPTScatterPlotField(rawValue: Int(field))! {
                     
@@ -1333,7 +1426,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 case .Y:
                     let plotID = plot.identifier as String
                     
-                    if plotID == "Competitors' Profit Margin" {
+                    if plotID == "Peers Profit Margin" {
                         return peersProfitMarginArray[Int(recordIndex)].value
                     } else {
                         return nil
@@ -1383,6 +1476,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 if plotID == "Gross Margin" {
                     return grossMarginArray[Int(recordIndex)].value
+                } else if plotID == "Peers Gross Margin" {
+                    return peersGrossMarginArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
@@ -1404,6 +1499,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 if plotID == "SG&A" {
                     return sgAndAArray[Int(recordIndex)].value
+                } else if plotID == "Peers SG&A" {
+                    return peersSgAndAArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
@@ -1425,6 +1522,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 if plotID == "R&D" {
                     return rAndDArray[Int(recordIndex)].value
+                } else if plotID == "Peers R&D" {
+                    return peersRAndDArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
