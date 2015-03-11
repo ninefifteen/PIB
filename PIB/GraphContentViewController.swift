@@ -373,7 +373,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             }
             
             plotLabelState = 0  // All plots labeled.
-            //addRemoveAnnotationsAllPlots()
+            addRemoveAnnotationsAllPlots()
             
         }
     }
@@ -648,6 +648,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
         let isDataForPeersProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0
+        let isDataForPeersTotalRevenuePlot: Bool = minimumValueInFinancialMetricArray(peersTotalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(peersTotalRevenueArray) != 0.0
         
         if isDataForProfitMarginPlot {
             
@@ -705,9 +706,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: GraphContent.Color.kRevenuePlotColor)
-        revenueBarPlot.barWidth = 0.60
+        revenueBarPlot.barWidth = 0.30
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = 0.50
+        revenueBarPlot.barOffset = 0.25
         revenueBarPlot.barCornerRadius = 2.0
         let revenueBarPlotIdentifier = "Revenue (" + company.currencyCode + ")"
         revenueBarPlot.identifier = revenueBarPlotIdentifier
@@ -715,6 +716,25 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         plots.append(revenueBarPlot)
+        
+        if isDataForPeersTotalRevenuePlot {
+            
+            println("isDataForPeersTotalRevenuePlot")
+            let peersRevenueBarPlot = CPTBarPlot()
+            peersRevenueBarPlot.barsAreHorizontal = false
+            peersRevenueBarPlot.lineStyle = nil
+            peersRevenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+            peersRevenueBarPlot.barWidth = 0.30
+            peersRevenueBarPlot.baseValue = 0.0
+            peersRevenueBarPlot.barOffset = 0.75
+            peersRevenueBarPlot.barCornerRadius = 2.0
+            let peersRevenueBarPlotIdentifier = "Competitors' Revenue (" + company.currencyCode + ")"
+            peersRevenueBarPlot.identifier = peersRevenueBarPlotIdentifier
+            peersRevenueBarPlot.delegate = self
+            peersRevenueBarPlot.dataSource = self
+            graph.addPlot(peersRevenueBarPlot, toPlotSpace:plotSpace)
+            plots.append(peersRevenueBarPlot)
+        }
         
         if isDataForProfitMarginPlot {
             
@@ -761,7 +781,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
                 peersProfitMarginLinePlot.dataLineStyle = peersProfitMarginPlotLineStyle
                 peersProfitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
-                peersProfitMarginLinePlot.identifier = "Peers Profit Margin"
+                peersProfitMarginLinePlot.identifier = "Competitors' Profit Margin"
                 
                 let peersSymbolLineStyle = CPTMutableLineStyle()
                 peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
@@ -1241,6 +1261,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             let plotID = plot.identifier as String
             let revenuePlotIdentifier = "Revenue (" + company.currencyCode + ")"
+            let peersRevenuePlotIdentifier = "Competitors' Revenue (" + company.currencyCode + ")"
             
             if plotID == revenuePlotIdentifier {
                 
@@ -1253,6 +1274,25 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     
                     if plotID == revenuePlotIdentifier {
                         return totalRevenueArray[Int(recordIndex)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
+            } else if plotID == peersRevenuePlotIdentifier {
+                
+                switch CPTBarPlotField(rawValue: Int(field))! {
+                    
+                case .BarLocation:
+                    return recordIndex as NSNumber
+                    
+                case .BarTip:
+                    
+                    if plotID == peersRevenuePlotIdentifier {
+                        return peersTotalRevenueArray[Int(recordIndex)].value
                     } else {
                         return nil
                     }
@@ -1282,7 +1322,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     return nil
                 }
                 
-            } else if plotID == "Peers Profit Margin" {
+            } else if plotID == "Competitors' Profit Margin" {
                 
                 switch CPTScatterPlotField(rawValue: Int(field))! {
                     
@@ -1293,7 +1333,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 case .Y:
                     let plotID = plot.identifier as String
                     
-                    if plotID == "Peers Profit Margin" {
+                    if plotID == "Competitors' Profit Margin" {
                         return peersProfitMarginArray[Int(recordIndex)].value
                     } else {
                         return nil
@@ -1441,25 +1481,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     @IBAction func handleDoubleTapGesture(recognizer: UITapGestureRecognizer) {
         
         if plots.count == 1 {
-            plotLabelState = plotLabelState == 0 ? 3 : 0
+            plotLabelState = plotLabelState == 0 ? plots.count + 1 : 0
         } else {
             plotLabelState++
-            if plotLabelState > 3 { plotLabelState = 0 }
+            if plotLabelState > plots.count + 1 { plotLabelState = 0 }
         }
         
-        switch plotLabelState {
-        case 0:
+        if plotLabelState == 0 {
             addRemoveAnnotationsAllPlots()
-        case 1:
-            graph.plotAreaFrame.plotArea.removeAllAnnotations()
-            addAnnotationsToPlot(plots[0])
-        case 2:
-            graph.plotAreaFrame.plotArea.removeAllAnnotations()
-            addAnnotationsToPlot(plots[1])
-        case 3:
+        } else if plotLabelState > plots.count {
             addRemoveAnnotationsAllPlots()
-        default:
-            break
+        } else {
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            addAnnotationsToPlot(plots[plotLabelState - 1])
         }
     }
     
