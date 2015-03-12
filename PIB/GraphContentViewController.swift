@@ -467,7 +467,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         } else {
             graph.plotAreaFrame.paddingLeft = 10.0
         }
-        graph.plotAreaFrame.paddingTop = 34.0
+        
+        if pageIdentifier == "Revenue" {
+            graph.plotAreaFrame.paddingTop = 34.0
+        } else {
+            graph.plotAreaFrame.paddingTop = 34.0
+        }
+        
         graph.plotAreaFrame.paddingRight = 10.0
         graph.plotAreaFrame.paddingBottom = 64.0
     }
@@ -800,6 +806,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Add legend.
         graph.legend = legendForGraph()
+        if plots.count > 2 {
+            graph.legend.numberOfRows = 2
+            graph.plotAreaFrame.paddingTop = 58.0
+        }
         graph.legendAnchor = graphLegendAnchor
         graph.legendDisplacement = graphLegendDisplacement
         
