@@ -34,6 +34,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             private static let kDarkGreenColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
             private static let kTealColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
             private static let kMagentaColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            private static let kDarkSeaGreenColor = CPTColor(componentRed: 143.0/255.0, green: 188.0/255.0, blue: 143.0/255.0, alpha: 1.0)
+            private static let kSandyBrownColor = CPTColor(componentRed: 244.0/255.0, green: 164.0/255.0, blue: 96.0/255.0, alpha: 1.0)
             
             static let kGridLineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
             
@@ -41,10 +43,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             static let kYAxisLabelColor = kRedColor
             
             static let kRevenuePlotColor = kTealColor
+            static let kPeersRevenuePlotColor = kDarkSeaGreenColor
             static let kProfitMarginPlotColor = kMagentaColor
+            static let kPeersProfitMarginPlotColor = kSandyBrownColor
             static let kGrossMarginPlotColor = kMagentaColor
+            static let kPeersGrossMarginPlotColor = kSandyBrownColor
             static let kRAndDPlotColor = kTealColor
+            static let kPeersRAndDPlotColor = kDarkSeaGreenColor
             static let kSgAndAPlotColor = kTealColor
+            static let kPeersSgAndAPlotColor = kDarkSeaGreenColor
             
             static let kPlotSymbolFillColor = CPTColor.whiteColor()
         }
@@ -725,11 +732,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForPeersTotalRevenuePlot {
             
-            println("isDataForPeersTotalRevenuePlot")
             let peersRevenueBarPlot = CPTBarPlot()
             peersRevenueBarPlot.barsAreHorizontal = false
             peersRevenueBarPlot.lineStyle = nil
-            peersRevenueBarPlot.fill = CPTFill(color: CPTColor.greenColor())
+            peersRevenueBarPlot.fill = CPTFill(color: GraphContent.Color.kPeersRevenuePlotColor)
             peersRevenueBarPlot.barWidth = 0.30
             peersRevenueBarPlot.baseValue = 0.0
             peersRevenueBarPlot.barOffset = 0.75
@@ -775,7 +781,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             if isDataForPeersProfitMarginPlot {
                 
                 // Peers Profit Margin line plot.
-                let peersProfitMarginPlotColor = CPTColor.orangeColor()
+                let peersProfitMarginPlotColor = GraphContent.Color.kPeersProfitMarginPlotColor
                 
                 let peersProfitMarginPlotLineStyle = CPTMutableLineStyle()
                 peersProfitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -925,7 +931,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForPeersGrossMarginPlot {
             
-            let peersGrossMarginPlotColor = CPTColor.orangeColor()
+            let peersGrossMarginPlotColor = GraphContent.Color.kPeersGrossMarginPlotColor
             
             let peersGrossMarginPlotLineStyle = CPTMutableLineStyle()
             peersGrossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -995,7 +1001,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForPeersRAndDLinePlot {
             
-            let peersRAndDLinePlotColor = CPTColor.greenColor()
+            let peersRAndDLinePlotColor = GraphContent.Color.kPeersRAndDPlotColor
             
             let peersRAndDLinePlotLineStyle = CPTMutableLineStyle()
             peersRAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -1065,7 +1071,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForPeersSgAndALinePlot {
             
-            let peersSgAndALinePlotColor = CPTColor.greenColor()
+            let peersSgAndALinePlotColor = GraphContent.Color.kPeersSgAndAPlotColor
             
             let peersSgAndALinePlotLineStyle = CPTMutableLineStyle()
             peersSgAndALinePlotLineStyle.lineWidth = scatterPlotLineWidth
