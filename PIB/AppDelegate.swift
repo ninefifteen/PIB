@@ -27,6 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
         // Override point for customization after application launch.
         let defaults = NSUserDefaults.standardUserDefaults()
         if defaults.objectForKey("firstRun") == nil {
@@ -47,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         WebServicesManagerAPI.sharedInstance.managedObjectContext = managedObjectContext
         
         let splitViewController = self.window!.rootViewController as UISplitViewController
-        splitViewController.view.tintColor = UIColor.whiteColor()
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as UINavigationController
         navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem()
         splitViewController.delegate = self
@@ -58,6 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         controller.managedObjectContext = managedObjectContext
         
         splitViewController.preferredDisplayMode = UISplitViewControllerDisplayMode.AllVisible
+        splitViewController.view.tintColor = UIColor.whiteColor()
         
         customizeAppearance()
         

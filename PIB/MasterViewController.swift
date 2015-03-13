@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchResultsUpdating {
     
     
     // MARK: - Types
@@ -42,6 +42,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     let masterViewTitle = "Companies"
     
     var isFirstAppearanceOfView = true
+    
+    var searchController: UISearchController?
+    var searchResultsController: UITableViewController?
+    
+    var filteredCompanies = Array<Company>()
     
     
     // MARK: - View Lifecycle
@@ -78,6 +83,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let controllers = split.viewControllers
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
+        
+        searchResultsController = UITableViewController()
+        searchResultsController!.tableView.dataSource = self
+        searchResultsController!.tableView.delegate = self
+        
+        searchController = UISearchController(searchResultsController: searchResultsController!)
+        searchController!.searchResultsUpdater = self
+        searchController!.searchBar.sizeToFit()
+        self.tableView.tableHeaderView = searchController!.searchBar
+        
+        definesPresentationContext = true
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -236,12 +252,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return self.fetchedResultsController.sections?.count ?? 0
+        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+            return 1
+        } else {
+            return self.fetchedResultsController.sections?.count ?? 1
+        }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects
+        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+            return filteredCompanies.count
+        } else {
+            let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
+            return sectionInfo.numberOfObjects
+        }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -492,6 +516,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     self.tableView.reloadData()
     }
     */
+    
+    
+    // MARK: - Search Results Updating
+    
+    func updateSearchResultsForSearchController(searchController: UISearchController) {
+        //
+    }
     
 }
 
