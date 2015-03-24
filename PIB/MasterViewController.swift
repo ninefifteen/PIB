@@ -94,6 +94,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         self.tableView.tableHeaderView = searchController!.searchBar
         
         definesPresentationContext = true
+        
+        tableView.contentOffset = CGPointMake(0.0, searchController!.searchBar.bounds.height);
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -127,13 +129,31 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
-            if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-                let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
-                controller.company = company
-                controller.managedObjectContext = managedObjectContext
-                controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                controller.navigationItem.leftItemsSupplementBackButton = true
+            let searchTableView = (searchController?.searchResultsController as UITableViewController).tableView
+            
+            if let sender = sender as? UITableViewCell {
+                
+                if searchTableView.indexPathForSelectedRow() != nil && sender == searchTableView.cellForRowAtIndexPath(searchTableView.indexPathForSelectedRow()!) {
+                    
+                    let indexPath = searchTableView.indexPathForSelectedRow()!
+                    let company = filteredCompanies[indexPath.row] as Company
+                    let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
+                    controller.company = company
+                    controller.managedObjectContext = managedObjectContext
+                    controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+                    controller.navigationItem.leftItemsSupplementBackButton = true
+                    
+                } else {
+                    
+                    if let indexPath = self.tableView.indexPathForSelectedRow() {
+                        let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                        let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
+                        controller.company = company
+                        controller.managedObjectContext = managedObjectContext
+                        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+                        controller.navigationItem.leftItemsSupplementBackButton = true
+                    }
+                }
             }
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
@@ -150,6 +170,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
                 let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                if company.dataState == .DataDownloadCompleteWithoutError {
+                    return true
+                } else if company.dataState == .DataDownloadCompleteWithError {
+                    if let tableCell = sender as? UITableViewCell {
+                        tableCell.setSelected(false, animated: true)
+                    }
+                    return false
+                }
+            } else if let indexPath = (searchController?.searchResultsController as UITableViewController).tableView.indexPathForSelectedRow() {
+                let company = filteredCompanies[indexPath.row]
                 if company.dataState == .DataDownloadCompleteWithoutError {
                     return true
                 } else if company.dataState == .DataDownloadCompleteWithError {
@@ -270,8 +300,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as UITableViewCell
-        self.configureCell(cell, atIndexPath: indexPath)
+        let cell = self.tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as UITableViewCell
+        self.configureCell(cell, atIndexPath: indexPath, forTableView: tableView)
         return cell
     }
     
@@ -303,7 +333,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath) {
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    
+    func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath, forTableView tableView: UITableView) {
         
         let nameLabel = cell.viewWithTag(101) as UILabel
         let locationLabel = cell.viewWithTag(102) as UILabel
@@ -312,87 +346,76 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
         let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
         
-        if indexPath.row < fetchedResultsController.fetchedObjects?.count {
+        var company: Company?
+        
+        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+            company  = self.filteredCompanies[indexPath.row]
+        } else {
+            company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
+        }
             
-            if let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company {
-                
-                nameLabel.hidden = false
-                nameLabel.text = company.name
-                
-                if company.city != "" {
-                    if company.country != "" && company.state != "" {
-                        locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-                    } else if company.country != "" {
-                        locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
-                    } else {
-                        locationLabel.text = company.city.capitalizedString
-                    }
+        if let company = company {
+            
+            nameLabel.hidden = false
+            nameLabel.text = company.name
+            
+            if company.city != "" {
+                if company.country != "" && company.state != "" {
+                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
                 } else {
-                    locationLabel.text = " "
+                    locationLabel.text = company.city.capitalizedString
                 }
-                
-                if company.dataState == .DataDownloadCompleteWithoutError {
-                    
-                    cell.accessoryView = nil
-                    cell.contentView.alpha = 1.0
-                    revenueLabel.hidden = false
-                    revenueTitleLabel.hidden = false
-                    revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-                    locationLabel.hidden = false
-                    activityIndicator.hidden = true
-                    noDataAvailableLabel.hidden = true
-                    
-                } else if company.dataState == .DataDownloadCompleteWithError {
-                    
-                    cell.contentView.alpha = 0.5
-                    revenueLabel.hidden = true
-                    revenueTitleLabel.hidden = true
-                    activityIndicator.hidden = true
-                    locationLabel.hidden = true
-                    noDataAvailableLabel.hidden = false
-                    
-                    let rawImage = UIImage(named: "trashCanSmall")
-                    if let image = rawImage?.imageByApplyingAlpha(0.5) {
-                        let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
-                        let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
-                        button.frame = frame
-                        button.setBackgroundImage(image, forState: .Normal)
-                        button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
-                        button.backgroundColor = UIColor.clearColor()
-                        cell.accessoryView = button
-                        cell.accessoryView?.hidden = false
-                    }
-                    
-                } else {
-                    
-                    cell.accessoryView = nil
-                    cell.contentView.alpha = 1.0
-                    revenueLabel.hidden = true
-                    revenueTitleLabel.hidden = true
-                    locationLabel.hidden = false
-                    activityIndicator.hidden = false
-                    activityIndicator.startAnimating()
-                    noDataAvailableLabel.hidden = true
-                }
-                
-                cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
+            } else {
+                locationLabel.text = " "
             }
             
-        } else {
+            if company.dataState == .DataDownloadCompleteWithoutError {
+                
+                cell.accessoryView = nil
+                cell.contentView.alpha = 1.0
+                revenueLabel.hidden = false
+                revenueTitleLabel.hidden = false
+                revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                locationLabel.hidden = false
+                activityIndicator.hidden = true
+                noDataAvailableLabel.hidden = true
+                
+            } else if company.dataState == .DataDownloadCompleteWithError {
+                
+                cell.contentView.alpha = 0.5
+                revenueLabel.hidden = true
+                revenueTitleLabel.hidden = true
+                activityIndicator.hidden = true
+                locationLabel.hidden = true
+                noDataAvailableLabel.hidden = false
+                
+                let rawImage = UIImage(named: "trashCanSmall")
+                if let image = rawImage?.imageByApplyingAlpha(0.5) {
+                    let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+                    let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
+                    button.frame = frame
+                    button.setBackgroundImage(image, forState: .Normal)
+                    button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
+                    button.backgroundColor = UIColor.clearColor()
+                    cell.accessoryView = button
+                    cell.accessoryView?.hidden = false
+                }
+                
+            } else {
+                
+                cell.accessoryView = nil
+                cell.contentView.alpha = 1.0
+                revenueLabel.hidden = true
+                revenueTitleLabel.hidden = true
+                locationLabel.hidden = false
+                activityIndicator.hidden = false
+                activityIndicator.startAnimating()
+                noDataAvailableLabel.hidden = true
+            }
             
-            nameLabel.text = ""
-            nameLabel.hidden = true
-            locationLabel.text = ""
-            locationLabel.hidden = true
-            revenueLabel.text = ""
-            revenueLabel.hidden = true
-            revenueTitleLabel.hidden = true
-            activityIndicator.hidden = true
-            noDataAvailableLabel.hidden = true
-            cell.contentView.alpha = 1.0
-            cell.accessoryView = nil
-            
-            cell.userInteractionEnabled = false
+            cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
         }
     }
     
@@ -495,7 +518,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         case .Update:
-            if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath) }
+            if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath, forTableView: tableView) }
         case .Move:
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
             tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
@@ -521,8 +544,81 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Search Results Updating
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-        //
+        let searchString = searchController.searchBar.text
+        filterCompaniesForSearchString(searchString)
+        (searchController.searchResultsController as UITableViewController).tableView.reloadData()
     }
     
+    
+    // MARK: - Content Filtering
+    
+    func filterCompaniesForSearchString(searchString: String) {
+        
+        filteredCompanies.removeAll(keepCapacity: false)
+        
+        let keysToSearch = ["name", "exchangeDisplayName"]
+        let searchWords = searchString.componentsSeparatedByString(" ")
+        
+        var predicates = [NSPredicate]()
+        
+        for searchWord in searchWords {
+            if countElements(searchWord) > 0 {
+                var predicateBuilder = ""
+                
+                for key in keysToSearch {
+                    let escapedSearchWord = searchWord.stringByReplacingOccurrencesOfString("\'", withString: "\\\'", options: .LiteralSearch, range: nil)
+                    
+                    if key != keysToSearch.last {
+                        predicateBuilder = predicateBuilder + "(" + key + " contains[c] '" + escapedSearchWord + "') OR "
+                    } else {
+                        predicateBuilder = predicateBuilder + "(" + key + " contains[c] '" + escapedSearchWord + "')"
+                    }
+                }
+                predicates.append(NSPredicate(format: predicateBuilder)!)
+            }
+        }
+        let compoundPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: predicates)
+        filteredCompanies = (fetchedResultsController.fetchedObjects as [Company]).filter({compoundPredicate.evaluateWithObject($0)})
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
