@@ -70,6 +70,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButtonItem
         
+        if company != nil {
+            self.splitViewController?.toggleMasterView()
+        }
+        
         updateLabels()
     }
     

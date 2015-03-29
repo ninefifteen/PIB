@@ -168,5 +168,24 @@ extension UIImage {
         
         return newImage
     }
-    
 }
+
+
+extension UISplitViewController {
+    
+    func toggleMasterView() {
+        let barButtonItem = self.displayModeButtonItem()
+        UIApplication.sharedApplication().sendAction(barButtonItem.action, to: barButtonItem.target, from: nil, forEvent: nil)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
