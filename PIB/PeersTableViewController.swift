@@ -23,7 +23,12 @@ class PeersTableViewController: UITableViewController {
     
     // MARK: - Properties
     
+    var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
+
     var peers = [Company]()
+    
+    var isEditMode = false
     
     
     // MARK: - View Lifecycle
@@ -36,6 +41,14 @@ class PeersTableViewController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        
+        tableView.editing = isEditMode
+        
+        if company.peers.count > 0 {
+            peers = company.peers.allObjects as [Company]
+            peers.sort({ $0.name < $1.name })
+            tableView.reloadData()
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -95,25 +108,22 @@ class PeersTableViewController: UITableViewController {
         }
     }
 
-    /*
-    // Override to support conditional editing of the table view.
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         // Return NO if you do not want the specified item to be editable.
         return true
     }
-    */
-
-    /*
-    // Override to support editing the table view.
+    
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
             // Delete the row from the data source
+            let peerCompany = peers[indexPath.row] as Company
+            company.removePeerCompany(peerCompany, inManagedObjectContext: managedObjectContext)
+            peers.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
 
     /*
     // Override to support rearranging the table view.

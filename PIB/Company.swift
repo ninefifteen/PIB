@@ -381,7 +381,6 @@ class Company: NSManagedObject {
             }
         }
         
-        
         financialMetrics = mutableFinancialMetrics.copy() as NSSet
     }
     
@@ -422,6 +421,26 @@ class Company: NSManagedObject {
         companyPeers.removeAllObjects()
         peers = companyPeers.copy() as NSSet
         
+        if !managedObjectContext.save(&error) {
+            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
+        }
+    }
+    
+    func removePeerCompany(peerCompany: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
+        
+        var companyPeers = peers.mutableCopy() as NSMutableSet
+        companyPeers.removeObject(peerCompany)
+        peers = companyPeers.copy() as NSSet
+        
+        if peerCompany.targets.count < 1 {
+            managedObjectContext.deleteObject(peerCompany)
+        }
+        
+        var error: NSError? = nil
         if !managedObjectContext.save(&error) {
             println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
             // Replace this implementation with code to handle the error appropriately.

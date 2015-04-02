@@ -699,16 +699,29 @@
                                             <segue destination="Apy-Yl-Ddc" kind="show" identifier="showPeersTable" id="KB3-xF-NAa"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dYM-Lz-eAs">
+                                        <rect key="frame" x="554" y="2" width="30" height="33"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <state key="normal" title="Edit">
+                                            <color key="titleColor" red="0.89019607840000003" green="0.18823529410000001" blue="0.20784313730000001" alpha="1" colorSpace="calibratedRGB"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <segue destination="Apy-Yl-Ddc" kind="show" identifier="showPeersTableEditMode" id="Wc3-5Q-VyB"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="1i7-pV-Y9g" secondAttribute="bottom" constant="8" id="3fO-tN-XjT"/>
                                     <constraint firstItem="xjn-t2-p7X" firstAttribute="leading" secondItem="uXH-XA-XpE" secondAttribute="leading" constant="8" id="8hC-Gg-dkg"/>
                                     <constraint firstItem="1i7-pV-Y9g" firstAttribute="leading" secondItem="uXH-XA-XpE" secondAttribute="leading" id="Hfs-6j-kaX"/>
+                                    <constraint firstItem="dYM-Lz-eAs" firstAttribute="top" secondItem="uXH-XA-XpE" secondAttribute="top" constant="2" id="OVm-RE-QUF"/>
                                     <constraint firstItem="xjn-t2-p7X" firstAttribute="top" secondItem="uXH-XA-XpE" secondAttribute="top" constant="8" id="W8X-qp-hL8"/>
                                     <constraint firstItem="Jo1-8i-0eT" firstAttribute="top" secondItem="xjn-t2-p7X" secondAttribute="bottom" constant="7" id="WBW-W3-oyR"/>
                                     <constraint firstItem="1i7-pV-Y9g" firstAttribute="top" secondItem="xjn-t2-p7X" secondAttribute="bottom" constant="8.5" id="ZhZ-dN-YhX"/>
                                     <constraint firstAttribute="bottom" secondItem="Jo1-8i-0eT" secondAttribute="bottom" constant="8" id="drB-iX-grB"/>
+                                    <constraint firstAttribute="trailing" secondItem="dYM-Lz-eAs" secondAttribute="trailing" constant="16" id="g6Z-D4-NkV"/>
                                     <constraint firstAttribute="trailing" secondItem="Jo1-8i-0eT" secondAttribute="trailing" id="jPW-OX-U0a"/>
                                     <constraint firstAttribute="height" constant="202" id="oky-UP-qNA"/>
                                     <constraint firstItem="Jo1-8i-0eT" firstAttribute="leading" secondItem="uXH-XA-XpE" secondAttribute="leading" id="x53-Yl-tx7"/>
@@ -733,6 +746,7 @@
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
                         <outlet property="descriptionTextView" destination="PLZ-cq-ZNe" id="Pgz-15-GVe"/>
+                        <outlet property="editButton" destination="dYM-Lz-eAs" id="MdJ-81-m2r"/>
                         <outlet property="employeeCountLabel" destination="JrW-vQ-RGe" id="LIv-EL-o0C"/>
                         <outlet property="marketCapLabel" destination="lsV-oY-fwI" id="mjq-9B-F5U"/>
                         <outlet property="peersTableContainerHeightConstraint" destination="oky-UP-qNA" id="Z3p-gB-axS"/>
@@ -885,6 +899,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
+        <segue reference="Wc3-5Q-VyB"/>
         <segue reference="VVC-je-NKy"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -171,6 +171,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             let companyOverviewViewController = storyboard?.instantiateViewControllerWithIdentifier("CompanyOverviewViewController") as CompanyOverviewViewController
             companyOverviewViewController.company = company
+            companyOverviewViewController.managedObjectContext = managedObjectContext
             addChildViewController(companyOverviewViewController)
             companyOverviewViewController.view.frame = descriptionView.frame
             descriptionView.addSubview(companyOverviewViewController.view)

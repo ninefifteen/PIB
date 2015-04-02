@@ -17,6 +17,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         struct SegueIdentifiers {
             static let kShowPeersTable = "showPeersTable"
+            static let kShowPeersTableEditMode = "showPeersTableEditMode"
             static let kShowDescriptionView = "showDescriptionView"
         }
         
@@ -39,11 +40,15 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
+    @IBOutlet weak var editButton: UIButton!
+    
     @IBOutlet weak var peersTableView: UITableView!
     
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
     var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
+
     var peers = [Company]()
     var peersTableCellCount = 0
     
@@ -63,6 +68,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         peersTableView.dataSource = self
         peersTableView.delegate = self
+        
+        editButton.tintColor = UIColor.redColor()
         
         updateLabels()
     }
@@ -196,12 +203,23 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTable {
+            
             let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
-            controller.peers = peers
+            controller.company = company
+            controller.managedObjectContext = managedObjectContext
+            controller.isEditMode = false
             controller.navigationItem.leftItemsSupplementBackButton = true
-        }
-        
-        if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+            
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTableEditMode {
+            
+            let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
+            controller.company = company
+            controller.managedObjectContext = managedObjectContext
+            controller.isEditMode = true
+            controller.navigationItem.leftItemsSupplementBackButton = true
+            
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+            
             let controller = (segue.destinationViewController as UINavigationController).topViewController as DescriptionViewController
             controller.company = company
             controller.navigationItem.leftItemsSupplementBackButton = true
