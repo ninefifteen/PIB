@@ -15,6 +15,10 @@ class PeersTableViewController: UITableViewController {
     
     struct MainStoryboard {
         
+        struct SegueIdentifiers {
+            static let kAddCompany = "addCompany"
+        }
+        
         struct TableViewCellIdentifiers {
             static let kPeerTableCell = "peerTableCell"
         }
@@ -42,7 +46,14 @@ class PeersTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
         
+        title = company.name
+        editButtonItem()
+        navigationItem.rightBarButtonItem = editButtonItem()
         tableView.editing = isEditMode
+        editing = isEditMode
+        
+        navigationController?.toolbarHidden = false
+        navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         
         if company.peers.count > 0 {
             peers = company.peers.allObjects as [Company]
@@ -55,6 +66,14 @@ class PeersTableViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    // MARK: - Button Functions
+    
+    @IBAction func addButtonPressed(sender: UIBarButtonItem) {
+        
+    }
+    
 
     
     // MARK: - Table View
@@ -140,14 +159,78 @@ class PeersTableViewController: UITableViewController {
     }
     */
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    
+    // MARK: - Segues
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
+        
+        if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
+            
+            let navigationController = segue.destinationViewController as UINavigationController
+            navigationController.view.tintColor = UIColor.whiteColor()
+            let controller = navigationController.topViewController as AddCompanyTableViewController
+            controller.managedObjectContext = managedObjectContext
+        }
     }
-    */
+    
+    @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
+        let controller = segue.sourceViewController as AddCompanyTableViewController
+        
+        if let companyToAdd = controller.companyToAdd? {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+            Company.saveNewPeerCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                if success {
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        
+                        var error: NSError? = nil
+                        if !self.managedObjectContext.save(&error) {
+                            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                        
+                        self.company.addPeerCompanyWithTickerSymbol(companyToAdd.name, withExchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+                        
+                        error = nil
+                        if !self.managedObjectContext.save(&error) {
+                            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+                            // Replace this implementation with code to handle the error appropriately.
+                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                            //println("Unresolved error \(error), \(error.userInfo)")
+                            abort()
+                        }
+                        
+                        if self.company.peers.count > 0 {
+                            self.peers = self.company.peers.allObjects as [Company]
+                            self.peers.sort({ $0.name < $1.name })
+                            self.tableView.reloadData()
+                        }
+                    })
+                }
+            })
+        } else {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

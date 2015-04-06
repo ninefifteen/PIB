@@ -231,7 +231,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dE4-rg-mgG" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="MiV-7M-y5L" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2276" y="-630"/>
+            <point key="canvasLocation" x="5260" y="-630"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="SYf-uF-LJ6">
@@ -249,7 +249,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E5u-3R-Pk0" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1488" y="-630"/>
+            <point key="canvasLocation" x="4472" y="-630"/>
         </scene>
         <!--Detail-->
         <scene sceneID="0zh-UF-liU">
@@ -855,7 +855,18 @@
                             <outlet property="delegate" destination="dyh-yV-9fy" id="65R-CM-TTN"/>
                         </connections>
                     </tableView>
+                    <toolbarItems>
+                        <barButtonItem systemItem="add" id="Yi7-L3-Rd8">
+                            <connections>
+                                <action selector="addButtonPressed:" destination="dyh-yV-9fy" id="aYh-aE-Ur2"/>
+                                <segue destination="DBh-A7-ixE" kind="popoverPresentation" identifier="addCompany" popoverAnchorBarButtonItem="Yi7-L3-Rd8" id="X9m-2M-rR3">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" id="Iw0-6g-NSp"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TEP-XH-Hhc" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -899,7 +910,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Wc3-5Q-VyB"/>
+        <segue reference="g43-td-wzo"/>
         <segue reference="VVC-je-NKy"/>
+        <segue reference="Wc3-5Q-VyB"/>
     </inferredMetricsTieBreakers>
 </document>
