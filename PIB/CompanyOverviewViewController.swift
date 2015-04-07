@@ -139,7 +139,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             
             if company.peers.count > 0 {
                 peers = company.peers.allObjects as [Company]
-                peers.sort({ $0.name < $1.name })
+                peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
                 peersTableView.reloadData()
             }
         }

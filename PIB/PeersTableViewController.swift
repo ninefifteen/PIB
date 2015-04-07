@@ -178,38 +178,62 @@ class PeersTableViewController: UITableViewController {
         
         if let companyToAdd = controller.companyToAdd? {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            Company.saveNewPeerCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                if success {
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        
-                        var error: NSError? = nil
-                        if !self.managedObjectContext.save(&error) {
-                            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        
-                        self.company.addPeerCompanyWithTickerSymbol(companyToAdd.name, withExchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
-                        
-                        error = nil
-                        if !self.managedObjectContext.save(&error) {
-                            println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
-                            // Replace this implementation with code to handle the error appropriately.
-                            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                            //println("Unresolved error \(error), \(error.userInfo)")
-                            abort()
-                        }
-                        
-                        if self.company.peers.count > 0 {
-                            self.peers = self.company.peers.allObjects as [Company]
-                            self.peers.sort({ $0.name < $1.name })
-                            self.tableView.reloadData()
-                        }
-                    })
+            
+            if Company.isSavedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                
+                company.addPeerCompanyWithTickerSymbol(companyToAdd.tickerSymbol, withExchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                
+                var error: NSError? = nil
+                if !managedObjectContext.save(&error) {
+                    println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+                    // Replace this implementation with code to handle the error appropriately.
+                    // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                    //println("Unresolved error \(error), \(error.userInfo)")
+                    abort()
                 }
-            })
+                
+                if self.company.peers.count > 0 {
+                    self.peers = self.company.peers.allObjects as [Company]
+                    self.peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
+                    self.tableView.reloadData()
+                }
+                
+            } else {
+                
+                Company.saveNewPeerCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                    if success {
+                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                            
+                            var error: NSError? = nil
+                            if !self.managedObjectContext.save(&error) {
+                                println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+                                // Replace this implementation with code to handle the error appropriately.
+                                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                                //println("Unresolved error \(error), \(error.userInfo)")
+                                abort()
+                            }
+                            
+                            self.company.addPeerCompanyWithTickerSymbol(companyToAdd.tickerSymbol, withExchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
+                            
+                            error = nil
+                            if !self.managedObjectContext.save(&error) {
+                                println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
+                                // Replace this implementation with code to handle the error appropriately.
+                                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                                //println("Unresolved error \(error), \(error.userInfo)")
+                                abort()
+                            }
+                            
+                            if self.company.peers.count > 0 {
+                                self.peers = self.company.peers.allObjects as [Company]
+                                self.peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
+                                self.tableView.reloadData()
+                            }
+                        })
+                    }
+                })
+            }
+            
         } else {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
         }

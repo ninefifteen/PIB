@@ -257,8 +257,6 @@ class Company: NSManagedObject {
             
         } else {    // Company already saved.
             
-            println("\(name) already saved.")
-            
             if completion != nil {
                 completion!(success: false)
             }
@@ -455,12 +453,9 @@ class Company: NSManagedObject {
         let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
         if let peerCompany = savedPeerCompany {
-            println("savedPeerCompany: \(peerCompany.name)")
             var peers = self.peers.mutableCopy() as NSMutableSet
             peers.addObject(peerCompany)
             self.peers = peers.copy() as NSSet
-        } else {
-            println("no savedPeerCompany")
         }
     }
     
