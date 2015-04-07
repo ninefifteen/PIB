@@ -193,12 +193,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 println("Fetch request error: \(error?.description)")
             }
             
-            /*let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
             request.predicate = revenueGrowthPredicate
             var revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
-            }*/
+            }
             
             /*let netIncomeGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Net Income Growth')", company)
             request.predicate = netIncomeGrowthPredicate
@@ -232,9 +232,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 pageIdentifiers.append("Revenue")
             }
             
-            /*if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
+            if minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 {
                 pageIdentifiers.append("Growth")
-            }*/
+            }
             
             if minimumValueInFinancialMetricArray(grossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(grossMarginArray) != 0.0 {
                 pageIdentifiers.append("GrossMargin")

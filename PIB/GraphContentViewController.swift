@@ -205,7 +205,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
+                //peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
                 
                 let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
@@ -214,7 +214,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
+                //peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
                 
                 let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
                 request.predicate = revenueGrowthPredicate
@@ -223,7 +223,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+                //peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
                 
                 numberOfDataPointPerPlot = totalRevenueArray.count
                 
@@ -257,7 +257,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
                 
-                let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+                /*let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
                 profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
@@ -266,7 +266,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
                 
-                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
+                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }*/
                 
                 numberOfDataPointPerPlot = revenueGrowthArray.count
                 
@@ -829,7 +829,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //configureTitleForGraph("Growth Dynamics")
         
         let isDataForRevenueGrowthPlot: Bool = minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0
-        let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        //let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        let isDataForProfitMarginPlot: Bool = false
+        let isDataForPeersRevenueGrowthArray: Bool = minimumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0
         
         if isDataForRevenueGrowthPlot {
             
@@ -887,6 +889,35 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             graph.addPlot(profitMarginPlot, toPlotSpace:plotSpace)
             plots.append(profitMarginPlot)
+        }
+        
+        if isDataForPeersRevenueGrowthArray {
+            
+            let peersRevenueGrowthPlotColor = GraphContent.Color.kPeersRevenuePlotColor
+            
+            let peersRevenueGrowthPlotLineStyle = CPTMutableLineStyle()
+            peersRevenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersRevenueGrowthPlotLineStyle.lineColor = peersRevenueGrowthPlotColor
+            
+            let peersRevenueGrowthPlot = CPTScatterPlot()
+            peersRevenueGrowthPlot.delegate = self
+            peersRevenueGrowthPlot.dataSource = self
+            peersRevenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersRevenueGrowthPlot.dataLineStyle = peersRevenueGrowthPlotLineStyle
+            peersRevenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersRevenueGrowthPlot.identifier = "Peers Revenue Growth"
+            
+            let peersRevenueGrowthSymbolLineStyle = CPTMutableLineStyle()
+            peersRevenueGrowthSymbolLineStyle.lineColor = peersRevenueGrowthPlotColor
+            peersRevenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersRevenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRevenueGrowthPlotSymbol.lineStyle = peersRevenueGrowthSymbolLineStyle
+            peersRevenueGrowthPlotSymbol.size = scatterPlotSymbolSize
+            peersRevenueGrowthPlot.plotSymbol = peersRevenueGrowthPlotSymbol
+            
+            graph.addPlot(peersRevenueGrowthPlot, toPlotSpace:plotSpace)
+            plots.append(peersRevenueGrowthPlot)
         }
         
         // Add legend.
@@ -1472,6 +1503,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     return revenueGrowthArray[Int(recordIndex)].value
                 } else if plotID == "Profit Margin" {
                     return profitMarginArray[Int(recordIndex)].value
+                } else if plotID == "Peers Revenue Growth" {
+                    return peersRevenueGrowthArray[Int(recordIndex)].value
                 } else {
                     return nil
                 }
