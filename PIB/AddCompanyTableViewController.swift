@@ -51,7 +51,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kAddCompanyScreenName)
-            tracker.send(GAIDictionaryBuilder.createAppView().build())
+            let build = GAIDictionaryBuilder.createAppView().build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
 
         // Uncomment the following line to preserve selection between presentations
@@ -144,7 +145,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
 
         if searchResultsCompanies.count > 0 {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewCompanyCell, forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewCompanyCell, forIndexPath: indexPath) as! UITableViewCell
             let company = searchResultsCompanies[indexPath.row]
             cell.textLabel!.text = company.name
             cell.detailTextLabel!.text = "(" + company.exchangeDisplayName + ":" + company.tickerSymbol + ")"
@@ -152,14 +153,14 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             
         } else if webServicesManagerAPIMessages.count > 0 {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewErrorMessageCell, forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewErrorMessageCell, forIndexPath: indexPath) as! UITableViewCell
             let message = webServicesManagerAPIMessages[0]
             cell.textLabel?.text = message
             return cell
             
         } else {
             
-            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewNoResultsCell, forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewNoResultsCell, forIndexPath: indexPath) as! UITableViewCell
             return cell
         }
     }
@@ -171,7 +172,8 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.send(GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build())
+            let build = GAIDictionaryBuilder.createEventWithCategory("User Action", action: "Add Company", label: companyName, value: nil).build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
     }
     

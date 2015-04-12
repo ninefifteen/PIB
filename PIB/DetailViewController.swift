@@ -62,7 +62,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kDetailScreenName)
-            tracker.send(GAIDictionaryBuilder.createAppView().build())
+            let build = GAIDictionaryBuilder.createAppView().build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleManagedObjectModelChangeNotification:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext)
@@ -181,21 +182,21 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             
             let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Total Revenue')", company)
             request.predicate = totalRevenuePredicate
-            var totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
             
             let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
             request.predicate = profitMarginPredicate
-            var profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
             
             let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
             request.predicate = revenueGrowthPredicate
-            var revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
@@ -209,21 +210,21 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             
             let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
             request.predicate = grossMarginPredicate
-            var grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
             
             let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
             request.predicate = rAndDPredicate
-            var rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
             
             let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
             request.predicate = sgAndAPredicate
-            var sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            var sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
             if error != nil {
                 println("Fetch request error: \(error?.description)")
             }
@@ -301,7 +302,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - UIPageViewControllerDelegate
     
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-        let currentContentPage = graphPageViewController.viewControllers.last as GraphContentViewController
+        let currentContentPage = graphPageViewController.viewControllers.last as! GraphContentViewController
         let currentPageIndex = currentContentPage.pageIndex
         removeValueView()
         pageControl.currentPage = currentPageIndex
@@ -336,7 +337,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kEmbedGraph {
             determineGraphsToBeDisplayed()
-            graphPageViewController = segue.destinationViewController as GraphPageViewController
+            graphPageViewController = segue.destinationViewController as! GraphPageViewController
             graphPageViewController.company = company
             graphPageViewController.managedObjectContext = managedObjectContext
             graphPageViewController.pageIndices = pageIndices
@@ -344,7 +345,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             graphPageViewController.delegate = self
             graphPageViewController.graphContentViewControllerDelegate = self
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowCompanyOverView {
-            let companyOverviewViewController = segue.destinationViewController as CompanyOverviewViewController
+            let companyOverviewViewController = segue.destinationViewController as! CompanyOverviewViewController
             companyOverviewViewController.company = company
         }
     }

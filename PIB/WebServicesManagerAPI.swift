@@ -28,7 +28,7 @@ class WebServicesManagerAPI: NSObject {
     var activeDataTask: NSURLSessionDataTask?
     
     var customAllowedCharacterSet: NSCharacterSet {
-        var _customAllowedCharacterSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as NSMutableCharacterSet
+        var _customAllowedCharacterSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as! NSMutableCharacterSet
         _customAllowedCharacterSet.formIntersectionWithCharacterSet(NSCharacterSet.URLHostAllowedCharacterSet())
         return _customAllowedCharacterSet
     }
@@ -99,7 +99,7 @@ class WebServicesManagerAPI: NSObject {
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadCompaniesMatchingSearchTerm rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -141,7 +141,7 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -186,7 +186,7 @@ class WebServicesManagerAPI: NSObject {
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadGoogleSummaryForCompanyWithTickerSymbol(_:onExchange:withCompletion:) rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -241,7 +241,7 @@ class WebServicesManagerAPI: NSObject {
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadGoogleFinancialsForCompany rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -296,7 +296,7 @@ class WebServicesManagerAPI: NSObject {
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadGoogleRelatedCompaniesForCompanyWithTickerSymbol(_:onExchange:withCompletion:) rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -515,7 +515,7 @@ class WebServicesManagerAPI: NSObject {
         var summaryDictionary = ["Market Cap": "", "companyDescription": "", "street": "", "city": "", "state": "", "zipCode": "", "country": "", "employeeCount": "", "webLink": ""]
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
+        let parser = NDHpple(HTMLData: html! as String)
         
         var marketCapHeadingFound: Bool = false
         var marketCapTableRowIndex: Int = 0
@@ -730,7 +730,7 @@ class WebServicesManagerAPI: NSObject {
         //var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
+        let parser = NDHpple(HTMLData: html! as String)
         
         // Currency type.
         var isCurrencySet = false

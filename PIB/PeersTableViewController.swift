@@ -56,7 +56,7 @@ class PeersTableViewController: UITableViewController {
         navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         
         if company.peers.count > 0 {
-            peers = company.peers.allObjects as [Company]
+            peers = company.peers.allObjects as! [Company]
             peers.sort({ $0.name < $1.name })
             tableView.reloadData()
         }
@@ -88,13 +88,13 @@ class PeersTableViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
         
         let company = peers[indexPath.row] as Company
         
-        let nameLabel = cell.viewWithTag(101) as UILabel
-        let locationLabel = cell.viewWithTag(102) as UILabel
-        let revenueLabel = cell.viewWithTag(103) as UILabel
+        let nameLabel = cell.viewWithTag(101) as! UILabel
+        let locationLabel = cell.viewWithTag(102) as! UILabel
+        let revenueLabel = cell.viewWithTag(103) as! UILabel
         
         nameLabel.text = company.name
         
@@ -166,17 +166,17 @@ class PeersTableViewController: UITableViewController {
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
             
-            let navigationController = segue.destinationViewController as UINavigationController
+            let navigationController = segue.destinationViewController as! UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
-            let controller = navigationController.topViewController as AddCompanyTableViewController
+            let controller = navigationController.topViewController as! AddCompanyTableViewController
             controller.managedObjectContext = managedObjectContext
         }
     }
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
-        let controller = segue.sourceViewController as AddCompanyTableViewController
+        let controller = segue.sourceViewController as! AddCompanyTableViewController
         
-        if let companyToAdd = controller.companyToAdd? {
+        if let companyToAdd = controller.companyToAdd {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
             
             if Company.isSavedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
@@ -193,7 +193,7 @@ class PeersTableViewController: UITableViewController {
                 }
                 
                 if self.company.peers.count > 0 {
-                    self.peers = self.company.peers.allObjects as [Company]
+                    self.peers = self.company.peers.allObjects as! [Company]
                     self.peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
                     self.tableView.reloadData()
                 }
@@ -225,7 +225,7 @@ class PeersTableViewController: UITableViewController {
                             }
                             
                             if self.company.peers.count > 0 {
-                                self.peers = self.company.peers.allObjects as [Company]
+                                self.peers = self.company.peers.allObjects as! [Company]
                                 self.peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
                                 self.tableView.reloadData()
                             }

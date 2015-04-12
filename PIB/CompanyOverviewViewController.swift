@@ -63,7 +63,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kCompanyOverviewScreenName)
-            tracker.send(GAIDictionaryBuilder.createAppView().build())
+            let build = GAIDictionaryBuilder.createAppView().build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
         
         peersTableView.dataSource = self
@@ -138,7 +139,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             }*/
             
             if company.peers.count > 0 {
-                peers = company.peers.allObjects as [Company]
+                peers = company.peers.allObjects as! [Company]
                 peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
                 peersTableView.reloadData()
             }
@@ -158,13 +159,13 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
         
         let company = peers[indexPath.row] as Company
         
-        let nameLabel = cell.viewWithTag(101) as UILabel
-        let locationLabel = cell.viewWithTag(102) as UILabel
-        let revenueLabel = cell.viewWithTag(103) as UILabel
+        let nameLabel = cell.viewWithTag(101) as! UILabel
+        let locationLabel = cell.viewWithTag(102) as! UILabel
+        let revenueLabel = cell.viewWithTag(103) as! UILabel
         
         nameLabel.text = company.name
         
@@ -204,7 +205,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTable {
             
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PeersTableViewController
             controller.company = company
             controller.managedObjectContext = managedObjectContext
             controller.isEditMode = false
@@ -212,7 +213,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTableEditMode {
             
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PeersTableViewController
             controller.company = company
             controller.managedObjectContext = managedObjectContext
             controller.isEditMode = true
@@ -220,7 +221,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
             
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as DescriptionViewController
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DescriptionViewController
             controller.company = company
             controller.navigationItem.leftItemsSupplementBackButton = true
         }
@@ -232,7 +233,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func ebitdaLabelStringForCompany(company: Company) -> String {
         
         var ebitdaArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "EBITDA" {
                 ebitdaArray.append(financialMetric)
@@ -251,7 +252,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func ebitdaMarginLabelStringForCompany(company: Company) -> String {
         
         var ebitdaMarginArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "EBITDA Margin" {
                 ebitdaMarginArray.append(financialMetric)
@@ -270,7 +271,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func profitMarginLabelStringForCompany(company: Company) -> String {
         
         var profitMarginArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Profit Margin" {
                 profitMarginArray.append(financialMetric)
@@ -289,7 +290,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func marketCapLabelStringForCompany(company: Company) -> String {
         
         var marketCapArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Market Cap" {
                 marketCapArray.append(financialMetric)

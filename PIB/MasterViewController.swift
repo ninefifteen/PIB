@@ -71,7 +71,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let builder = GAIDictionaryBuilder.createScreenView()
             builder.set("start", forKey: kGAISessionControl)
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kMasterScreenName)
-            tracker.send(builder.build())
+            let build = builder.build() as [NSObject : AnyObject];
+            tracker.send(build)
         }
         
         self.navigationItem.leftBarButtonItem = self.editButtonItem()
@@ -129,7 +130,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
-            let searchTableView = (searchController?.searchResultsController as UITableViewController).tableView
+            let searchTableView = (searchController?.searchResultsController as! UITableViewController).tableView
             
             if let sender = sender as? UITableViewCell {
                 
@@ -137,7 +138,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     
                     let indexPath = searchTableView.indexPathForSelectedRow()!
                     let company = filteredCompanies[indexPath.row] as Company
-                    let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
+                    let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
                     controller.company = company
                     controller.managedObjectContext = managedObjectContext
                     controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
@@ -146,8 +147,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 } else {
                     
                     if let indexPath = self.tableView.indexPathForSelectedRow() {
-                        let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
-                        let controller = (segue.destinationViewController as UINavigationController).topViewController as DetailViewController
+                        let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
+                        let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
                         controller.company = company
                         controller.managedObjectContext = managedObjectContext
                         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
@@ -158,9 +159,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
                         
-            let navigationController = segue.destinationViewController as UINavigationController
+            let navigationController = segue.destinationViewController as! UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
-            let controller = navigationController.topViewController as AddCompanyTableViewController
+            let controller = navigationController.topViewController as! AddCompanyTableViewController
             controller.managedObjectContext = managedObjectContext
         }
     }
@@ -169,7 +170,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
                 if company.dataState == .DataDownloadCompleteWithoutError {
                     return true
                 } else if company.dataState == .DataDownloadCompleteWithError {
@@ -178,7 +179,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                     return false
                 }
-            } else if let indexPath = (searchController?.searchResultsController as UITableViewController).tableView.indexPathForSelectedRow() {
+            } else if let indexPath = (searchController?.searchResultsController as! UITableViewController).tableView.indexPathForSelectedRow() {
                 let company = filteredCompanies[indexPath.row]
                 if company.dataState == .DataDownloadCompleteWithoutError {
                     return true
@@ -195,9 +196,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
         
-        let controller = segue.sourceViewController as AddCompanyTableViewController
+        let controller = segue.sourceViewController as! AddCompanyTableViewController
         
-        if let companyToAdd = controller.companyToAdd? {
+        if let companyToAdd = controller.companyToAdd {
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
             Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         } else {
@@ -211,7 +212,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
-            tracker.send(GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build())
+            let build = GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
     }
     
@@ -282,7 +284,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             return 1
         } else {
             return self.fetchedResultsController.sections?.count ?? 1
@@ -290,17 +292,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             return filteredCompanies.count
         } else {
-            let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
+            let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
             return sectionInfo.numberOfObjects
         }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = self.tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as UITableViewCell
+        let cell = self.tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as! UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath, forTableView: tableView)
         return cell
     }
@@ -327,7 +329,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if editingStyle == .Delete {
             
             let context = self.fetchedResultsController.managedObjectContext
-            let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+            let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
             
             removeTargetCompany(company, inManagedObjectContext: context)
         }
@@ -339,16 +341,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func configureCell(cell: UITableViewCell, atIndexPath indexPath: NSIndexPath, forTableView tableView: UITableView) {
         
-        let nameLabel = cell.viewWithTag(101) as UILabel
-        let locationLabel = cell.viewWithTag(102) as UILabel
-        let revenueLabel = cell.viewWithTag(103) as UILabel
-        let revenueTitleLabel = cell.viewWithTag(104) as UILabel
-        let activityIndicator = cell.viewWithTag(105) as UIActivityIndicatorView
-        let noDataAvailableLabel = cell.viewWithTag(106) as UILabel
+        let nameLabel = cell.viewWithTag(101) as! UILabel
+        let locationLabel = cell.viewWithTag(102) as! UILabel
+        let revenueLabel = cell.viewWithTag(103) as! UILabel
+        let revenueTitleLabel = cell.viewWithTag(104) as! UILabel
+        let activityIndicator = cell.viewWithTag(105) as! UIActivityIndicatorView
+        let noDataAvailableLabel = cell.viewWithTag(106) as! UILabel
         
         var company: Company?
         
-        if tableView == (searchController?.searchResultsController as UITableViewController).tableView {
+        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             company  = self.filteredCompanies[indexPath.row]
         } else {
             company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
@@ -393,7 +395,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 
                 let rawImage = UIImage(named: "trashCanSmall")
                 if let image = rawImage?.imageByApplyingAlpha(0.5) {
-                    let button = UIButton.buttonWithType(UIButtonType.Custom) as UIButton
+                    let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
                     let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
                     button.frame = frame
                     button.setBackgroundImage(image, forState: .Normal)
@@ -425,13 +427,13 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             
             let touches = uiEvent.allTouches()
             
-            if let touch = touches?.anyObject() as? UITouch {
+            if let touch = touches?.first as? UITouch {
                 
                 let currentTouchPosition = touch.locationInView(tableView)
                 
                 if let indexPath = tableView.indexPathForRowAtPoint(currentTouchPosition) {
                     
-                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as Company
+                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
                     
                     if company.dataState == .DataDownloadCompleteWithError {
                         
@@ -511,20 +513,23 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath) {
-        switch type {
-        case .Insert:
-            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-        case .Delete:
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        case .Update:
-            if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath, forTableView: tableView) }
-        case .Move:
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-        default:
-            return
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        if let newIndexPath = newIndexPath, indexPath = indexPath {
+            switch type {
+            case .Insert:
+                tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
+            case .Delete:
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            case .Update:
+                if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath, forTableView: tableView) }
+            case .Move:
+                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+                tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
+            default:
+                return
+            }
         }
+        return
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
@@ -546,7 +551,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func updateSearchResultsForSearchController(searchController: UISearchController) {
         let searchString = searchController.searchBar.text
         filterCompaniesForSearchString(searchString)
-        (searchController.searchResultsController as UITableViewController).tableView.reloadData()
+        (searchController.searchResultsController as! UITableViewController).tableView.reloadData()
     }
     
     
@@ -562,7 +567,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         var predicates = [NSPredicate]()
         
         for searchWord in searchWords {
-            if countElements(searchWord) > 0 {
+            if count(searchWord) > 0 {
                 var predicateBuilder = ""
                 
                 for key in keysToSearch {
@@ -574,11 +579,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                         predicateBuilder = predicateBuilder + "(" + key + " contains[c] '" + escapedSearchWord + "')"
                     }
                 }
-                predicates.append(NSPredicate(format: predicateBuilder)!)
+                predicates.append(NSPredicate(format: predicateBuilder, argumentArray: nil))
             }
         }
         let compoundPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: predicates)
-        filteredCompanies = (fetchedResultsController.fetchedObjects as [Company]).filter({compoundPredicate.evaluateWithObject($0)})
+        filteredCompanies = (fetchedResultsController.fetchedObjects as! [Company]).filter({compoundPredicate.evaluateWithObject($0)})
     }
 }
 

@@ -46,7 +46,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         // Create a new view controller and pass suitable data.
         if  company != nil {
-            let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as GraphContentViewController
+            let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as! GraphContentViewController
             graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
             graphContentViewController.company = company
@@ -70,7 +70,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as GraphContentViewController).pageIndex
+        var index = (viewController as! GraphContentViewController).pageIndex
         if (index == 0) || (index == NSNotFound) {
             return nil
         }
@@ -81,7 +81,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as GraphContentViewController).pageIndex
+        var index = (viewController as! GraphContentViewController).pageIndex
         if index == NSNotFound {
             return nil
         }

@@ -68,9 +68,9 @@ class Company: NSManagedObject {
                 company = savedCompany
                 
                 // Remove old finacial metrics to prepare for update.
-                var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+                var financialMetrics = company.financialMetrics.mutableCopy() as! NSMutableSet
                 financialMetrics.removeAllObjects()
-                company.financialMetrics = financialMetrics.copy() as NSSet
+                company.financialMetrics = financialMetrics.copy() as! NSSet
             }
             
         } else {    // Company is NOT saved to app.
@@ -276,7 +276,7 @@ class Company: NSManagedObject {
         
         let predicate = NSPredicate(format: "(tickerSymbol == %@) AND (exchangeDisplayName == %@)", tickerSymbol, exchangeDisplayName)
         request.predicate = predicate
-        var matchingCompaniesArray = alternateContext.executeFetchRequest(request, error: &requestError) as [Company]
+        var matchingCompaniesArray = alternateContext.executeFetchRequest(request, error: &requestError) as! [Company]
         if requestError != nil {
             println("Fetch request error: \(requestError?.description)")
             return nil
@@ -309,7 +309,7 @@ class Company: NSManagedObject {
         
         let incompleteCompaniesPredicate = NSPredicate(format: "objectState == 0")
         request.predicate = incompleteCompaniesPredicate
-        var incompleteCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as [Company]
+        var incompleteCompaniesArray = managedObjectContext.executeFetchRequest(request, error: &requestError) as! [Company]
         if requestError != nil {
             println("Fetch request error: \(requestError?.description)")
         }
@@ -336,7 +336,7 @@ class Company: NSManagedObject {
     func addSummaryDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, fromSummaryDictionary summaryDictionary: [String: String]) {
         
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var mutableFinancialMetrics = financialMetrics.mutableCopy() as NSMutableSet
+        var mutableFinancialMetrics = financialMetrics.mutableCopy() as! NSMutableSet
         
         let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
         financialMetric.type = "Market Cap"
@@ -344,7 +344,7 @@ class Company: NSManagedObject {
         financialMetric.value = NSString(string: summaryDictionary["Market Cap"]!).doubleValue
         mutableFinancialMetrics.addObject(financialMetric)
         
-        financialMetrics = mutableFinancialMetrics.copy() as NSSet
+        financialMetrics = mutableFinancialMetrics.copy() as! NSSet
         
         companyDescription = summaryDictionary["companyDescription"]!
         street = summaryDictionary["street"]!
@@ -367,7 +367,7 @@ class Company: NSManagedObject {
         }
         
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var mutableFinancialMetrics = financialMetrics.mutableCopy() as NSMutableSet
+        var mutableFinancialMetrics = financialMetrics.mutableCopy() as! NSMutableSet
         
         if let financialMetricArray = financialDictionary["financialMetrics"] as? [FinancialMetric] {
             for financialMetric in financialMetricArray {
@@ -379,7 +379,7 @@ class Company: NSManagedObject {
             }
         }
         
-        financialMetrics = mutableFinancialMetrics.copy() as NSSet
+        financialMetrics = mutableFinancialMetrics.copy() as! NSSet
     }
     
     func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
@@ -415,9 +415,9 @@ class Company: NSManagedObject {
             //println("Unresolved error \(error), \(error.userInfo)")
             abort()
         }
-        var companyPeers = peers.mutableCopy() as NSMutableSet
+        var companyPeers = peers.mutableCopy() as! NSMutableSet
         companyPeers.removeAllObjects()
-        peers = companyPeers.copy() as NSSet
+        peers = companyPeers.copy() as! NSSet
         
         if !managedObjectContext.save(&error) {
             println("Save Error in changeFromTargetToPeerInManagedObjectContext(_:) while removing peers.")
@@ -430,9 +430,9 @@ class Company: NSManagedObject {
     
     func removePeerCompany(peerCompany: Company, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
         
-        var companyPeers = peers.mutableCopy() as NSMutableSet
+        var companyPeers = peers.mutableCopy() as! NSMutableSet
         companyPeers.removeObject(peerCompany)
-        peers = companyPeers.copy() as NSSet
+        peers = companyPeers.copy() as! NSSet
         
         if peerCompany.targets.count < 1 {
             managedObjectContext.deleteObject(peerCompany)
@@ -453,9 +453,9 @@ class Company: NSManagedObject {
         let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
         if let peerCompany = savedPeerCompany {
-            var peers = self.peers.mutableCopy() as NSMutableSet
+            var peers = self.peers.mutableCopy() as! NSMutableSet
             peers.addObject(peerCompany)
-            self.peers = peers.copy() as NSSet
+            self.peers = peers.copy() as! NSSet
         }
     }
     

@@ -126,7 +126,7 @@ extension Company {
     func revenueLabelString() -> String {
         
         var totalRevenueArray = Array<FinancialMetric>()
-        var financialMetrics = self.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics = self.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Total Revenue" {
                 totalRevenueArray.append(financialMetric)
