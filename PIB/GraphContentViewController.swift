@@ -830,7 +830,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         let isDataForRevenueGrowthPlot: Bool = minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0
         //let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
-        let isDataForProfitMarginPlot: Bool = false
+        //let isDataForProfitMarginPlot: Bool = false
         let isDataForPeersRevenueGrowthArray: Bool = minimumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0
         
         if isDataForRevenueGrowthPlot {
@@ -862,7 +862,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             plots.append(revenueGrowthPlot)
         }
         
-        if isDataForProfitMarginPlot {
+        /*if isDataForProfitMarginPlot {
             
             let profitMarginPlotColor = GraphContent.Color.kProfitMarginPlotColor
             
@@ -889,7 +889,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             graph.addPlot(profitMarginPlot, toPlotSpace:plotSpace)
             plots.append(profitMarginPlot)
-        }
+        }*/
         
         if isDataForPeersRevenueGrowthArray {
             

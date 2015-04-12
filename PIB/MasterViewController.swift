@@ -514,22 +514,19 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        if let newIndexPath = newIndexPath, indexPath = indexPath {
-            switch type {
-            case .Insert:
-                tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
-            case .Delete:
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-            case .Update:
-                if let tableCell = tableView.cellForRowAtIndexPath(indexPath) { self.configureCell(tableCell, atIndexPath: indexPath, forTableView: tableView) }
-            case .Move:
-                tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-                tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
-            default:
-                return
-            }
+        switch type {
+        case .Insert:
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+        case .Delete:
+            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+        case .Update:
+            if let tableCell = tableView.cellForRowAtIndexPath(indexPath!) { self.configureCell(tableCell, atIndexPath: indexPath!, forTableView: tableView) }
+        case .Move:
+            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+        default:
+            return
         }
-        return
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
