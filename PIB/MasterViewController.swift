@@ -103,13 +103,32 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         super.viewWillAppear(animated)
         
-        if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
+        /*if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
             if firstRunValueString == "true" {
-                /*WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
+                WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
                     if success {
                         self.loadSampleCompaniesForFirstRun()
                     }
-                })*/
+                })
+            } else if isFirstAppearanceOfView {
+                Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
+            }
+        }
+        
+        isFirstAppearanceOfView = false*/
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        
+        super.viewDidAppear(animated)
+        
+        if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
+            if firstRunValueString == "true" {
+                WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
+                    /*if success {
+                        self.loadSampleCompaniesForFirstRun()
+                    }*/
+                })
             } else if isFirstAppearanceOfView {
                 Company.removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext)
             }

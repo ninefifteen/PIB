@@ -720,9 +720,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: GraphContent.Color.kRevenuePlotColor)
-        revenueBarPlot.barWidth = 0.30
+        revenueBarPlot.barWidth = 0.60
         revenueBarPlot.baseValue = 0.0
-        revenueBarPlot.barOffset = 0.25
+        revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
         let revenueBarPlotIdentifier = "Revenue (" + company.currencyCode + ")"
         revenueBarPlot.identifier = revenueBarPlotIdentifier

@@ -14,6 +14,31 @@ let logAnalytics: Bool = false
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     
+    /*var updateContextWithUbiquitousContentUpdates: Bool = false {
+        willSet {
+            println("willSet updateContextWithUbiquitousContentUpdates")
+            ubiquitousChangesObserver = newValue ? NSNotificationCenter.defaultCenter() : nil
+        }
+    }
+    
+    private var ubiquitousChangesObserver : NSNotificationCenter? {
+        didSet {
+            println("didSet ubiquitousChangesObserver")
+            oldValue?.removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
+            ubiquitousChangesObserver?.addObserver(self, selector: "persistentStoreDidImportUbiquitousContentChanges:", name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
+        }
+    }
+    
+    func persistentStoreDidImportUbiquitousContentChanges(notification: NSNotification) {
+        println("Merging ubiquitous content changes")
+        if let managedObjectContext = managedObjectContext {
+            managedObjectContext.performBlock({ () -> Void in
+                println("Merge ubiquitous content changes!!")
+                managedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
+            })
+        }
+    }*/
+    
     struct GoogleAnalytics {
         static let kTrackerId = "UA-35969227-1"
     }
@@ -27,6 +52,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
+        //updateContextWithUbiquitousContentUpdates = true
         
         // Override point for customization after application launch.
         let defaults = NSUserDefaults.standardUserDefaults()
@@ -123,10 +150,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it. This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
         // Create the coordinator and store
         var coordinator: NSPersistentStoreCoordinator? = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
+        self.registerForiCloudNotificationsWithCoordinator(coordinator!)
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("PIB.sqlite")
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
-        let options = [NSPersistentStoreUbiquitousContentNameKey: "PIB", NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
+        let options = [NSPersistentStoreUbiquitousContentNameKey: "PIB_2", NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: options, error: &error) == nil {
             coordinator = nil
             // Report any error we got.
@@ -143,6 +171,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         return coordinator
     }()
+    
+    func registerForiCloudNotificationsWithCoordinator(coordinator: NSPersistentStoreCoordinator) {
+        
+        let notificationCenter = NSNotificationCenter.defaultCenter()
+        
+        notificationCenter.addObserver(self, selector: "storesWillChange:", name: NSPersistentStoreCoordinatorStoresWillChangeNotification, object: coordinator)
+        notificationCenter.addObserver(self, selector: "storesDidChange:", name: NSPersistentStoreCoordinatorStoresDidChangeNotification, object: coordinator)
+        notificationCenter.addObserver(self, selector: "persistentStoreDidImportUbiquitousContentChanges:", name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: coordinator)
+    }
+    
+    func storesWillChange(notification: NSNotification) {
+        
+        println("storesWillChange")
+        println("notification: \(notification)")
+        
+        let context = self.managedObjectContext
+        
+        if let context = context {
+            
+            println("context != nil")
+            
+            //context.performBlockAndWait({ () -> Void in
+                
+                if context.hasChanges {
+                    println("context has changes")
+                    var error: NSError? = nil
+                    if !context.save(&error) {
+                        // Replace this implementation with code to handle the error appropriately.
+                        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                        //println("Unresolved error \(error), \(error.userInfo)")
+                        abort()
+                    }
+                    context.reset()
+                } else {
+                    println("context has NO changes")
+                }
+            //})
+            
+        } else {
+            println("context == nil")
+        }
+    }
+    
+    func storesDidChange(notification: NSNotification) {
+        
+        println("storesDidChange")
+        //println("notification: \(notification)")
+    }
+    
+    func persistentStoreDidImportUbiquitousContentChanges(notification: NSNotification) {
+        
+        println("persistentStoreDidImportUbiquitousContentChanges")
+        
+        let context = self.managedObjectContext
+        
+        if let context = context {
+            
+            println("context != nil")
+            
+            //context.performBlock({ () -> Void in
+                context.mergeChangesFromContextDidSaveNotification(notification)
+            //})
+            
+        } else {
+            println("context == nil")
+        }
+    }
 
     lazy var managedObjectContext: NSManagedObjectContext? = {
         // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
