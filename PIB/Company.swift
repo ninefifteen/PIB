@@ -262,6 +262,37 @@ class Company: NSManagedObject {
             }
         }
     }
+    
+    class func newUserAddedPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company {
+            
+        // Create new company managed object.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+        
+        // Set attributes.
+        company.name = name
+        company.exchange = ""
+        company.exchangeDisplayName = exchangeDisplayName
+        company.tickerSymbol = tickerSymbol
+        company.street = ""
+        company.city = ""
+        company.state = ""
+        company.zipCode = ""
+        company.country = ""
+        company.companyDescription = ""
+        company.webLink = ""
+        company.currencySymbol = ""
+        //company.currencyCode = ""
+        company.employeeCount = 0
+        company.isTargetCompany = NSNumber(bool: false)
+        
+        company.dataState = .DataDownloadInProgress
+        company.isTargetCompany = NSNumber(bool: false)
+        
+        return company
+    }
+    
+    
 
     class func savedCompanyWithTickerSymbol(tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company? {
         
@@ -380,6 +411,40 @@ class Company: NSManagedObject {
         }
         
         financialMetrics = mutableFinancialMetrics.copy() as! NSSet
+    }
+    
+    func addPeerDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, withCompletion completion: ((success: Bool) -> Void)?) {
+        
+        let dispatchGroup = dispatch_group_create()
+        
+        dispatch_group_enter(dispatchGroup)
+        WebServicesManagerAPI.sharedInstance.downloadGoogleSummaryForCompanyWithTickerSymbol(self.tickerSymbol, onExchange: self.exchangeDisplayName) { (summaryDictionary, success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if success { self.addSummaryDataForCompanyInManagedObjectContext(managedObjectContext, fromSummaryDictionary: summaryDictionary) }
+                self.summaryDownloadComplete = true
+                self.summaryDownloadError = !success
+                dispatch_group_leave(dispatchGroup)
+            })
+        }
+        
+        dispatch_group_enter(dispatchGroup)
+        WebServicesManagerAPI.sharedInstance.downloadGoogleFinancialsForCompanyWithTickerSymbol(self.tickerSymbol, onExchange: self.exchangeDisplayName) { (financialDictionary, success) -> Void in
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                if success { self.addFinancialDataForCompanyInManagedObjectContext(managedObjectContext, fromFinancialDictionary: financialDictionary) }
+                self.financialsDownloadComplete = true
+                self.financialsDownloadError = !success
+                dispatch_group_leave(dispatchGroup)
+            })
+        }
+        
+        dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
+            
+            self.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
+            
+            if completion != nil {
+                completion!(success: true)
+            }
+        }
     }
     
     func setDataStatusForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
