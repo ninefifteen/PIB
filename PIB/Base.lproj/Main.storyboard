@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C1514" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="H1p-Uh-vWS">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7531" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="H1p-Uh-vWS">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -806,15 +806,15 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="peerTableCell" id="wrp-iZ-sce">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="peerTableCell" id="wrp-iZ-sce">
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="wrp-iZ-sce" id="54d-e5-bxg">
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some City, ST United States" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tad-lm-1M6">
-                                            <rect key="frame" x="16" y="31" width="147" height="14"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
-                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$99.9B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UWM-oe-cgI">
+                                            <rect key="frame" x="538" y="11" width="46" height="17"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                            <color key="textColor" red="0.14117647059999999" green="0.61568627450000002" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Name" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="14" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7y9-UZ-eIo">
@@ -822,10 +822,15 @@
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$99.9B" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UWM-oe-cgI">
-                                            <rect key="frame" x="538" y="11" width="46" height="17"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                            <color key="textColor" red="0.14117647059999999" green="0.61568627450000002" blue="0.2901960784" alpha="1" colorSpace="calibratedRGB"/>
+                                        <label hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="106" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Data Available" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hjt-3n-DOZ">
+                                            <rect key="frame" x="16" y="31" width="92" height="14"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Some City, ST United States" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tad-lm-1M6">
+                                            <rect key="frame" x="16" y="31" width="147" height="14"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
                                         <label opaque="NO" userInteractionEnabled="NO" tag="104" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="REVENUE" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gNH-6C-5KU">
@@ -834,17 +839,24 @@
                                             <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <activityIndicatorView opaque="NO" tag="105" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="qsh-gu-mRV">
+                                            <rect key="frame" x="564" y="16" width="20" height="20"/>
+                                        </activityIndicatorView>
                                     </subviews>
                                     <constraints>
+                                        <constraint firstItem="Hjt-3n-DOZ" firstAttribute="top" secondItem="7y9-UZ-eIo" secondAttribute="bottom" constant="3" id="5o2-e0-MP4"/>
                                         <constraint firstItem="UWM-oe-cgI" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="7y9-UZ-eIo" secondAttribute="trailing" constant="70" id="8KB-e5-m3y"/>
                                         <constraint firstItem="tad-lm-1M6" firstAttribute="leading" secondItem="54d-e5-bxg" secondAttribute="leadingMargin" constant="8" id="Cfd-Bl-yK5"/>
                                         <constraint firstItem="7y9-UZ-eIo" firstAttribute="bottom" secondItem="UWM-oe-cgI" secondAttribute="bottom" id="EFf-m9-kZt"/>
                                         <constraint firstItem="tad-lm-1M6" firstAttribute="top" secondItem="7y9-UZ-eIo" secondAttribute="bottom" constant="3" id="IRZ-w2-luN"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="gNH-6C-5KU" secondAttribute="trailing" constant="8" id="JWI-kM-EvE"/>
+                                        <constraint firstAttribute="centerY" secondItem="qsh-gu-mRV" secondAttribute="centerY" id="SI9-JK-C18"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="UWM-oe-cgI" secondAttribute="trailing" constant="8" id="TeD-FH-exY"/>
                                         <constraint firstItem="7y9-UZ-eIo" firstAttribute="leading" secondItem="54d-e5-bxg" secondAttribute="leadingMargin" constant="8" id="hdm-Zs-4ta"/>
                                         <constraint firstItem="tad-lm-1M6" firstAttribute="bottom" secondItem="gNH-6C-5KU" secondAttribute="bottom" id="lVz-Df-YlL"/>
                                         <constraint firstItem="7y9-UZ-eIo" firstAttribute="top" secondItem="54d-e5-bxg" secondAttribute="topMargin" constant="-1" id="qju-bk-c85"/>
+                                        <constraint firstItem="Hjt-3n-DOZ" firstAttribute="leading" secondItem="54d-e5-bxg" secondAttribute="leadingMargin" constant="8" id="wXU-yt-L7m"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="qsh-gu-mRV" secondAttribute="trailing" constant="8" id="y7c-iK-8mb"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -910,8 +922,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="g43-td-wzo"/>
         <segue reference="VVC-je-NKy"/>
+        <segue reference="X9m-2M-rR3"/>
         <segue reference="Wc3-5Q-VyB"/>
     </inferredMetricsTieBreakers>
 </document>

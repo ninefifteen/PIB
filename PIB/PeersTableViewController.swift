@@ -95,7 +95,11 @@ class PeersTableViewController: UITableViewController {
         let nameLabel = cell.viewWithTag(101) as! UILabel
         let locationLabel = cell.viewWithTag(102) as! UILabel
         let revenueLabel = cell.viewWithTag(103) as! UILabel
+        let revenueTitleLabel = cell.viewWithTag(104) as! UILabel
+        let activityIndicator = cell.viewWithTag(105) as! UIActivityIndicatorView
+        let noDataAvailableLabel = cell.viewWithTag(106) as! UILabel
         
+        nameLabel.hidden = false
         nameLabel.text = company.name
         
         if company.city != "" {
@@ -110,7 +114,51 @@ class PeersTableViewController: UITableViewController {
             locationLabel.text = " "
         }
         
-        revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+        if company.dataState == .DataDownloadCompleteWithoutError {
+            
+            cell.accessoryView = nil
+            cell.contentView.alpha = 1.0
+            revenueLabel.hidden = false
+            revenueTitleLabel.hidden = false
+            revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+            locationLabel.hidden = false
+            activityIndicator.hidden = true
+            noDataAvailableLabel.hidden = true
+            
+        } else if company.dataState == .DataDownloadCompleteWithError {
+            
+            cell.contentView.alpha = 0.5
+            revenueLabel.hidden = true
+            revenueTitleLabel.hidden = true
+            activityIndicator.hidden = true
+            locationLabel.hidden = true
+            noDataAvailableLabel.hidden = false
+            
+            let rawImage = UIImage(named: "trashCanSmall")
+            if let image = rawImage?.imageByApplyingAlpha(0.5) {
+                let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
+                let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
+                button.frame = frame
+                button.setBackgroundImage(image, forState: .Normal)
+                button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
+                button.backgroundColor = UIColor.clearColor()
+                cell.accessoryView = button
+                cell.accessoryView?.hidden = false
+            }
+            
+        } else {
+            
+            cell.accessoryView = nil
+            cell.contentView.alpha = 1.0
+            revenueLabel.hidden = true
+            revenueTitleLabel.hidden = true
+            locationLabel.hidden = false
+            activityIndicator.hidden = false
+            activityIndicator.startAnimating()
+            noDataAvailableLabel.hidden = true
+        }
+        
+        cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
         
         return cell
     }
@@ -143,6 +191,12 @@ class PeersTableViewController: UITableViewController {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
+    
+    /*
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    }
+    */
 
     /*
     // Override to support rearranging the table view.
