@@ -21,6 +21,7 @@ class PeersTableViewController: UITableViewController {
         
         struct TableViewCellIdentifiers {
             static let kPeerTableCell = "peerTableCell"
+            static let kAddPeerTableCell = "addPeerTableCell"
         }
     }
     
@@ -52,8 +53,8 @@ class PeersTableViewController: UITableViewController {
         tableView.editing = isEditMode
         editing = isEditMode
         
-        navigationController?.toolbarHidden = false
-        navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
+        //navigationController?.toolbarHidden = false
+        //navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         
         if company.peers.count > 0 {
             peers = company.peers.allObjects as! [Company]
@@ -66,14 +67,6 @@ class PeersTableViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
-    // MARK: - Button Functions
-    
-    @IBAction func addButtonPressed(sender: UIBarButtonItem) {
-        
-    }
-    
 
     
     // MARK: - Table View
@@ -83,84 +76,92 @@ class PeersTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peers.count
+        return peers.count + 1
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
-        
-        let company = peers[indexPath.row] as Company
-        
-        let nameLabel = cell.viewWithTag(101) as! UILabel
-        let locationLabel = cell.viewWithTag(102) as! UILabel
-        let revenueLabel = cell.viewWithTag(103) as! UILabel
-        let revenueTitleLabel = cell.viewWithTag(104) as! UILabel
-        let activityIndicator = cell.viewWithTag(105) as! UIActivityIndicatorView
-        let noDataAvailableLabel = cell.viewWithTag(106) as! UILabel
-        
-        nameLabel.hidden = false
-        nameLabel.text = company.name
-        
-        if company.city != "" {
-            if company.country != "" && company.state != "" {
-                locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-            } else if company.country != "" {
-                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+        if indexPath.row < peers.count {
+            
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
+            
+            let company = peers[indexPath.row] as Company
+            
+            let nameLabel = cell.viewWithTag(101) as! UILabel
+            let locationLabel = cell.viewWithTag(102) as! UILabel
+            let revenueLabel = cell.viewWithTag(103) as! UILabel
+            let revenueTitleLabel = cell.viewWithTag(104) as! UILabel
+            let activityIndicator = cell.viewWithTag(105) as! UIActivityIndicatorView
+            let noDataAvailableLabel = cell.viewWithTag(106) as! UILabel
+            
+            nameLabel.hidden = false
+            nameLabel.text = company.name
+            
+            if company.city != "" {
+                if company.country != "" && company.state != "" {
+                    locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+                } else {
+                    locationLabel.text = company.city.capitalizedString
+                }
             } else {
-                locationLabel.text = company.city.capitalizedString
-            }
-        } else {
-            locationLabel.text = " "
-        }
-        
-        if company.dataState == .DataDownloadCompleteWithoutError {
-            
-            cell.accessoryView = nil
-            cell.contentView.alpha = 1.0
-            revenueLabel.hidden = false
-            revenueTitleLabel.hidden = false
-            revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-            locationLabel.hidden = false
-            activityIndicator.hidden = true
-            noDataAvailableLabel.hidden = true
-            
-        } else if company.dataState == .DataDownloadCompleteWithError {
-            
-            cell.contentView.alpha = 0.5
-            revenueLabel.hidden = true
-            revenueTitleLabel.hidden = true
-            activityIndicator.hidden = true
-            locationLabel.hidden = true
-            noDataAvailableLabel.hidden = false
-            
-            let rawImage = UIImage(named: "trashCanSmall")
-            if let image = rawImage?.imageByApplyingAlpha(0.5) {
-                let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
-                let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
-                button.frame = frame
-                button.setBackgroundImage(image, forState: .Normal)
-                button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
-                button.backgroundColor = UIColor.clearColor()
-                cell.accessoryView = button
-                cell.accessoryView?.hidden = false
+                locationLabel.text = " "
             }
             
+            if company.dataState == .DataDownloadCompleteWithoutError {
+                
+                cell.accessoryView = nil
+                cell.contentView.alpha = 1.0
+                revenueLabel.hidden = false
+                revenueTitleLabel.hidden = false
+                revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                locationLabel.hidden = false
+                activityIndicator.hidden = true
+                noDataAvailableLabel.hidden = true
+                
+            } else if company.dataState == .DataDownloadCompleteWithError {
+                
+                cell.contentView.alpha = 0.5
+                revenueLabel.hidden = true
+                revenueTitleLabel.hidden = true
+                activityIndicator.hidden = true
+                locationLabel.hidden = true
+                noDataAvailableLabel.hidden = false
+                
+                let rawImage = UIImage(named: "trashCanSmall")
+                if let image = rawImage?.imageByApplyingAlpha(0.5) {
+                    let button = UIButton.buttonWithType(UIButtonType.Custom) as! UIButton
+                    let frame = CGRectMake(0.0, 0.0, image.size.width, image.size.height)
+                    button.frame = frame
+                    button.setBackgroundImage(image, forState: .Normal)
+                    button.addTarget(self, action: "checkAccessoryDeleteButtonTapped:event:", forControlEvents: .TouchUpInside)
+                    button.backgroundColor = UIColor.clearColor()
+                    cell.accessoryView = button
+                    cell.accessoryView?.hidden = false
+                }
+                
+            } else {
+                
+                cell.accessoryView = nil
+                cell.contentView.alpha = 1.0
+                revenueLabel.hidden = true
+                revenueTitleLabel.hidden = true
+                locationLabel.hidden = false
+                activityIndicator.hidden = false
+                activityIndicator.startAnimating()
+                noDataAvailableLabel.hidden = true
+            }
+            
+            cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
+            
+            return cell
+            
         } else {
             
-            cell.accessoryView = nil
-            cell.contentView.alpha = 1.0
-            revenueLabel.hidden = true
-            revenueTitleLabel.hidden = true
-            locationLabel.hidden = false
-            activityIndicator.hidden = false
-            activityIndicator.startAnimating()
-            noDataAvailableLabel.hidden = true
+            let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
+            return cell
         }
-        
-        cell.userInteractionEnabled = company.dataState == .DataDownloadInProgress ? false : true
-        
-        return cell
     }
     
     override func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
@@ -192,11 +193,10 @@ class PeersTableViewController: UITableViewController {
         }    
     }
     
-    /*
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+
+        if indexPath.row == peers.count { }
     }
-    */
 
     /*
     // Override to support rearranging the table view.
