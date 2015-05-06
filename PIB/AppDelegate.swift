@@ -154,7 +154,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("PIB.sqlite")
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
-        let options = [NSPersistentStoreUbiquitousContentNameKey: "PIB_2", NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
+        let options = [NSPersistentStoreUbiquitousContentNameKey: "PIB_3", NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
         if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: options, error: &error) == nil {
             coordinator = nil
             // Report any error we got.
@@ -183,16 +183,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func storesWillChange(notification: NSNotification) {
         
-        println("storesWillChange")
-        println("notification: \(notification)")
-        
-        let context = self.managedObjectContext
-        
-        if let context = context {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
             
-            println("context != nil")
+            println("storesWillChange")
+            println("notification: \(notification)")
             
-            //context.performBlockAndWait({ () -> Void in
+            let context = self.managedObjectContext
+            
+            if let context = context {
+                
+                println("context != nil")
+                
+                //context.performBlockAndWait({ () -> Void in
                 
                 if context.hasChanges {
                     println("context has changes")
@@ -207,11 +209,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 } else {
                     println("context has NO changes")
                 }
-            //})
+                //})
+                
+            } else {
+                println("context == nil")
+            }
             
-        } else {
-            println("context == nil")
-        }
+        })
     }
     
     func storesDidChange(notification: NSNotification) {
@@ -222,21 +226,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     
     func persistentStoreDidImportUbiquitousContentChanges(notification: NSNotification) {
         
-        println("persistentStoreDidImportUbiquitousContentChanges")
-        
-        let context = self.managedObjectContext
-        
-        if let context = context {
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
             
-            println("context != nil")
+            println("persistentStoreDidImportUbiquitousContentChanges")
             
-            //context.performBlock({ () -> Void in
+            let context = self.managedObjectContext
+            
+            if let context = context {
+                
+                println("context != nil")
+                
+                //context.performBlock({ () -> Void in
+                //context.mergePolicy = NSMergePolicy(mergeType: NSMergePolicyType.MergeByPropertyStoreTrumpMergePolicyType)
                 context.mergeChangesFromContextDidSaveNotification(notification)
-            //})
+                //})
+                
+            } else {
+                println("context == nil")
+            }
             
-        } else {
-            println("context == nil")
-        }
+        })
     }
 
     lazy var managedObjectContext: NSManagedObjectContext? = {
