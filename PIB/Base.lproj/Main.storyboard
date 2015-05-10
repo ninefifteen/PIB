@@ -49,10 +49,10 @@
             </objects>
             <point key="canvasLocation" x="-45" y="129"/>
         </scene>
-        <!--View Controller-->
+        <!--Master Table Container View Controller-->
         <scene sceneID="r49-cR-e1A">
             <objects>
-                <viewController id="A23-44-tbF" sceneMemberID="viewController">
+                <viewController id="A23-44-tbF" customClass="MasterTableContainerViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="JS9-j2-h3l"/>
                         <viewControllerLayoutGuide type="bottom" id="4Yo-EG-pqR"/>
@@ -78,7 +78,7 @@
                                     <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cd4-x3-PFU">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="496"/>
                                         <connections>
-                                            <segue destination="o43-gC-vdl" kind="embed" id="wQp-XT-JMI"/>
+                                            <segue destination="o43-gC-vdl" kind="embed" identifier="embedTable" id="wQp-XT-JMI"/>
                                         </connections>
                                     </containerView>
                                 </subviews>
@@ -123,8 +123,8 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jD-uo-l9B">
-                                            <rect key="frame" x="538" y="11" width="46" height="17"/>
+                                        <label opaque="NO" userInteractionEnabled="NO" tag="103" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jD-uo-l9B">
+                                            <rect key="frame" x="539" y="11" width="45" height="17"/>
                                             <attributedString key="attributedText">
                                                 <fragment content="$99.9B">
                                                     <attributes>
@@ -328,7 +328,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mug-A5-joV">
-                                <rect key="frame" x="0.0" y="64" width="600" height="70"/>
+                                <rect key="frame" x="0.0" y="44" width="600" height="70"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="CompanyName" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="22" adjustsLetterSpacingToFitWidth="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OgA-Mz-VvC">
                                         <rect key="frame" x="8" y="8" width="192" height="34"/>
@@ -361,7 +361,7 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kL8-DU-Dxt">
-                                <rect key="frame" x="0.0" y="64" width="600" height="70"/>
+                                <rect key="frame" x="0.0" y="44" width="600" height="70"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="right" contentVerticalAlignment="top" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bwp-Z5-DLI">
                                         <rect key="frame" x="8" y="0.0" width="584" height="62"/>
@@ -403,7 +403,7 @@
                                 </constraints>
                             </view>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tqM-Rp-xFw">
-                                <rect key="frame" x="0.0" y="134" width="600" height="466"/>
+                                <rect key="frame" x="0.0" y="114" width="600" height="486"/>
                                 <connections>
                                     <segue destination="48B-kN-GCi" kind="embed" identifier="embedGraph" id="rjD-4O-oHf"/>
                                 </connections>

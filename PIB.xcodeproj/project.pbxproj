@@ -36,6 +36,7 @@
 		45126A051A435D56005A01CC /* AddCompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */; };
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
+		4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */; };
 		456F31761AD617EF002A2FC4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 456F31751AD617EF002A2FC4 /* CloudKit.framework */; };
 		45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DD81A83D16B001AB107 /* PeersTableViewController.swift */; };
 		45914DE11A83D955001AB107 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE01A83D955001AB107 /* Extensions.swift */; };
@@ -178,6 +179,7 @@
 		45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCompanyTableViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
+		4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MasterTableContainerViewController.swift; sourceTree = "<group>"; };
 		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
 		456F31741AD617E6002A2FC4 /* PIB.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PIB.entitlements; sourceTree = "<group>"; };
 		456F31751AD617EF002A2FC4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -285,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				451269491A433020005A01CC /* AppDelegate.swift */,
+				4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */,
 				4512694E1A433020005A01CC /* MasterViewController.swift */,
 				45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */,
 				451269501A433020005A01CC /* DetailViewController.swift */,
@@ -596,6 +599,7 @@
 				45914DE11A83D955001AB107 /* Extensions.swift in Sources */,
 				4512697E1A43340A005A01CC /* XPathQuery.swift in Sources */,
 				45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */,
+				4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */,
 				451269511A433020005A01CC /* DetailViewController.swift in Sources */,
 				45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */,
 			);

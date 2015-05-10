@@ -27,12 +27,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
-    struct GoogleAnalytics {
-        static let kMasterScreenName = "Master"
-        static let kEventCategoryUserAction = "User Action"
-        static let kEventActionAddCompany = "Add Company"
-    }
-    
     
     // MARK: - Properties
     
@@ -64,26 +58,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.viewDidLoad()
         
         // Do any additional setup after loading the view, typically from a nib.
-        
-        if logAnalytics {
-            let tracker = GAI.sharedInstance().defaultTracker
-            tracker.set(kGAIScreenName, value: GoogleAnalytics.kMasterScreenName)
-            let builder = GAIDictionaryBuilder.createScreenView()
-            builder.set("start", forKey: kGAISessionControl)
-            tracker.set(kGAIScreenName, value: GoogleAnalytics.kMasterScreenName)
-            let build = builder.build() as [NSObject : AnyObject];
-            tracker.send(build)
-        }
-        
-        self.navigationItem.leftBarButtonItem = self.editButtonItem()
-        title = masterViewTitle
-        let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
-        navigationItem.backBarButtonItem = backButtonItem
-        
-        if let split = self.splitViewController {
-            let controllers = split.viewControllers
-            self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
-        }
         
         searchResultsController = UITableViewController()
         searchResultsController!.tableView.dataSource = self
@@ -226,15 +200,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     // MARK: - General Methods
-    
-    func sendAddedCompanyNameToGoogleAnalytics(companyName: String) {
-        
-        if logAnalytics {
-            let tracker = GAI.sharedInstance().defaultTracker
-            let build = GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build() as [NSObject : AnyObject]
-            tracker.send(build)
-        }
-    }
     
     func showCompanyDataNotFoundAlert(companyName: String) {
         let title = "We are sorry, our database does not contain financial information for " + companyName + ". Please try a different company."
