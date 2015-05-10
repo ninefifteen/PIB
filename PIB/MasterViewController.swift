@@ -398,7 +398,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
                 revenueTitleLabel.hidden = false
-                revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                revenueTitleLabel.text = company.revenueGrowthLabelString()
+                //revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                let revenueString = company.currencySymbol + company.revenueLabelString()
+                var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
+                revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.pibBlueTextColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
+                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(17.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
+                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(0, 1))
+                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                
+                revenueLabel.attributedText = revenueLabelAttributedString
+                
                 locationLabel.hidden = false
                 activityIndicator.hidden = true
                 noDataAvailableLabel.hidden = true

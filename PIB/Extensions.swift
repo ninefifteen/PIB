@@ -141,6 +141,34 @@ extension Company {
             return "-"
         }
     }
+    
+    func revenueGrowthLabelString() -> String {
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics = self.financialMetrics.allObjects as! [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Total Revenue" {
+                totalRevenueArray.append(financialMetric)
+            }
+        }
+        
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+        
+        if totalRevenueArray.count > 1 {
+            let revenueCurrent = Double(totalRevenueArray[0].value)
+            let revenuePrevious = Double(totalRevenueArray[1].value)
+            let revenueDelta = revenueCurrent - revenuePrevious
+            let percentageDelta = (revenueDelta / revenuePrevious) * 100.0
+            let revenueGrowthLabelString = revenueDelta.pibStandardStyleValueString() + " (" + percentageDelta.pibPercentageStyleValueString() + ")"
+            if revenueDelta < 0 {
+                return revenueGrowthLabelString
+            } else {
+                return "+" + revenueGrowthLabelString
+            }
+        } else {
+            return "-"
+        }
+    }
 }
 
 
@@ -176,6 +204,14 @@ extension UISplitViewController {
     func toggleMasterView() {
         let barButtonItem = self.displayModeButtonItem()
         UIApplication.sharedApplication().sendAction(barButtonItem.action, to: barButtonItem.target, from: nil, forEvent: nil)
+    }
+}
+
+
+extension UIColor {
+    
+    class func pibBlueTextColor() -> UIColor {
+        return UIColor(red: 0.0 / 255.0, green: 155.0 / 255.0, blue: 254.0 / 255.0, alpha: 1.0)
     }
 }
 
