@@ -28,6 +28,11 @@ class MasterTableContainerViewController: UIViewController {
         static let kEventActionAddCompany = "Add Company"
     }
     
+    enum SortScheme {
+        case Name
+        case Revenue
+    }
+    
     
     // MARK: - Properties
     
@@ -35,7 +40,12 @@ class MasterTableContainerViewController: UIViewController {
     var managedObjectContext: NSManagedObjectContext!
     
     let masterViewTitle = "Companies"
+    
+    var selectedSortScheme = SortScheme.Name
         
+    @IBOutlet weak var nameButtonIndicator: UIView!
+    @IBOutlet weak var revenueButtonIndicator: UIView!
+    
     
     // MARK: - View Lifecycle
 
@@ -63,6 +73,14 @@ class MasterTableContainerViewController: UIViewController {
             let controllers = split.viewControllers
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
+        
+        if selectedSortScheme == .Name {
+            nameButtonIndicator.hidden = false
+            revenueButtonIndicator.hidden = true
+        } else if selectedSortScheme == .Revenue {
+            nameButtonIndicator.hidden = true
+            revenueButtonIndicator.hidden = false
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -79,6 +97,25 @@ class MasterTableContainerViewController: UIViewController {
             let tracker = GAI.sharedInstance().defaultTracker
             let build = GAIDictionaryBuilder.createEventWithCategory(GoogleAnalytics.kEventCategoryUserAction, action: GoogleAnalytics.kEventActionAddCompany, label: companyName, value: nil).build() as [NSObject : AnyObject]
             tracker.send(build)
+        }
+    }
+    
+    
+    // MARK: - Button Actions
+    
+    @IBAction func nameButtonPressed(sender: UIButton) {
+        if selectedSortScheme != .Name {
+            selectedSortScheme = .Name
+            nameButtonIndicator.hidden = false
+            revenueButtonIndicator.hidden = true
+        }
+    }
+    
+    @IBAction func revenueButtonPressed(sender: UIButton) {
+        if selectedSortScheme != .Revenue {
+            selectedSortScheme = .Revenue
+            nameButtonIndicator.hidden = true
+            revenueButtonIndicator.hidden = false
         }
     }
     
