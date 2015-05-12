@@ -37,6 +37,7 @@
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
 		4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */; };
+		453DFD5F1B0237C600515EC4 /* PIBColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453DFD5E1B0237C600515EC4 /* PIBColor.swift */; };
 		456F31761AD617EF002A2FC4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 456F31751AD617EF002A2FC4 /* CloudKit.framework */; };
 		45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DD81A83D16B001AB107 /* PeersTableViewController.swift */; };
 		45914DE11A83D955001AB107 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE01A83D955001AB107 /* Extensions.swift */; };
@@ -180,6 +181,7 @@
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
 		4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MasterTableContainerViewController.swift; sourceTree = "<group>"; };
+		453DFD5E1B0237C600515EC4 /* PIBColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PIBColor.swift; sourceTree = "<group>"; };
 		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
 		456F31741AD617E6002A2FC4 /* PIB.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PIB.entitlements; sourceTree = "<group>"; };
 		456F31751AD617EF002A2FC4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -262,6 +264,7 @@
 				451269481A433020005A01CC /* Info.plist */,
 				451269821A433497005A01CC /* PIB-Bridging-Header.h */,
 				45914DE01A83D955001AB107 /* Extensions.swift */,
+				453DFD5E1B0237C600515EC4 /* PIBColor.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -601,6 +604,7 @@
 				45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */,
 				4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */,
 				451269511A433020005A01CC /* DetailViewController.swift in Sources */,
+				453DFD5F1B0237C600515EC4 /* PIBColor.swift in Sources */,
 				45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

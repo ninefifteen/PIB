@@ -208,13 +208,6 @@ extension UISplitViewController {
 }
 
 
-extension UIColor {
-    
-    class func pibBlueTextColor() -> UIColor {
-        return UIColor(red: 0.0 / 255.0, green: 155.0 / 255.0, blue: 254.0 / 255.0, alpha: 1.0)
-    }
-}
-
 
 
 

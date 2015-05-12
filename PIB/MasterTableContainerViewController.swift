@@ -42,6 +42,8 @@ class MasterTableContainerViewController: UIViewController {
     let masterViewTitle = "Companies"
     
     var selectedSortScheme = SortScheme.Name
+    
+    weak var tableViewController: MasterViewController!
         
     @IBOutlet weak var nameButtonIndicator: UIView!
     @IBOutlet weak var revenueButtonIndicator: UIView!
@@ -119,14 +121,19 @@ class MasterTableContainerViewController: UIViewController {
         }
     }
     
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        tableViewController.setEditing(editing, animated: animated)
+    }
+    
     
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kEmbedTable {
-            let masterTableViewController = segue.destinationViewController as! MasterViewController
-            masterTableViewController.managedObjectContext = managedObjectContext
+            tableViewController = segue.destinationViewController as! MasterViewController
+            tableViewController.managedObjectContext = managedObjectContext
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
             let navigationController = segue.destinationViewController as! UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()

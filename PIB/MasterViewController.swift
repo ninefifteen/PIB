@@ -211,6 +211,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         NSUserDefaults.standardUserDefaults().setObject("false", forKey: "firstRun")
     }
     
+    func toggleEditingMode() {
+        
+    }
+    
     func companiesFromDictionaryArray(sampleCompaniesDictionaryArray: Array<Dictionary<String, String>>) -> [Company] {
         
         var companies = [Company]()
@@ -350,7 +354,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 //revenueLabel.text = company.currencySymbol + company.revenueLabelString()
                 let revenueString = company.currencySymbol + company.revenueLabelString()
                 var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
-                revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.pibBlueTextColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
+                revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: PIBColor.blueColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
                 revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(17.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
                 revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(0, 1))
                 revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
