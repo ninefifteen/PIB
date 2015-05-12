@@ -75,7 +75,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="781-Dn-qJb">
                                 <rect key="frame" x="0.0" y="104" width="600" height="496"/>
                                 <subviews>
-                                    <containerView opaque="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cd4-x3-PFU">
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cd4-x3-PFU">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="496"/>
                                         <connections>
                                             <segue destination="o43-gC-vdl" kind="embed" identifier="embedTable" id="wQp-XT-JMI"/>
@@ -83,6 +83,12 @@
                                     </containerView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="cd4-x3-PFU" firstAttribute="top" secondItem="781-Dn-qJb" secondAttribute="top" id="396-Qo-alm"/>
+                                    <constraint firstAttribute="bottom" secondItem="cd4-x3-PFU" secondAttribute="bottom" id="D4v-hL-qDI"/>
+                                    <constraint firstAttribute="trailing" secondItem="cd4-x3-PFU" secondAttribute="trailing" id="Rxr-x3-SdH"/>
+                                    <constraint firstItem="cd4-x3-PFU" firstAttribute="leading" secondItem="781-Dn-qJb" secondAttribute="leading" id="a6f-Ct-oNi"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -100,7 +106,16 @@
                             <constraint firstItem="PDM-ZY-WAK" firstAttribute="width" secondItem="PCu-Hf-PG7" secondAttribute="width" id="tgv-CO-NRk"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="nzJ-hs-A6M"/>
+                    <navigationItem key="navigationItem" id="nzJ-hs-A6M">
+                        <barButtonItem key="leftBarButtonItem" systemItem="edit" id="l8P-8l-K8r"/>
+                        <barButtonItem key="rightBarButtonItem" title="Add" id="LMZ-Cr-Lip">
+                            <connections>
+                                <segue destination="DBh-A7-ixE" kind="popoverPresentation" identifier="addCompany" popoverAnchorBarButtonItem="LMZ-Cr-Lip" id="aJd-5J-TvG">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jl5-zn-Vfl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -193,13 +208,7 @@
                         </connections>
                     </tableView>
                     <navigationItem key="navigationItem" id="hZx-Gl-FEp">
-                        <barButtonItem key="rightBarButtonItem" title="Add" id="ItD-pe-lJ5">
-                            <connections>
-                                <segue destination="DBh-A7-ixE" kind="popoverPresentation" identifier="addCompany" popoverAnchorBarButtonItem="ItD-pe-lJ5" id="g43-td-wzo">
-                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                </segue>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Add" id="ItD-pe-lJ5"/>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CjA-Od-PWx" sceneMemberID="firstResponder"/>
@@ -244,7 +253,7 @@
                                     </subviews>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <segue destination="MiV-7M-y5L" kind="unwind" unwindAction="unwindFromAddCompanySegue:" id="bFD-n6-L2Y"/>
+                                    <segue destination="MiV-7M-y5L" kind="unwind" identifier="unwindFromAddCompanyToPeers" unwindAction="unwindFromAddCompanySegue:" id="bFD-n6-L2Y"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell userInteractionEnabled="NO" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="noResultsCell" textLabel="xfo-Nh-Abn" style="IBUITableViewCellStyleDefault" id="p2S-6K-7Sr">
@@ -864,7 +873,7 @@
         <scene sceneID="Frq-KV-dwm">
             <objects>
                 <tableViewController id="dyh-yV-9fy" customClass="PeersTableViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="52" sectionHeaderHeight="22" sectionFooterHeight="22" id="vOx-0y-Inl">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="52" sectionHeaderHeight="22" sectionFooterHeight="22" id="vOx-0y-Inl">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -999,8 +1008,8 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="g43-td-wzo"/>
-        <segue reference="VVC-je-NKy"/>
         <segue reference="Wc3-5Q-VyB"/>
+        <segue reference="VVC-je-NKy"/>
+        <segue reference="aJd-5J-TvG"/>
     </inferredMetricsTieBreakers>
 </document>

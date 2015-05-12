@@ -207,6 +207,8 @@ class PeersTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        println("didSelectRowAtIndexPath")
 
         if indexPath.row == peers.count { }
     }
@@ -232,7 +234,6 @@ class PeersTableViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
-            
             let navigationController = segue.destinationViewController as! UINavigationController
             navigationController.view.tintColor = UIColor.whiteColor()
             let controller = navigationController.topViewController as! AddCompanyTableViewController
@@ -244,6 +245,7 @@ class PeersTableViewController: UITableViewController {
         let controller = segue.sourceViewController as! AddCompanyTableViewController
         
         if let companyToAdd = controller.companyToAdd {
+            
             controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
             
             if Company.isSavedCompanyWithTickerSymbol(companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {

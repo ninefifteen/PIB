@@ -33,7 +33,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext!
     
-    let masterViewTitle = "Companies"
+    //let masterViewTitle = "Companies"
     
     var isFirstAppearanceOfView = true
     
@@ -150,12 +150,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 }
             }
             
-        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
-                        
-            let navigationController = segue.destinationViewController as! UINavigationController
-            navigationController.view.tintColor = UIColor.whiteColor()
-            let controller = navigationController.topViewController as! AddCompanyTableViewController
-            controller.managedObjectContext = managedObjectContext
         }
     }
     
@@ -187,17 +181,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return true
     }
     
-    @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
-        
-        let controller = segue.sourceViewController as! AddCompanyTableViewController
-        
-        if let companyToAdd = controller.companyToAdd {
-            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-        } else {
-            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-        }
-    }
     
     // MARK: - General Methods
     

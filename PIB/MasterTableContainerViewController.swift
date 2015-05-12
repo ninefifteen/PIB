@@ -90,7 +90,24 @@ class MasterTableContainerViewController: UIViewController {
         if segue.identifier == MainStoryboard.SegueIdentifiers.kEmbedTable {
             let masterTableViewController = segue.destinationViewController as! MasterViewController
             masterTableViewController.managedObjectContext = managedObjectContext
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kAddCompany {
+            let navigationController = segue.destinationViewController as! UINavigationController
+            navigationController.view.tintColor = UIColor.whiteColor()
+            let controller = navigationController.topViewController as! AddCompanyTableViewController
+            controller.managedObjectContext = managedObjectContext
         }
     }
-
+    
+    @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
+        
+        let controller = segue.sourceViewController as! AddCompanyTableViewController
+        
+        if let companyToAdd = controller.companyToAdd {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+        } else {
+            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
+        }
+    }
+    
 }
