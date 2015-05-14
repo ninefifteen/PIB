@@ -68,7 +68,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         searchController!.searchBar.sizeToFit()
         self.tableView.tableHeaderView = searchController!.searchBar
         
-        definesPresentationContext = true
+        definesPresentationContext = false
         
         tableView.contentOffset = CGPointMake(0.0, searchController!.searchBar.bounds.height);
     }
@@ -352,12 +352,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueTitleLabel.hidden = false
                 revenueTitleLabel.text = company.revenueGrowthLabelString()
                 //revenueLabel.text = company.currencySymbol + company.revenueLabelString()
+                //let revenueString = company.currencySymbol + company.revenueLabelString()
                 let revenueString = company.currencySymbol + company.revenueLabelString()
                 var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
                 revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: PIBColor.blueColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
                 revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(17.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
                 revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(0, 1))
-                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                
+                if revenueString.hasSuffix("K") || revenueString.hasSuffix("M") || revenueString.hasSuffix("B") || revenueString.hasSuffix("T") {
+                    revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                }
                 
                 revenueLabel.attributedText = revenueLabelAttributedString
                 
@@ -475,8 +479,82 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             //println("Unresolved error \(error), \(error.userInfo)")
             abort()
         }
-        
+                
         return _fetchedResultsController!
+    }
+    
+    func sortByName() {
+        
+        let fetchRequest = NSFetchRequest()
+        // Edit the entity name as appropriate.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entity
+        
+        // Set the batch size to a suitable number.
+        fetchRequest.fetchBatchSize = 20
+        
+        // Only fetch target companies.
+        let predicate = NSPredicate(format: "isTargetCompany == 1")
+        fetchRequest.predicate = predicate
+        
+        // Edit the sort key as appropriate.
+        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")
+        let sortDescriptors = [sortDescriptor]
+        
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        // Edit the section name key path and cache name if appropriate.
+        // nil for section name key path means "no sections".
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
+        aFetchedResultsController.delegate = self
+        _fetchedResultsController = aFetchedResultsController
+        
+        var error: NSError? = nil
+        if !_fetchedResultsController!.performFetch(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func sortByRevenue() {
+        
+        let fetchRequest = NSFetchRequest()
+        // Edit the entity name as appropriate.
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+        fetchRequest.entity = entity
+        
+        // Set the batch size to a suitable number.
+        fetchRequest.fetchBatchSize = 20
+        
+        // Only fetch target companies.
+        let predicate = NSPredicate(format: "isTargetCompany == 1")
+        fetchRequest.predicate = predicate
+        
+        // Edit the sort key as appropriate.
+        let sortDescriptor = NSSortDescriptor(key: "mostRecentRevenue", ascending: false)
+        let sortDescriptors = [sortDescriptor]
+        
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        // Edit the section name key path and cache name if appropriate.
+        // nil for section name key path means "no sections".
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
+        aFetchedResultsController.delegate = self
+        _fetchedResultsController = aFetchedResultsController
+        
+        var error: NSError? = nil
+        if !_fetchedResultsController!.performFetch(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
+        }
+        
+        tableView.reloadData()
     }
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {

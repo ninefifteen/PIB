@@ -110,6 +110,7 @@ class MasterTableContainerViewController: UIViewController {
             selectedSortScheme = .Name
             nameButtonIndicator.hidden = false
             revenueButtonIndicator.hidden = true
+            tableViewController.sortByName()
         }
     }
     
@@ -118,6 +119,7 @@ class MasterTableContainerViewController: UIViewController {
             selectedSortScheme = .Revenue
             nameButtonIndicator.hidden = true
             revenueButtonIndicator.hidden = false
+            tableViewController.sortByRevenue()
         }
     }
     

@@ -33,6 +33,7 @@ class Company: NSManagedObject {
     @NSManaged var zipCode: String
     @NSManaged var financialMetrics: NSSet
     @NSManaged var isTargetCompany: NSNumber
+    @NSManaged var mostRecentRevenue: NSNumber
     @NSManaged var peers: NSSet
     @NSManaged var targets: NSSet
     @NSManaged var objectState: Int16
@@ -47,6 +48,41 @@ class Company: NSManagedObject {
     var dataState: DataState {
         get { return DataState(rawValue: objectState) ?? .DataDownloadCompleteWithError }
         set { objectState = newValue.rawValue }
+    }
+    
+    
+    // MARK: - Comparison
+    
+    func latestRevenueValueCompare(comparisonCompany: AnyObject!) -> NSComparisonResult {
+        
+        /*let metrics1 = self.financialMetrics.allObjects as! [FinancialMetric]
+        let metrics2 = comparisonCompany.financialMetrics.allObjects as! [FinancialMetric]
+        
+        println("inside the if let")
+        
+        var totalRevenueArray1 = Array<FinancialMetric>()
+        for (index, financialMetric) in enumerate(metrics1) {
+            if financialMetric.type == "Total Revenue" {
+                totalRevenueArray1.append(financialMetric)
+            }
+        }
+        totalRevenueArray1.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+        
+        var totalRevenueArray2 = Array<FinancialMetric>()
+        for (index, financialMetric) in enumerate(metrics2) {
+            if financialMetric.type == "Total Revenue" {
+                totalRevenueArray2.append(financialMetric)
+            }
+        }
+        totalRevenueArray2.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+        
+        if totalRevenueArray1.last!.value < totalRevenueArray1.last!.value {
+            return NSComparisonResult.OrderedAscending
+        } else {
+            return NSComparisonResult.OrderedDescending
+        }*/
+        
+        return NSComparisonResult.OrderedDescending
     }
     
     
@@ -400,6 +436,8 @@ class Company: NSManagedObject {
         let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
         var mutableFinancialMetrics = financialMetrics.mutableCopy() as! NSMutableSet
         
+        var totalRevenueArray = [FinancialMetric]()
+        
         if let financialMetricArray = financialDictionary["financialMetrics"] as? [FinancialMetric] {
             for financialMetric in financialMetricArray {
                 let newFinancialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
@@ -407,10 +445,19 @@ class Company: NSManagedObject {
                 newFinancialMetric.type = financialMetric.type
                 newFinancialMetric.value = financialMetric.value
                 mutableFinancialMetrics.addObject(newFinancialMetric)
+                if financialMetric.type == "Revenue" {
+                    totalRevenueArray.append(financialMetric)
+                }
             }
         }
         
         financialMetrics = mutableFinancialMetrics.copy() as! NSSet
+        
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+        
+        if totalRevenueArray.count > 0 {
+            mostRecentRevenue = totalRevenueArray.last!.value
+        }
     }
     
     func addPeerDataForCompanyInManagedObjectContext(managedObjectContext: NSManagedObjectContext!, withCompletion completion: ((success: Bool) -> Void)?) {

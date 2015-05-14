@@ -95,6 +95,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         
         customizeAppearance()
         
+        checkForCompaniesWithoutMostRecentRevenueValue()
+        
         return true
     }
     
@@ -276,6 +278,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 NSLog("Unresolved error \(error), \(error!.userInfo)")
                 abort()
             }
+        }
+    }
+    
+    
+    // MARK: - Maintenance
+    
+    func checkForCompaniesWithoutMostRecentRevenueValue() {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext!)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        let predicate = NSPredicate(format: "mostRecentRevenue == 0")
+        request.predicate = predicate
+        var error: NSError? = nil
+        
+        let noMostRecentRevenueCompanies = managedObjectContext!.executeFetchRequest(request, error: &error) as! [Company]
+        println(noMostRecentRevenueCompanies.count)
+        
+        if error != nil {
+            println("Fetch request error: \(error?.description)")
+        }
+        
+        for company in noMostRecentRevenueCompanies {
+            
+            var totalRevenueArray = Array<FinancialMetric>()
+            var financialMetrics = company.financialMetrics.allObjects as! [FinancialMetric]
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                if financialMetric.type == "Total Revenue" {
+                    totalRevenueArray.append(financialMetric)
+                }
+            }
+            
+            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            
+            if totalRevenueArray.count > 0 {
+                company.mostRecentRevenue = totalRevenueArray.last!.value
+            }
+        }
+        
+        var saveError: NSError? = nil
+        if !managedObjectContext!.save(&saveError) {
+            println("Save Error in setDataStatusForCompanyInManagedObjectContext(_:).")
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(saveError), \(saveError.userInfo)")
+            abort()
         }
     }
 
