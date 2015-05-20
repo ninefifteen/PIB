@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchResultsUpdating {
+class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchBarDelegate /*, UISearchResultsUpdating*/ {
     
     
     // MARK: - Types
@@ -37,11 +37,12 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     var isFirstAppearanceOfView = true
     
-    var searchController: UISearchController?
-    var searchResultsController: UITableViewController?
+    //var searchController: UISearchController?
+    //var searchResultsController: UITableViewController?
     
     var filteredCompanies = Array<Company>()
     
+    @IBOutlet weak var searchBar: UISearchBar!
     
     // MARK: - View Lifecycle
     
@@ -57,9 +58,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view, typically from a nib.
+        searchBar.delegate = self
         
-        searchResultsController = UITableViewController()
+        /*searchResultsController = UITableViewController()
         searchResultsController!.tableView.dataSource = self
         searchResultsController!.tableView.delegate = self
         
@@ -70,7 +71,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         definesPresentationContext = false
         
-        tableView.contentOffset = CGPointMake(0.0, searchController!.searchBar.bounds.height);
+        tableView.contentOffset = CGPointMake(0.0, searchController!.searchBar.bounds.height)*/
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -109,6 +110,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
         
         isFirstAppearanceOfView = false
+        
+        tableView.contentOffset = CGPointMake(0.0, searchBar.bounds.height)
     }
     
     override func didReceiveMemoryWarning() {
@@ -123,11 +126,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
-            let searchTableView = (searchController?.searchResultsController as! UITableViewController).tableView
+            //let searchTableView = (searchController?.searchResultsController as! UITableViewController).tableView
             
             if let sender = sender as? UITableViewCell {
                 
-                if searchTableView.indexPathForSelectedRow() != nil && sender == searchTableView.cellForRowAtIndexPath(searchTableView.indexPathForSelectedRow()!) {
+                /*if searchTableView.indexPathForSelectedRow() != nil && sender == searchTableView.cellForRowAtIndexPath(searchTableView.indexPathForSelectedRow()!) {
                     
                     let indexPath = searchTableView.indexPathForSelectedRow()!
                     let company = filteredCompanies[indexPath.row] as Company
@@ -137,7 +140,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                     controller.navigationItem.leftItemsSupplementBackButton = true
                     
-                } else {
+                } else {*/
                     
                     if let indexPath = self.tableView.indexPathForSelectedRow() {
                         let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
@@ -147,7 +150,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                         controller.navigationItem.leftItemsSupplementBackButton = true
                     }
-                }
+                //}
             }
             
         }
@@ -166,7 +169,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                     return false
                 }
-            } else if let indexPath = (searchController?.searchResultsController as! UITableViewController).tableView.indexPathForSelectedRow() {
+            } /*else if let indexPath = (searchController?.searchResultsController as! UITableViewController).tableView.indexPathForSelectedRow() {
                 let company = filteredCompanies[indexPath.row]
                 if company.dataState == .DataDownloadCompleteWithoutError {
                     return true
@@ -176,7 +179,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     }
                     return false
                 }
-            }
+            }*/
         }
         return true
     }
@@ -255,20 +258,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             return 1
-        } else {
+        } else {*/
             return self.fetchedResultsController.sections?.count ?? 1
-        }
+        //}
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             return filteredCompanies.count
-        } else {
+        } else {*/
             let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
             return sectionInfo.numberOfObjects
-        }
+        //}
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -321,11 +324,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         var company: Company?
         
-        if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
             company  = self.filteredCompanies[indexPath.row]
-        } else {
+        } else {*/
             company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
-        }
+        //}
             
         if let company = company {
             
@@ -600,6 +603,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     self.tableView.reloadData()
     }
     */
+    
+    
+    // MARK: - UISearchBar Delegate
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        if !searchText.isEmpty {
+            filterCompaniesForSearchString(searchText)
+        } else {
+            filteredCompanies.removeAll(keepCapacity: false)
+        }
+    }
     
     
     // MARK: - Search Results Updating
