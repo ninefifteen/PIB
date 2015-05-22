@@ -41,6 +41,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     //var searchResultsController: UITableViewController?
     
     var filteredCompanies = Array<Company>()
+    var isDataSourceFilteredCompanies = false
     
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -140,7 +141,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                     controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                     controller.navigationItem.leftItemsSupplementBackButton = true
                     
-                } else {*/
+                } else */
+                
+                if isDataSourceFilteredCompanies {
+                    
+                    if let indexPath = self.tableView.indexPathForSelectedRow() {
+                        let company = filteredCompanies[indexPath.row] as Company
+                        let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
+                        controller.company = company
+                        controller.managedObjectContext = managedObjectContext
+                        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
+                        controller.navigationItem.leftItemsSupplementBackButton = true
+                    }
+                    
+                } else {
                     
                     if let indexPath = self.tableView.indexPathForSelectedRow() {
                         let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
@@ -150,7 +164,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                         controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                         controller.navigationItem.leftItemsSupplementBackButton = true
                     }
-                //}
+                }
             }
             
         }
@@ -159,27 +173,31 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
         
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
+            
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
-                if company.dataState == .DataDownloadCompleteWithoutError {
-                    return true
-                } else if company.dataState == .DataDownloadCompleteWithError {
-                    if let tableCell = sender as? UITableViewCell {
-                        tableCell.setSelected(false, animated: true)
+                
+                if isDataSourceFilteredCompanies {
+                    let company = filteredCompanies[indexPath.row]
+                    if company.dataState == .DataDownloadCompleteWithoutError {
+                        return true
+                    } else if company.dataState == .DataDownloadCompleteWithError {
+                        if let tableCell = sender as? UITableViewCell {
+                            tableCell.setSelected(false, animated: true)
+                        }
+                        return false
                     }
-                    return false
-                }
-            } /*else if let indexPath = (searchController?.searchResultsController as! UITableViewController).tableView.indexPathForSelectedRow() {
-                let company = filteredCompanies[indexPath.row]
-                if company.dataState == .DataDownloadCompleteWithoutError {
-                    return true
-                } else if company.dataState == .DataDownloadCompleteWithError {
-                    if let tableCell = sender as? UITableViewCell {
-                        tableCell.setSelected(false, animated: true)
+                } else {
+                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
+                    if company.dataState == .DataDownloadCompleteWithoutError {
+                        return true
+                    } else if company.dataState == .DataDownloadCompleteWithError {
+                        if let tableCell = sender as? UITableViewCell {
+                            tableCell.setSelected(false, animated: true)
+                        }
+                        return false
                     }
-                    return false
                 }
-            }*/
+            }
         }
         return true
     }
@@ -258,20 +276,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        if isDataSourceFilteredCompanies {
             return 1
-        } else {*/
+        } else {
             return self.fetchedResultsController.sections?.count ?? 1
-        //}
+        }
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        if isDataSourceFilteredCompanies {
             return filteredCompanies.count
-        } else {*/
+        } else {
             let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
             return sectionInfo.numberOfObjects
-        //}
+        }
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -324,11 +342,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         var company: Company?
         
-        /*if tableView == (searchController?.searchResultsController as! UITableViewController).tableView {
+        if isDataSourceFilteredCompanies {
             company  = self.filteredCompanies[indexPath.row]
-        } else {*/
+        } else {
             company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
-        //}
+        }
             
         if let company = company {
             
@@ -412,17 +430,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func checkAccessoryDeleteButtonTapped(sender: UIButton?, event: UIEvent?) {
         
         if let uiEvent = event {
-            
             let touches = uiEvent.allTouches()
-            
             if let touch = touches?.first as? UITouch {
-                
                 let currentTouchPosition = touch.locationInView(tableView)
-                
                 if let indexPath = tableView.indexPathForRowAtPoint(currentTouchPosition) {
-                    
                     let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
-                    
                     if company.dataState == .DataDownloadCompleteWithError {
                         
                         let context = self.fetchedResultsController.managedObjectContext
@@ -608,6 +620,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - UISearchBar Delegate
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        println("searchBarSearchButtonClicked")
         searchBar.resignFirstResponder()
     }
     
@@ -617,7 +630,28 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             filterCompaniesForSearchString(searchText)
         } else {
             filteredCompanies.removeAll(keepCapacity: false)
+            isDataSourceFilteredCompanies = false
+            tableView.reloadData()
         }
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        println("searchBarTextDidEndEditing")
+        searchBar.showsCancelButton = false
+    }
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        println("searchBarTextDidBeginEditing")
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        println("searchBarCancelButtonClicked")
+        searchBar.text = ""
+        searchBar.showsCancelButton = false
+        isDataSourceFilteredCompanies = false
+        searchBar.resignFirstResponder()
+        tableView.reloadData()
     }
     
     
@@ -634,6 +668,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func filterCompaniesForSearchString(searchString: String) {
         
+        println("filterCompaniesForSearchString")
+        
+        isDataSourceFilteredCompanies = true
         filteredCompanies.removeAll(keepCapacity: false)
         
         let keysToSearch = ["name", "exchangeDisplayName"]
@@ -657,8 +694,11 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 predicates.append(NSPredicate(format: predicateBuilder, argumentArray: nil))
             }
         }
+        
         let compoundPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: predicates)
         filteredCompanies = (fetchedResultsController.fetchedObjects as! [Company]).filter({compoundPredicate.evaluateWithObject($0)})
+        
+        tableView.reloadData()
     }
 }
 
