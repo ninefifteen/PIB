@@ -27,21 +27,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         }
     }
     
+    enum SortScheme {
+        case Name
+        case Revenue
+    }
+    
     
     // MARK: - Properties
     
     var detailViewController: DetailViewController? = nil
     var managedObjectContext: NSManagedObjectContext!
     
+    var selectedSortScheme = SortScheme.Name
+    
     //let masterViewTitle = "Companies"
     
     var isFirstAppearanceOfView = true
-    
-    //var searchController: UISearchController?
-    //var searchResultsController: UITableViewController?
-    
-    var filteredCompanies = Array<Company>()
-    var isDataSourceFilteredCompanies = false
     
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -127,46 +128,17 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
-            //let searchTableView = (searchController?.searchResultsController as! UITableViewController).tableView
-            
             if let sender = sender as? UITableViewCell {
-                
-                /*if searchTableView.indexPathForSelectedRow() != nil && sender == searchTableView.cellForRowAtIndexPath(searchTableView.indexPathForSelectedRow()!) {
                     
-                    let indexPath = searchTableView.indexPathForSelectedRow()!
-                    let company = filteredCompanies[indexPath.row] as Company
+                if let indexPath = self.tableView.indexPathForSelectedRow() {
+                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
                     let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
                     controller.company = company
                     controller.managedObjectContext = managedObjectContext
                     controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
                     controller.navigationItem.leftItemsSupplementBackButton = true
-                    
-                } else */
-                
-                if isDataSourceFilteredCompanies {
-                    
-                    if let indexPath = self.tableView.indexPathForSelectedRow() {
-                        let company = filteredCompanies[indexPath.row] as Company
-                        let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-                        controller.company = company
-                        controller.managedObjectContext = managedObjectContext
-                        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                        controller.navigationItem.leftItemsSupplementBackButton = true
-                    }
-                    
-                } else {
-                    
-                    if let indexPath = self.tableView.indexPathForSelectedRow() {
-                        let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
-                        let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
-                        controller.company = company
-                        controller.managedObjectContext = managedObjectContext
-                        controller.navigationItem.leftBarButtonItem = self.splitViewController?.displayModeButtonItem()
-                        controller.navigationItem.leftItemsSupplementBackButton = true
-                    }
                 }
             }
-            
         }
     }
     
@@ -175,27 +147,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
             if let indexPath = self.tableView.indexPathForSelectedRow() {
-                
-                if isDataSourceFilteredCompanies {
-                    let company = filteredCompanies[indexPath.row]
-                    if company.dataState == .DataDownloadCompleteWithoutError {
-                        return true
-                    } else if company.dataState == .DataDownloadCompleteWithError {
-                        if let tableCell = sender as? UITableViewCell {
-                            tableCell.setSelected(false, animated: true)
-                        }
-                        return false
+                let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
+                if company.dataState == .DataDownloadCompleteWithoutError {
+                    return true
+                } else if company.dataState == .DataDownloadCompleteWithError {
+                    if let tableCell = sender as? UITableViewCell {
+                        tableCell.setSelected(false, animated: true)
                     }
-                } else {
-                    let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
-                    if company.dataState == .DataDownloadCompleteWithoutError {
-                        return true
-                    } else if company.dataState == .DataDownloadCompleteWithError {
-                        if let tableCell = sender as? UITableViewCell {
-                            tableCell.setSelected(false, animated: true)
-                        }
-                        return false
-                    }
+                    return false
                 }
             }
         }
@@ -276,24 +235,15 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - Table View
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        if isDataSourceFilteredCompanies {
-            return 1
-        } else {
-            return self.fetchedResultsController.sections?.count ?? 1
-        }
+        return self.fetchedResultsController.sections?.count ?? 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isDataSourceFilteredCompanies {
-            return filteredCompanies.count
-        } else {
-            let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
-            return sectionInfo.numberOfObjects
-        }
+        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+        return sectionInfo.numberOfObjects
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
         let cell = self.tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kMasterViewTableCell, forIndexPath: indexPath) as! UITableViewCell
         self.configureCell(cell, atIndexPath: indexPath, forTableView: tableView)
         return cell
@@ -319,10 +269,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == .Delete {
-            
             let context = self.fetchedResultsController.managedObjectContext
             let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
-            
             removeTargetCompany(company, inManagedObjectContext: context)
         }
     }
@@ -341,13 +289,8 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let noDataAvailableLabel = cell.viewWithTag(106) as! UILabel
         
         var company: Company?
+        company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
         
-        if isDataSourceFilteredCompanies {
-            company  = self.filteredCompanies[indexPath.row]
-        } else {
-            company  = self.fetchedResultsController.objectAtIndexPath(indexPath) as? Company
-        }
-            
         if let company = company {
             
             nameLabel.hidden = false
@@ -500,36 +443,40 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func sortByName() {
         
-        let fetchRequest = NSFetchRequest()
-        // Edit the entity name as appropriate.
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
-        fetchRequest.entity = entity
-        
-        // Set the batch size to a suitable number.
-        fetchRequest.fetchBatchSize = 20
-        
-        // Only fetch target companies.
-        let predicate = NSPredicate(format: "isTargetCompany == 1")
-        fetchRequest.predicate = predicate
-        
-        // Edit the sort key as appropriate.
-        let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")
-        let sortDescriptors = [sortDescriptor]
-        
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        // Edit the section name key path and cache name if appropriate.
-        // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
-        aFetchedResultsController.delegate = self
-        _fetchedResultsController = aFetchedResultsController
-        
-        var error: NSError? = nil
-        if !_fetchedResultsController!.performFetch(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
+        if searchBar.text.isEmpty {
+            let fetchRequest = NSFetchRequest()
+            // Edit the entity name as appropriate.
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+            fetchRequest.entity = entity
+            
+            // Set the batch size to a suitable number.
+            fetchRequest.fetchBatchSize = 20
+            
+            // Only fetch target companies.
+            let predicate = NSPredicate(format: "isTargetCompany == 1")
+            fetchRequest.predicate = predicate
+            
+            // Edit the sort key as appropriate.
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")
+            let sortDescriptors = [sortDescriptor]
+            
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            
+            // Edit the section name key path and cache name if appropriate.
+            // nil for section name key path means "no sections".
+            let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+            aFetchedResultsController.delegate = self
+            _fetchedResultsController = aFetchedResultsController
+            
+            var error: NSError? = nil
+            if !_fetchedResultsController!.performFetch(&error) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(error), \(error.userInfo)")
+                abort()
+            }
+        } else {
+            filterForSearchString(searchBar.text)
         }
         
         tableView.reloadData()
@@ -537,6 +484,50 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     func sortByRevenue() {
         
+        if searchBar.text.isEmpty {
+            let fetchRequest = NSFetchRequest()
+            // Edit the entity name as appropriate.
+            let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
+            fetchRequest.entity = entity
+            
+            // Set the batch size to a suitable number.
+            fetchRequest.fetchBatchSize = 20
+            
+            // Only fetch target companies.
+            let predicate = NSPredicate(format: "isTargetCompany == 1")
+            fetchRequest.predicate = predicate
+            
+            // Edit the sort key as appropriate.
+            let sortDescriptor = NSSortDescriptor(key: "mostRecentRevenue", ascending: false)
+            let sortDescriptors = [sortDescriptor]
+            
+            fetchRequest.sortDescriptors = [sortDescriptor]
+            
+            // Edit the section name key path and cache name if appropriate.
+            // nil for section name key path means "no sections".
+            let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+            aFetchedResultsController.delegate = self
+            _fetchedResultsController = aFetchedResultsController
+            
+            var error: NSError? = nil
+            if !_fetchedResultsController!.performFetch(&error) {
+                // Replace this implementation with code to handle the error appropriately.
+                // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+                //println("Unresolved error \(error), \(error.userInfo)")
+                abort()
+            }
+        } else {
+            filterForSearchString(searchBar.text)
+        }
+        
+        tableView.reloadData()
+    }
+    
+    func filterForSearchString(searchString: String) {
+        
+        let keysToSearch = ["name", "exchangeDisplayName"]
+        let searchWords = searchString.componentsSeparatedByString(" ")
+        
         let fetchRequest = NSFetchRequest()
         // Edit the entity name as appropriate.
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: self.managedObjectContext!)
@@ -544,137 +535,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         // Set the batch size to a suitable number.
         fetchRequest.fetchBatchSize = 20
-        
-        // Only fetch target companies.
-        let predicate = NSPredicate(format: "isTargetCompany == 1")
-        fetchRequest.predicate = predicate
-        
-        // Edit the sort key as appropriate.
-        let sortDescriptor = NSSortDescriptor(key: "mostRecentRevenue", ascending: false)
-        let sortDescriptors = [sortDescriptor]
-        
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        
-        // Edit the section name key path and cache name if appropriate.
-        // nil for section name key path means "no sections".
-        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: "Master")
-        aFetchedResultsController.delegate = self
-        _fetchedResultsController = aFetchedResultsController
-        
-        var error: NSError? = nil
-        if !_fetchedResultsController!.performFetch(&error) {
-            // Replace this implementation with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            //println("Unresolved error \(error), \(error.userInfo)")
-            abort()
-        }
-        
-        tableView.reloadData()
-    }
-    
-    func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.beginUpdates()
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        switch type {
-        case .Insert:
-            self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-        case .Delete:
-            self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
-        default:
-            return
-        }
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        switch type {
-        case .Insert:
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
-        case .Delete:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
-        case .Update:
-            if let tableCell = tableView.cellForRowAtIndexPath(indexPath!) { self.configureCell(tableCell, atIndexPath: indexPath!, forTableView: tableView) }
-        case .Move:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
-        default:
-            return
-        }
-    }
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.endUpdates()
-    }
-    
-    /*
-    // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
-    
-    func controllerDidChangeContent(controller: NSFetchedResultsController) {
-    // In the simplest, most efficient, case, reload the table view.
-    self.tableView.reloadData()
-    }
-    */
-    
-    
-    // MARK: - UISearchBar Delegate
-    
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        println("searchBarSearchButtonClicked")
-        searchBar.resignFirstResponder()
-    }
-    
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        if !searchText.isEmpty {
-            filterCompaniesForSearchString(searchText)
-        } else {
-            filteredCompanies.removeAll(keepCapacity: false)
-            isDataSourceFilteredCompanies = false
-            tableView.reloadData()
-        }
-    }
-    
-    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
-        println("searchBarTextDidEndEditing")
-        searchBar.showsCancelButton = false
-    }
-    
-    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
-        println("searchBarTextDidBeginEditing")
-        searchBar.showsCancelButton = true
-    }
-    
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        println("searchBarCancelButtonClicked")
-        searchBar.text = ""
-        searchBar.showsCancelButton = false
-        isDataSourceFilteredCompanies = false
-        searchBar.resignFirstResponder()
-        tableView.reloadData()
-    }
-    
-    
-    // MARK: - Search Results Updating
-    
-    func updateSearchResultsForSearchController(searchController: UISearchController) {
-        let searchString = searchController.searchBar.text
-        filterCompaniesForSearchString(searchString)
-        (searchController.searchResultsController as! UITableViewController).tableView.reloadData()
-    }
-    
-    
-    // MARK: - Content Filtering
-    
-    func filterCompaniesForSearchString(searchString: String) {
-        
-        println("filterCompaniesForSearchString")
-        
-        isDataSourceFilteredCompanies = true
-        filteredCompanies.removeAll(keepCapacity: false)
-        
-        let keysToSearch = ["name", "exchangeDisplayName"]
-        let searchWords = searchString.componentsSeparatedByString(" ")
         
         var predicates = [NSPredicate]()
         
@@ -695,11 +555,135 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
         
+        predicates.append(NSPredicate(format: "isTargetCompany == 1"))
         let compoundPredicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: predicates)
-        filteredCompanies = (fetchedResultsController.fetchedObjects as! [Company]).filter({compoundPredicate.evaluateWithObject($0)})
+        
+        fetchRequest.predicate = compoundPredicate
+        
+        if selectedSortScheme == .Revenue {
+            let sortDescriptor = NSSortDescriptor(key: "mostRecentRevenue", ascending: false)
+            fetchRequest.sortDescriptors = [sortDescriptor]
+        } else {
+            let sortDescriptor = NSSortDescriptor(key: "name", ascending: true, selector: "caseInsensitiveCompare:")
+            fetchRequest.sortDescriptors = [sortDescriptor]
+        }
+        
+        // Edit the section name key path and cache name if appropriate.
+        // nil for section name key path means "no sections".
+        let aFetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.managedObjectContext!, sectionNameKeyPath: nil, cacheName: nil)
+        aFetchedResultsController.delegate = self
+        _fetchedResultsController = aFetchedResultsController
+        
+        var error: NSError? = nil
+        if !_fetchedResultsController!.performFetch(&error) {
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(error), \(error.userInfo)")
+            abort()
+        }
         
         tableView.reloadData()
     }
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        println("controllerWillChangeContent(_:)")
+        self.tableView.beginUpdates()
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        println("controller(_:didChangeSection:atIndex:forChangeType:)")
+        switch type {
+        case .Insert:
+            println(".Insert")
+            self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        case .Delete:
+            println(".Delete")
+            self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
+        default:
+            println("default")
+            return
+        }
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        println("controller(_:didChangeObject:atIndexPath:forChangeType:newIndexPath:)")
+        switch type {
+        case .Insert:
+            println(".Insert")
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
+        case .Delete:
+            println(".Delete")
+            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+        case .Update:
+            println(".Update")
+            if let tableCell = tableView.cellForRowAtIndexPath(indexPath!) { self.configureCell(tableCell, atIndexPath: indexPath!, forTableView: tableView) }
+        case .Move:
+            println(".Move")
+            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
+        default:
+            println("default")
+            return
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        println("controllerDidChangeContent(_:)")
+        self.tableView.endUpdates()
+    }
+    
+    /*
+    // Implementing the above methods to update the table view in response to individual changes may have performance implications if a large number of changes are made simultaneously. If this proves to be an issue, you can instead just implement controllerDidChangeContent: which notifies the delegate that all section and object changes have been processed.
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+    // In the simplest, most efficient, case, reload the table view.
+    self.tableView.reloadData()
+    }
+    */
+    
+    
+    // MARK: - UISearchBar Delegate
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        println("searchBarSearchButtonClicked(_:)")
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        println("searchBar(_:textDidChange:)")
+        if !searchText.isEmpty {
+            filterForSearchString(searchText)
+        } else {
+            if selectedSortScheme == .Name {
+                sortByName()
+            } else {
+                sortByRevenue()
+            }
+        }
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        println("searchBarTextDidEndEditing(_:)")
+        searchBar.showsCancelButton = false
+    }
+    
+    func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
+        println("searchBarTextDidBeginEditing(_:)")
+        searchBar.showsCancelButton = true
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        println("searchBarCancelButtonClicked(_:)")
+        searchBar.text = ""
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
+        if selectedSortScheme == .Name {
+            sortByName()
+        } else {
+            sortByRevenue()
+        }
+    }
+    
 }
 
 

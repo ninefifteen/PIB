@@ -28,11 +28,6 @@ class MasterTableContainerViewController: UIViewController {
         static let kEventActionAddCompany = "Add Company"
     }
     
-    enum SortScheme {
-        case Name
-        case Revenue
-    }
-    
     
     // MARK: - Properties
     
@@ -40,8 +35,6 @@ class MasterTableContainerViewController: UIViewController {
     var managedObjectContext: NSManagedObjectContext!
     
     let masterViewTitle = "Companies"
-    
-    var selectedSortScheme = SortScheme.Name
     
     weak var tableViewController: MasterViewController!
         
@@ -76,10 +69,10 @@ class MasterTableContainerViewController: UIViewController {
             self.detailViewController = controllers[controllers.count-1].topViewController as? DetailViewController
         }
         
-        if selectedSortScheme == .Name {
+        if tableViewController.selectedSortScheme == .Name {
             nameButtonIndicator.hidden = false
             revenueButtonIndicator.hidden = true
-        } else if selectedSortScheme == .Revenue {
+        } else if tableViewController.selectedSortScheme == .Revenue {
             nameButtonIndicator.hidden = true
             revenueButtonIndicator.hidden = false
         }
@@ -106,8 +99,8 @@ class MasterTableContainerViewController: UIViewController {
     // MARK: - Button Actions
     
     @IBAction func nameButtonPressed(sender: UIButton) {
-        if selectedSortScheme != .Name {
-            selectedSortScheme = .Name
+        if tableViewController.selectedSortScheme != .Name {
+            tableViewController.selectedSortScheme = .Name
             nameButtonIndicator.hidden = false
             revenueButtonIndicator.hidden = true
             tableViewController.sortByName()
@@ -115,8 +108,8 @@ class MasterTableContainerViewController: UIViewController {
     }
     
     @IBAction func revenueButtonPressed(sender: UIButton) {
-        if selectedSortScheme != .Revenue {
-            selectedSortScheme = .Revenue
+        if tableViewController.selectedSortScheme != .Revenue {
+            tableViewController.selectedSortScheme = .Revenue
             nameButtonIndicator.hidden = true
             revenueButtonIndicator.hidden = false
             tableViewController.sortByRevenue()
