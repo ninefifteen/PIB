@@ -445,7 +445,7 @@ class Company: NSManagedObject {
                 newFinancialMetric.type = financialMetric.type
                 newFinancialMetric.value = financialMetric.value
                 mutableFinancialMetrics.addObject(newFinancialMetric)
-                if financialMetric.type == "Revenue" {
+                if financialMetric.type == "Total Revenue" {
                     totalRevenueArray.append(financialMetric)
                 }
             }

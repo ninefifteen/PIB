@@ -586,49 +586,37 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        println("controllerWillChangeContent(_:)")
         self.tableView.beginUpdates()
     }
     
     func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        println("controller(_:didChangeSection:atIndex:forChangeType:)")
         switch type {
         case .Insert:
-            println(".Insert")
             self.tableView.insertSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
         case .Delete:
-            println(".Delete")
             self.tableView.deleteSections(NSIndexSet(index: sectionIndex), withRowAnimation: .Fade)
         default:
-            println("default")
             return
         }
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        println("controller(_:didChangeObject:atIndexPath:forChangeType:newIndexPath:)")
         switch type {
         case .Insert:
-            println(".Insert")
             tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
         case .Delete:
-            println(".Delete")
             tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
         case .Update:
-            println(".Update")
             if let tableCell = tableView.cellForRowAtIndexPath(indexPath!) { self.configureCell(tableCell, atIndexPath: indexPath!, forTableView: tableView) }
         case .Move:
-            println(".Move")
             tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
             tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Fade)
         default:
-            println("default")
             return
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        println("controllerDidChangeContent(_:)")
         self.tableView.endUpdates()
     }
     
@@ -645,12 +633,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     // MARK: - UISearchBar Delegate
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        println("searchBarSearchButtonClicked(_:)")
         searchBar.resignFirstResponder()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-        println("searchBar(_:textDidChange:)")
         if !searchText.isEmpty {
             filterForSearchString(searchText)
         } else {
@@ -663,17 +649,14 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     func searchBarTextDidEndEditing(searchBar: UISearchBar) {
-        println("searchBarTextDidEndEditing(_:)")
         searchBar.showsCancelButton = false
     }
     
     func searchBarTextDidBeginEditing(searchBar: UISearchBar) {
-        println("searchBarTextDidBeginEditing(_:)")
         searchBar.showsCancelButton = true
     }
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
-        println("searchBarCancelButtonClicked(_:)")
         searchBar.text = ""
         searchBar.showsCancelButton = false
         searchBar.resignFirstResponder()
