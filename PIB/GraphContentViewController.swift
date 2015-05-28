@@ -36,10 +36,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             private static let kMagentaColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
             private static let kDarkSeaGreenColor = CPTColor(componentRed: 143.0/255.0, green: 188.0/255.0, blue: 143.0/255.0, alpha: 1.0)
             private static let kSandyBrownColor = CPTColor(componentRed: 244.0/255.0, green: 164.0/255.0, blue: 96.0/255.0, alpha: 1.0)
+            private static let kLightGreyColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
             
             static let kGridLineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
             
-            static let kXAxisLabelColor = kDarkGreenColor
+            static let kXAxisLabelColor = kLightGreyColor
             static let kYAxisLabelColor = kRedColor
             
             static let kRevenuePlotColor = kTealColor
@@ -141,8 +142,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let annotationTextStyle = CPTMutableTextStyle()
     let titleTextStyle = CPTMutableTextStyle()
     
-    let graphLegendAnchor = CPTRectAnchor.Top
-    let graphLegendDisplacement = CGPointMake(0.0, 0.0)
+    let graphLegendAnchor = CPTRectAnchor.TopLeft
+    let graphLegendDisplacement = CGPointMake(5.0, -24.0)
     
     var scatterPlotOffset: Double = 0.5
     let scatterPlotLineWidth: CGFloat = 3.5
@@ -163,6 +164,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
+        
+        view.backgroundColor = UIColor.clearColor()
         
         if pageIdentifier == "CompanyOverview" {
             
@@ -406,7 +409,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y2AxisLabelTextStyle.fontSize = GraphContent.Font.Size.kYAxisLabelFontSize
         y2AxisLabelTextStyle.textAlignment = CPTTextAlignment.Left
         
-        legendTextStyle.color = CPTColor.darkGrayColor()
+        legendTextStyle.color = CPTColor.whiteColor()
         legendTextStyle.fontSize = GraphContent.Font.Size.kLegendFontSize
         
         annotationTextStyle.color = CPTColor.grayColor()
@@ -421,7 +424,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func legendForGraph() -> CPTLegend {
         
         let legend = CPTLegend(graph: graph)
-        legend.fill = CPTFill(color: CPTColor.whiteColor())
+        legend.fill = CPTFill(color: CPTColor.clearColor())
         legend.borderLineStyle = nil
         legend.cornerRadius = 10.0
         legend.swatchSize = CGSizeMake(14.0, 14.0)
@@ -446,13 +449,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func configureBaseGraph() {
         
-        graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
+        //graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
         graph.plotAreaFrame.plotArea.delegate = self
         
         // Graph border.
         graph.plotAreaFrame.borderLineStyle = nil
         graph.plotAreaFrame.cornerRadius = 0.0
         graph.plotAreaFrame.masksToBorder = false
+        graph.plotAreaFrame.fill = CPTFill(color: CPTColor.clearColor())
+        graph.plotAreaFrame.plotArea.fill = CPTFill(color: CPTColor.clearColor())
         
         // Graph paddings.
         graph.paddingLeft = 0.0
@@ -477,13 +482,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }
         
         if pageIdentifier == "Revenue" {
-            graph.plotAreaFrame.paddingTop = 34.0
+            graph.plotAreaFrame.paddingTop = 64.0
         } else {
-            graph.plotAreaFrame.paddingTop = 34.0
+            graph.plotAreaFrame.paddingTop = 64.0
         }
         
         graph.plotAreaFrame.paddingRight = 10.0
-        graph.plotAreaFrame.paddingBottom = 64.0
+        graph.plotAreaFrame.paddingBottom = 34.0
     }
     
     func configureBaseBarGraph() {

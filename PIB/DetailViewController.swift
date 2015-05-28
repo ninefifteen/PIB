@@ -18,6 +18,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         struct SegueIdentifiers {
             static let kShowCompanyOverView = "showCompanyOverview"
             static let kEmbedGraph = "embedGraph"
+            static let kEmbedPeersTable = "embedPeersTable"
         }
     }
     
@@ -32,6 +33,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet weak var companyNameLocationView: UIView!
     @IBOutlet weak var valueView: UIView!
     @IBOutlet weak var valueViewTypeLabel: UILabel!
     @IBOutlet weak var valueViewLabel: UILabel!
@@ -74,6 +76,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         if company != nil {
             self.splitViewController?.toggleMasterView()
         }
+        
+        navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+        navigationController!.navigationBar.shadowImage = UIImage()
+        navigationController!.navigationBar.translucent = true
         
         updateLabels()
     }
@@ -169,7 +175,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             
-            pageIdentifiers.append("CompanyOverview")
+            //pageIdentifiers.append("CompanyOverview")
             
             let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
             let request = NSFetchRequest()
@@ -261,6 +267,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         valueViewTypeLabel.text = ""
         valueViewLabel.text = ""
         valueView.hidden = true
+        companyNameLocationView.hidden = false
     }
     
     
@@ -319,10 +326,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             valueViewTypeLabel.text = ""
             valueViewLabel.text = ""
             valueView.hidden = true
+            companyNameLocationView.hidden = false
         } else {
             valueViewTypeLabel.text = type
             valueViewLabel.text = valueViewLabelString
             valueView.hidden = false
+            companyNameLocationView.hidden = true
         }
     }
     
@@ -347,6 +356,22 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowCompanyOverView {
             let companyOverviewViewController = segue.destinationViewController as! CompanyOverviewViewController
             companyOverviewViewController.company = company
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kEmbedPeersTable {
+            let peersTableViewController = segue.destinationViewController as! PeersTableViewController
+            peersTableViewController.company = company
+            peersTableViewController.managedObjectContext = managedObjectContext
+        }
+    }
+    
+    override func shouldPerformSegueWithIdentifier(identifier: String?, sender: AnyObject?) -> Bool {
+        if identifier == MainStoryboard.SegueIdentifiers.kEmbedPeersTable {
+            if company != nil {
+                return true
+            } else {
+                return false
+            }
+        } else {
+            return true
         }
     }
 }
