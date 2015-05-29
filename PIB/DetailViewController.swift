@@ -37,6 +37,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var valueView: UIView!
     @IBOutlet weak var valueViewTypeLabel: UILabel!
     @IBOutlet weak var valueViewLabel: UILabel!
+    @IBOutlet weak var competitorsBarView: UIView!
+    @IBOutlet weak var backgroundImageContainerView: UIView!
     
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     
@@ -161,12 +163,16 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             }
             
             pageControl.hidden = false
+            backgroundImageContainerView.hidden = false
+            competitorsBarView.hidden = false
             
         } else {
             
             nameLabel.hidden = true
             locationLabel.hidden = true
             pageControl.hidden = true
+            backgroundImageContainerView.hidden = true
+            competitorsBarView.hidden = true
         }
     }
     

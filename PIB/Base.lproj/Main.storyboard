@@ -585,7 +585,9 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="rSS-nq-bBg"/>
                     <connections>
+                        <outlet property="backgroundImageContainerView" destination="dC7-1E-7LG" id="XZU-A7-znU"/>
                         <outlet property="companyNameLocationView" destination="mug-A5-joV" id="51o-KT-7GX"/>
+                        <outlet property="competitorsBarView" destination="Xsz-IK-DTu" id="ekJ-fk-J9g"/>
                         <outlet property="containerView" destination="tqM-Rp-xFw" id="iTi-9S-rX4"/>
                         <outlet property="locationLabel" destination="XBy-gW-Cbq" id="ZUk-22-82b"/>
                         <outlet property="nameLabel" destination="OgA-Mz-VvC" id="pUw-82-AmM"/>

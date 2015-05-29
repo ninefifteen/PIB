@@ -30,29 +30,33 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         struct Color {
             
             // Base CPTColors used in Graphs.
-            private static let kRedColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
-            private static let kDarkGreenColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
-            private static let kTealColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
-            private static let kMagentaColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
-            private static let kDarkSeaGreenColor = CPTColor(componentRed: 143.0/255.0, green: 188.0/255.0, blue: 143.0/255.0, alpha: 1.0)
-            private static let kSandyBrownColor = CPTColor(componentRed: 244.0/255.0, green: 164.0/255.0, blue: 96.0/255.0, alpha: 1.0)
-            private static let kLightGreyColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
+            private static let kRedColor = CPTColor(componentRed: 237/255, green: 68/255, blue: 4/255, alpha: 1.0)
+            private static let kDarkGreenColor = CPTColor(componentRed: 23/255, green: 98/255, blue: 55/255, alpha: 1.0)
+            private static let kTealColor = CPTColor(componentRed: 44/255, green: 146/255, blue: 172/255, alpha: 1.0)
+            private static let kMagentaColor = CPTColor(componentRed: 233/255, green: 31/255, blue: 100/255, alpha: 1.0)
+            private static let kDarkSeaGreenColor = CPTColor(componentRed: 143/255, green: 188/255, blue: 143/255, alpha: 1.0)
+            private static let kSandyBrownColor = CPTColor(componentRed: 244/255, green: 164/255, blue: 96/255, alpha: 1.0)
+            private static let kLightGreyColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
+            private static let kOrangeColor = CPTColor(componentRed: 245/255, green: 239/255, blue: 14/255, alpha: 1.0)
+            private static let kRevenueBarColor = CPTColor(componentRed: 119/255, green: 169/255, blue: 113/255, alpha: 1.0)
             
-            static let kGridLineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
+            static let kGridLineColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
             
             static let kXAxisLabelColor = kLightGreyColor
             static let kYAxisLabelColor = kRedColor
             
-            static let kRevenuePlotColor = kTealColor
+            static let kRevenuePlotColor = kRevenueBarColor
             static let kPeersRevenuePlotColor = kDarkSeaGreenColor
-            static let kProfitMarginPlotColor = kMagentaColor
+            static let kProfitMarginPlotColor = kOrangeColor
             static let kPeersProfitMarginPlotColor = kSandyBrownColor
-            static let kGrossMarginPlotColor = kMagentaColor
-            static let kPeersGrossMarginPlotColor = kSandyBrownColor
-            static let kRAndDPlotColor = kTealColor
-            static let kPeersRAndDPlotColor = kDarkSeaGreenColor
-            static let kSgAndAPlotColor = kTealColor
-            static let kPeersSgAndAPlotColor = kDarkSeaGreenColor
+            static let kRevenueGrowthPlotColor = CPTColor.whiteColor()
+            static let kPeersRevenueGrowthPlotColor = kOrangeColor
+            static let kGrossMarginPlotColor = CPTColor.whiteColor()
+            static let kPeersGrossMarginPlotColor = kOrangeColor
+            static let kRAndDPlotColor = CPTColor.whiteColor()
+            static let kPeersRAndDPlotColor = kOrangeColor
+            static let kSgAndAPlotColor = CPTColor.whiteColor()
+            static let kPeersSgAndAPlotColor = kOrangeColor
             
             static let kPlotSymbolFillColor = CPTColor.whiteColor()
         }
@@ -725,7 +729,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: GraphContent.Color.kRevenuePlotColor)
-        revenueBarPlot.barWidth = 0.60
+        revenueBarPlot.barWidth = 0.25
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
@@ -766,7 +770,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let profitMarginLinePlot = CPTScatterPlot()
             profitMarginLinePlot.delegate = self
             profitMarginLinePlot.dataSource = self
-            profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
             profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
             profitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             profitMarginLinePlot.identifier = "Profit Margin"
@@ -775,8 +779,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = profitMarginPlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-            plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+            //plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             plotSymbol.lineStyle = symbolLineStyle
             plotSymbol.size = scatterPlotSymbolSize
             profitMarginLinePlot.plotSymbol = plotSymbol
@@ -796,7 +800,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 let peersProfitMarginLinePlot = CPTScatterPlot()
                 peersProfitMarginLinePlot.delegate = self
                 peersProfitMarginLinePlot.dataSource = self
-                peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+                peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
                 peersProfitMarginLinePlot.dataLineStyle = peersProfitMarginPlotLineStyle
                 peersProfitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
                 peersProfitMarginLinePlot.identifier = "Peers Profit Margin"
@@ -805,8 +809,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
                 peersSymbolLineStyle.lineWidth = scatterPlotLineWidth
                 let peersPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-                //peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-                peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+                peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+                //peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
                 peersPlotSymbol.lineStyle = peersSymbolLineStyle
                 peersPlotSymbol.size = scatterPlotSymbolSize
                 peersProfitMarginLinePlot.plotSymbol = peersPlotSymbol
@@ -840,7 +844,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForRevenueGrowthPlot {
             
-            let revenueGrowthPlotColor = GraphContent.Color.kRevenuePlotColor
+            let revenueGrowthPlotColor = GraphContent.Color.kRevenueGrowthPlotColor
             
             let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
             revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -849,7 +853,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let revenueGrowthPlot = CPTScatterPlot()
             revenueGrowthPlot.delegate = self
             revenueGrowthPlot.dataSource = self
-            revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Linear
             revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
             revenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             revenueGrowthPlot.identifier = "Revenue Growth"
@@ -858,7 +862,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthSymbolLineStyle.lineColor = revenueGrowthPlotColor
             revenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            revenueGrowthPlotSymbol.fill = CPTFill(color: revenueGrowthPlotColor)
+            //revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             revenueGrowthPlotSymbol.lineStyle = revenueGrowthSymbolLineStyle
             revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
             revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
@@ -898,7 +903,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         if isDataForPeersRevenueGrowthArray {
             
-            let peersRevenueGrowthPlotColor = GraphContent.Color.kPeersRevenuePlotColor
+            let peersRevenueGrowthPlotColor = GraphContent.Color.kPeersRevenueGrowthPlotColor
             
             let peersRevenueGrowthPlotLineStyle = CPTMutableLineStyle()
             peersRevenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -907,7 +912,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let peersRevenueGrowthPlot = CPTScatterPlot()
             peersRevenueGrowthPlot.delegate = self
             peersRevenueGrowthPlot.dataSource = self
-            peersRevenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersRevenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Linear
             peersRevenueGrowthPlot.dataLineStyle = peersRevenueGrowthPlotLineStyle
             peersRevenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             peersRevenueGrowthPlot.identifier = "Peers Revenue Growth"
@@ -916,7 +921,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             peersRevenueGrowthSymbolLineStyle.lineColor = peersRevenueGrowthPlotColor
             peersRevenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersRevenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: peersRevenueGrowthPlotColor)
+            //peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersRevenueGrowthPlotSymbol.lineStyle = peersRevenueGrowthSymbolLineStyle
             peersRevenueGrowthPlotSymbol.size = scatterPlotSymbolSize
             peersRevenueGrowthPlot.plotSymbol = peersRevenueGrowthPlotSymbol
@@ -949,7 +955,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let grossMarginPlot = CPTScatterPlot()
         grossMarginPlot.delegate = self
         grossMarginPlot.dataSource = self
-        grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Linear
         grossMarginPlot.dataLineStyle = grossMarginPlotLineStyle
         grossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         grossMarginPlot.identifier = "Gross Margin"
@@ -958,7 +964,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = grossMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let grossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        grossMarginPlotSymbol.fill = CPTFill(color: grossMarginPlotColor)
+        //grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         grossMarginPlotSymbol.lineStyle = symbolLineStyle
         grossMarginPlotSymbol.size = scatterPlotSymbolSize
         grossMarginPlot.plotSymbol = grossMarginPlotSymbol
@@ -977,7 +984,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let peersGrossMarginPlot = CPTScatterPlot()
             peersGrossMarginPlot.delegate = self
             peersGrossMarginPlot.dataSource = self
-            peersGrossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersGrossMarginPlot.interpolation = CPTScatterPlotInterpolation.Linear
             peersGrossMarginPlot.dataLineStyle = peersGrossMarginPlotLineStyle
             peersGrossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             peersGrossMarginPlot.identifier = "Peers Gross Margin"
@@ -986,7 +993,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersGrossMarginPlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersGrossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersGrossMarginPlotSymbol.fill = CPTFill(color: peersGrossMarginPlotColor)
+            //peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersGrossMarginPlotSymbol.lineStyle = symbolLineStyle
             peersGrossMarginPlotSymbol.size = scatterPlotSymbolSize
             peersGrossMarginPlot.plotSymbol = peersGrossMarginPlotSymbol
@@ -1019,7 +1027,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let rAndDLinePlot = CPTScatterPlot()
         rAndDLinePlot.delegate = self
         rAndDLinePlot.dataSource = self
-        rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
         rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
         rAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         rAndDLinePlot.identifier = "R&D"
@@ -1028,7 +1036,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = rAndDLinePlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        plotSymbol.fill = CPTFill(color: rAndDLinePlotColor)
+        //plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
         rAndDLinePlot.plotSymbol = plotSymbol
@@ -1047,7 +1056,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let peersRAndDLinePlot = CPTScatterPlot()
             peersRAndDLinePlot.delegate = self
             peersRAndDLinePlot.dataSource = self
-            peersRAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersRAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
             peersRAndDLinePlot.dataLineStyle = peersRAndDLinePlotLineStyle
             peersRAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             peersRAndDLinePlot.identifier = "Peers R&D"
@@ -1056,7 +1065,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersRAndDLinePlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersRAndDLinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRAndDLinePlotSymbol.fill = CPTFill(color: peersRAndDLinePlotColor)
+            //peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersRAndDLinePlotSymbol.lineStyle = symbolLineStyle
             peersRAndDLinePlotSymbol.size = scatterPlotSymbolSize
             peersRAndDLinePlot.plotSymbol = peersRAndDLinePlotSymbol
@@ -1089,7 +1099,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let sgAndAPlot = CPTScatterPlot()
         sgAndAPlot.delegate = self
         sgAndAPlot.dataSource = self
-        sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Linear
         sgAndAPlot.dataLineStyle = sgAndAPlotLineStyle
         sgAndAPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         sgAndAPlot.identifier = "SG&A"
@@ -1098,7 +1108,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = sgAndAPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let sgAndAPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        sgAndAPlotSymbol.fill = CPTFill(color: sgAndAPlotColor)
+        //sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         sgAndAPlotSymbol.lineStyle = symbolLineStyle
         sgAndAPlotSymbol.size = scatterPlotSymbolSize
         sgAndAPlot.plotSymbol = sgAndAPlotSymbol
@@ -1117,7 +1128,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let peersSgAndALinePlot = CPTScatterPlot()
             peersSgAndALinePlot.delegate = self
             peersSgAndALinePlot.dataSource = self
-            peersSgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            peersSgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Linear
             peersSgAndALinePlot.dataLineStyle = peersSgAndALinePlotLineStyle
             peersSgAndALinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             peersSgAndALinePlot.identifier = "Peers SG&A"
@@ -1126,7 +1137,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersSgAndALinePlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersSgAndALinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersSgAndALinePlotSymbol.fill = CPTFill(color: peersSgAndALinePlotColor)
+            //peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersSgAndALinePlotSymbol.lineStyle = symbolLineStyle
             peersSgAndALinePlotSymbol.size = scatterPlotSymbolSize
             peersSgAndALinePlot.plotSymbol = peersSgAndALinePlotSymbol
