@@ -8,7 +8,7 @@
 
 import UIKit
 
-class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class CompanyOverviewViewController: UIViewController {
     
     
     // MARK: - Types
@@ -40,12 +40,6 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
-    @IBOutlet weak var editButton: UIButton!
-    
-    @IBOutlet weak var peersTableView: UITableView!
-    
-    @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
-    
     var company: Company!
     var managedObjectContext: NSManagedObjectContext!
 
@@ -67,11 +61,6 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             tracker.send(build)
         }
         
-        peersTableView.dataSource = self
-        peersTableView.delegate = self
-        
-        editButton.tintColor = UIColor.redColor()
-        
         updateLabels()
     }
     
@@ -80,7 +69,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewWillLayoutSubviews() {
+    // Calculate tableview height based on screen height.
+    /*override func viewWillLayoutSubviews() {
         
         var maxCellsToDisplay = 0
         let rowHeight = peersTableView.rowHeight
@@ -105,7 +95,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             peersTableContainerHeightConstraint.constant = CGFloat(maxCellsToDisplay) * rowHeight + buffer
             peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
         }
-    }
+    }*/
     
     
     // MARK: - Populate Labels
@@ -137,64 +127,6 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
                     println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
                 }
             }*/
-            
-            if company.peers.count > 0 {
-                peers = company.peers.allObjects as! [Company]
-                peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
-                peersTableView.reloadData()
-            }
-        }
-    }
-    
-    
-    // MARK: - Table View
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peersTableCellCount
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as! UITableViewCell
-        
-        let company = peers[indexPath.row] as Company
-        
-        let nameLabel = cell.viewWithTag(101) as! UILabel
-        let locationLabel = cell.viewWithTag(102) as! UILabel
-        let revenueLabel = cell.viewWithTag(103) as! UILabel
-        
-        nameLabel.text = company.name
-        
-        if company.city != "" {
-            if company.country != "" && company.state != "" {
-                locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-            } else if company.country != "" {
-                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
-            } else {
-                locationLabel.text = company.city.capitalizedString
-            }
-        } else {
-            locationLabel.text = " "
-        }
-        
-        revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-        
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if cell.respondsToSelector("setSeparatorInset:") {
-            cell.separatorInset = UIEdgeInsetsZero
-        }
-        if cell.respondsToSelector("setPreservesSuperviewLayoutMargins:") {
-            cell.preservesSuperviewLayoutMargins = false
-        }
-        if cell.respondsToSelector("setLayoutMargins:") {
-            cell.layoutMargins = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0)
         }
     }
     
@@ -209,14 +141,6 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
             controller.company = company
             controller.managedObjectContext = managedObjectContext
             controller.isEditMode = false
-            controller.navigationItem.leftItemsSupplementBackButton = true
-            
-        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTableEditMode {
-            
-            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PeersTableViewController
-            controller.company = company
-            controller.managedObjectContext = managedObjectContext
-            controller.isEditMode = true
             controller.navigationItem.leftItemsSupplementBackButton = true
             
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {

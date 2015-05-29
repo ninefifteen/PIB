@@ -181,7 +181,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             
-            //pageIdentifiers.append("CompanyOverview")
+            pageIdentifiers.append("CompanyOverview")
             
             let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
             let request = NSFetchRequest()
