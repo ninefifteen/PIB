@@ -41,6 +41,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var backgroundImageContainerView: UIView!
     
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -98,12 +99,20 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - Subview Size Modification
     
+    // Calculate tableview height based on screen height.
+    override func viewWillLayoutSubviews() {
+        
+        if let screenHeight = view.window?.bounds.height {
+            peersTableContainerHeightConstraint.constant = 0.35 * screenHeight
+        }
+    }
+    
     /*override func viewWillLayoutSubviews() {
-        
+    
         super.viewWillLayoutSubviews()
-        
+    
         if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-            
+    
             let orientation = UIApplication.sharedApplication().statusBarOrientation
             
             if !valueView.hidden && UIInterfaceOrientationIsLandscape(orientation) {
