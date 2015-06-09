@@ -76,6 +76,8 @@ class MasterTableContainerViewController: UIViewController {
             nameButtonIndicator.hidden = true
             revenueButtonIndicator.hidden = false
         }
+        
+        navigationController?.presentTransparentNavigationBar()
     }
 
     override func didReceiveMemoryWarning() {

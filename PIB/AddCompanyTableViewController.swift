@@ -62,6 +62,10 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIGeneralErrorMessage", name: "WebServicesManagerAPIGeneralErrorMessage", object: nil)
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
+        
+        if let backgroundImage = UIImage(named: "navBarBackground") {
+            navigationController?.navigationBar.setBackgroundImage(backgroundImage, forBarMetrics:UIBarMetrics.Default)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -107,6 +111,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        println("prepareForSegue")
+        navigationController?.presentTransparentNavigationBar()
         
         if let tableViewCell = sender as? UITableViewCell {
             if let indexPath = tableView.indexPathForSelectedRow() {

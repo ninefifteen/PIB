@@ -49,9 +49,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         //UINavigationBar.appearance().barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
         //UINavigationBar.appearance().setBackgroundImage(UIImage(contentsOfFile: "navBarBackground"), forBarMetrics: UIBarMetrics.Default)
         
-        if let backgroundImage = UIImage(named: "navBarBackground") {
+        /*if let backgroundImage = UIImage(named: "navBarBackground") {
             UINavigationBar.appearance().setBackgroundImage(backgroundImage.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 0, 0, 0), resizingMode: .Stretch), forBarMetrics: .Default)
-        }
+        }*/
         
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
         UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent
