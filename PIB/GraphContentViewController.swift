@@ -39,15 +39,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             private static let kLightGreyColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
             private static let kOrangeColor = CPTColor(componentRed: 245/255, green: 239/255, blue: 14/255, alpha: 1.0)
             private static let kRevenueBarColor = CPTColor(componentRed: 119/255, green: 169/255, blue: 113/255, alpha: 1.0)
+            private static let kBlueColor = CPTColor(componentRed: 52/255, green: 157/255, blue: 221/255, alpha: 1.0)
+            
             
             static let kGridLineColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
             
             static let kXAxisLabelColor = kLightGreyColor
             static let kYAxisLabelColor = kRedColor
             
-            static let kRevenuePlotColor = kRevenueBarColor
+            static let kRevenuePlotColor = kOrangeColor
             static let kPeersRevenuePlotColor = kDarkSeaGreenColor
-            static let kProfitMarginPlotColor = kOrangeColor
+            static let kProfitMarginPlotColor = CPTColor.whiteColor()
             static let kPeersProfitMarginPlotColor = kSandyBrownColor
             static let kRevenueGrowthPlotColor = CPTColor.whiteColor()
             static let kPeersRevenueGrowthPlotColor = kOrangeColor
@@ -58,7 +60,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             static let kSgAndAPlotColor = CPTColor.whiteColor()
             static let kPeersSgAndAPlotColor = kOrangeColor
             
-            static let kPlotSymbolFillColor = CPTColor.whiteColor()
+            static let kPlotSymbolFillColor = kBlueColor
         }
         
         struct Font {
@@ -779,8 +781,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = profitMarginPlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-            //plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //plotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+            plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             plotSymbol.lineStyle = symbolLineStyle
             plotSymbol.size = scatterPlotSymbolSize
             profitMarginLinePlot.plotSymbol = plotSymbol
@@ -809,8 +811,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
                 peersSymbolLineStyle.lineWidth = scatterPlotLineWidth
                 let peersPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-                peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
-                //peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+                //peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+                peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
                 peersPlotSymbol.lineStyle = peersSymbolLineStyle
                 peersPlotSymbol.size = scatterPlotSymbolSize
                 peersProfitMarginLinePlot.plotSymbol = peersPlotSymbol
@@ -862,8 +864,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthSymbolLineStyle.lineColor = revenueGrowthPlotColor
             revenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            revenueGrowthPlotSymbol.fill = CPTFill(color: revenueGrowthPlotColor)
-            //revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //revenueGrowthPlotSymbol.fill = CPTFill(color: revenueGrowthPlotColor)
+            revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             revenueGrowthPlotSymbol.lineStyle = revenueGrowthSymbolLineStyle
             revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
             revenueGrowthPlot.plotSymbol = revenueGrowthPlotSymbol
@@ -921,8 +923,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             peersRevenueGrowthSymbolLineStyle.lineColor = peersRevenueGrowthPlotColor
             peersRevenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersRevenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: peersRevenueGrowthPlotColor)
-            //peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //peersRevenueGrowthPlotSymbol.fill = CPTFill(color: peersRevenueGrowthPlotColor)
+            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersRevenueGrowthPlotSymbol.lineStyle = peersRevenueGrowthSymbolLineStyle
             peersRevenueGrowthPlotSymbol.size = scatterPlotSymbolSize
             peersRevenueGrowthPlot.plotSymbol = peersRevenueGrowthPlotSymbol
@@ -964,8 +966,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = grossMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let grossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        grossMarginPlotSymbol.fill = CPTFill(color: grossMarginPlotColor)
-        //grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        //grossMarginPlotSymbol.fill = CPTFill(color: grossMarginPlotColor)
+        grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         grossMarginPlotSymbol.lineStyle = symbolLineStyle
         grossMarginPlotSymbol.size = scatterPlotSymbolSize
         grossMarginPlot.plotSymbol = grossMarginPlotSymbol
@@ -993,8 +995,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersGrossMarginPlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersGrossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersGrossMarginPlotSymbol.fill = CPTFill(color: peersGrossMarginPlotColor)
-            //peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //peersGrossMarginPlotSymbol.fill = CPTFill(color: peersGrossMarginPlotColor)
+            peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersGrossMarginPlotSymbol.lineStyle = symbolLineStyle
             peersGrossMarginPlotSymbol.size = scatterPlotSymbolSize
             peersGrossMarginPlot.plotSymbol = peersGrossMarginPlotSymbol
@@ -1036,8 +1038,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = rAndDLinePlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        plotSymbol.fill = CPTFill(color: rAndDLinePlotColor)
-        //plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        //plotSymbol.fill = CPTFill(color: rAndDLinePlotColor)
+        plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
         rAndDLinePlot.plotSymbol = plotSymbol
@@ -1065,8 +1067,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersRAndDLinePlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersRAndDLinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersRAndDLinePlotSymbol.fill = CPTFill(color: peersRAndDLinePlotColor)
-            //peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //peersRAndDLinePlotSymbol.fill = CPTFill(color: peersRAndDLinePlotColor)
+            peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersRAndDLinePlotSymbol.lineStyle = symbolLineStyle
             peersRAndDLinePlotSymbol.size = scatterPlotSymbolSize
             peersRAndDLinePlot.plotSymbol = peersRAndDLinePlotSymbol
@@ -1108,8 +1110,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = sgAndAPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let sgAndAPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-        sgAndAPlotSymbol.fill = CPTFill(color: sgAndAPlotColor)
-        //sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+        //sgAndAPlotSymbol.fill = CPTFill(color: sgAndAPlotColor)
+        sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         sgAndAPlotSymbol.lineStyle = symbolLineStyle
         sgAndAPlotSymbol.size = scatterPlotSymbolSize
         sgAndAPlot.plotSymbol = sgAndAPlotSymbol
@@ -1137,8 +1139,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             symbolLineStyle.lineColor = peersSgAndALinePlotColor
             symbolLineStyle.lineWidth = scatterPlotLineWidth
             let peersSgAndALinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
-            peersSgAndALinePlotSymbol.fill = CPTFill(color: peersSgAndALinePlotColor)
-            //peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            //peersSgAndALinePlotSymbol.fill = CPTFill(color: peersSgAndALinePlotColor)
+            peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             peersSgAndALinePlotSymbol.lineStyle = symbolLineStyle
             peersSgAndALinePlotSymbol.size = scatterPlotSymbolSize
             peersSgAndALinePlot.plotSymbol = peersSgAndALinePlotSymbol
