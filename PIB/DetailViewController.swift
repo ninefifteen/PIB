@@ -78,13 +78,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             self.splitViewController?.toggleMasterView()
+            title = company.name
         }
         
         navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         navigationController!.navigationBar.shadowImage = UIImage()
         navigationController!.navigationBar.translucent = true
         
-        updateLabels()
+        //updateLabels()
     }
     
     override func didReceiveMemoryWarning() {
@@ -100,12 +101,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - Subview Size Modification
     
     // Calculate tableview height based on screen height.
-    override func viewWillLayoutSubviews() {
+    /*override func viewWillLayoutSubviews() {
         
         if let screenHeight = view.window?.bounds.height {
             peersTableContainerHeightConstraint.constant = 0.35 * screenHeight
         }
-    }
+    }*/
     
     /*override func viewWillLayoutSubviews() {
     
@@ -141,8 +142,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                     if deletedCompany == company {
                         dispatch_async(dispatch_get_main_queue(), { () -> Void in
                             self.company = nil
-                            self.updateLabels()
-                            self.containerView.hidden = true
+                            //self.updateLabels()
+                            //self.containerView.hidden = true
                         })
                     }
                 }
@@ -326,14 +327,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
         let currentContentPage = graphPageViewController.viewControllers.last as! GraphContentViewController
         let currentPageIndex = currentContentPage.pageIndex
-        removeValueView()
+        //removeValueView()
         pageControl.currentPage = currentPageIndex
     }
     
     
     // MARK: - GraphContentViewControllerDelegate
     
-    func userSelectedGraphPointOfType(type: String, forDate date: String, withValue value: String) {
+    /*func userSelectedGraphPointOfType(type: String, forDate date: String, withValue value: String) {
         
         let valueViewLabelString = date + "  " + value
         
@@ -348,7 +349,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             valueView.hidden = false
             companyNameLocationView.hidden = true
         }
-    }
+    }*/
     
     @IBAction func cancelValueViewButtonPressed(sender: UIButton) {
         removeValueView()
