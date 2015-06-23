@@ -50,8 +50,8 @@ class PeersTableViewController: UITableViewController {
         //title = company.name
         //editButtonItem()
         //navigationItem.rightBarButtonItem = editButtonItem()
-        //tableView.editing = isEditMode
-        //editing = isEditMode
+        tableView.editing = isEditMode
+        editing = isEditMode
         
         //navigationController?.toolbarHidden = false
         //navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)

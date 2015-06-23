@@ -40,12 +40,17 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var competitorsBarView: UIView!
     @IBOutlet weak var backgroundImageContainerView: UIView!
     
+    @IBOutlet weak var editButton: UIButton!
+    
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
     weak var graphPageViewController: GraphPageViewController!
+    weak var peersTableViewController: PeersTableViewController?
+    
+    var isPeersTableEditing = false
     
     var pageIndices = Array<Int>()
     var pageIdentifiers = Array<String>()
@@ -134,6 +139,25 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             pageControl.hidden = false
         }
     }*/
+    
+    
+    // MARK: - IBActions
+    
+    @IBAction func editButtonPressed(sender: UIButton) {
+        
+        if let peersTableViewController = peersTableViewController {
+            
+            if isPeersTableEditing {
+                isPeersTableEditing = false
+                editButton.setTitle("EDIT", forState: .Normal)
+            } else {
+                isPeersTableEditing = true
+                editButton.setTitle("DONE", forState: .Normal)
+            }
+            
+            peersTableViewController.setEditing(isPeersTableEditing, animated: true)
+        }
+    }
     
     
     // MARK: - Managed Object Model Change
@@ -382,6 +406,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             let peersTableViewController = segue.destinationViewController as! PeersTableViewController
             peersTableViewController.company = company
             peersTableViewController.managedObjectContext = managedObjectContext
+            self.peersTableViewController = peersTableViewController
         }
     }
     

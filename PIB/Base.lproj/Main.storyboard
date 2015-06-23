@@ -473,11 +473,30 @@
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WuY-PP-3vr">
+                                        <rect key="frame" x="493" y="0.0" width="99" height="30"/>
+                                        <state key="normal">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0lK-BS-6JA">
+                                        <rect key="frame" x="561" y="0.0" width="31" height="29"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <state key="normal" title="EDIT">
+                                            <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="editButtonPressed:" destination="QDx-Jf-XX2" eventType="touchUpInside" id="Lcc-K6-2hV"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.93333333333333335" green="0.93333333333333335" blue="0.93333333333333335" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="0lK-BS-6JA" secondAttribute="trailing" constant="8" id="4Zq-Z9-3Al"/>
                                     <constraint firstAttribute="centerY" secondItem="Uyu-1I-sXj" secondAttribute="centerY" id="DSv-TR-MJg"/>
                                     <constraint firstAttribute="height" constant="30" id="HUg-1X-YYV"/>
+                                    <constraint firstAttribute="centerY" secondItem="0lK-BS-6JA" secondAttribute="centerY" id="VcR-S0-PnP"/>
                                     <constraint firstItem="Uyu-1I-sXj" firstAttribute="leading" secondItem="Xsz-IK-DTu" secondAttribute="leading" constant="8" id="p3b-wR-Ua5"/>
                                 </constraints>
                             </view>
@@ -525,6 +544,7 @@
                         <outlet property="backgroundImageContainerView" destination="dC7-1E-7LG" id="XZU-A7-znU"/>
                         <outlet property="competitorsBarView" destination="Xsz-IK-DTu" id="ekJ-fk-J9g"/>
                         <outlet property="containerView" destination="tqM-Rp-xFw" id="iTi-9S-rX4"/>
+                        <outlet property="editButton" destination="0lK-BS-6JA" id="dpX-FL-xDn"/>
                         <outlet property="pageControl" destination="uEj-i2-fX0" id="Ios-SM-zBx"/>
                         <outlet property="peersTableContainerHeightConstraint" destination="xtm-mF-EsN" id="xN5-tl-3ay"/>
                     </connections>
