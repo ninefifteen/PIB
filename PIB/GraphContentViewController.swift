@@ -1627,7 +1627,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             valueString = valueString + " " + revenueGrowthValueString
         }
         
-        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
+        //delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
@@ -1642,7 +1642,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //println("index: \(idx), date: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
         let typeString = plot.identifier as! String
         let valueString = Double(value).pibPercentageStyleValueString()
-        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
+        //delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     

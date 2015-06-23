@@ -768,14 +768,14 @@
                                 <rect key="frame" x="0.0" y="16" width="600" height="516"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="PLZ-cq-ZNe">
-                                        <rect key="frame" x="8" y="8" width="584" height="500"/>
+                                        <rect key="frame" x="8" y="37" width="584" height="471"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                     </textView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4DI-dE-CeV">
-                                        <rect key="frame" x="8" y="8" width="584" height="500"/>
+                                        <rect key="frame" x="8" y="37" width="584" height="471"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <state key="normal">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -784,16 +784,24 @@
                                             <segue destination="tjH-c9-3es" kind="show" identifier="showDescriptionView" id="yQw-M0-qBB"/>
                                         </connections>
                                     </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Company Address" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iqP-HZ-k2g">
+                                        <rect key="frame" x="10" y="8" width="143" height="21"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="4DI-dE-CeV" firstAttribute="top" secondItem="ya7-Cj-BDP" secondAttribute="top" constant="8" id="143-NM-SSA"/>
                                     <constraint firstAttribute="bottom" secondItem="4DI-dE-CeV" secondAttribute="bottom" constant="8" id="3bo-9J-7Bm"/>
                                     <constraint firstAttribute="trailing" secondItem="PLZ-cq-ZNe" secondAttribute="trailing" constant="8" id="Ff6-xV-T4C"/>
+                                    <constraint firstItem="4DI-dE-CeV" firstAttribute="top" secondItem="iqP-HZ-k2g" secondAttribute="bottom" constant="8" id="GRK-8c-IpB"/>
+                                    <constraint firstItem="iqP-HZ-k2g" firstAttribute="leading" secondItem="ya7-Cj-BDP" secondAttribute="leading" constant="10" id="Kt1-eH-2Xc"/>
                                     <constraint firstItem="PLZ-cq-ZNe" firstAttribute="leading" secondItem="ya7-Cj-BDP" secondAttribute="leading" constant="8" id="Tpa-nc-f4a"/>
                                     <constraint firstAttribute="trailing" secondItem="4DI-dE-CeV" secondAttribute="trailing" constant="8" id="bgk-9G-SY3"/>
                                     <constraint firstAttribute="bottom" secondItem="PLZ-cq-ZNe" secondAttribute="bottom" constant="8" id="eJT-jc-CQp"/>
-                                    <constraint firstItem="PLZ-cq-ZNe" firstAttribute="top" secondItem="ya7-Cj-BDP" secondAttribute="top" constant="8" id="k65-sk-HSP"/>
+                                    <constraint firstItem="PLZ-cq-ZNe" firstAttribute="top" secondItem="iqP-HZ-k2g" secondAttribute="bottom" constant="8" id="ntI-vZ-6FQ"/>
+                                    <constraint firstItem="iqP-HZ-k2g" firstAttribute="top" secondItem="ya7-Cj-BDP" secondAttribute="top" constant="8" id="sgF-Td-Woh"/>
                                     <constraint firstItem="4DI-dE-CeV" firstAttribute="leading" secondItem="ya7-Cj-BDP" secondAttribute="leading" constant="8" id="vFB-pK-FGH"/>
                                 </constraints>
                             </view>
@@ -823,6 +831,7 @@
                     </view>
                     <nil key="simulatedStatusBarMetrics"/>
                     <connections>
+                        <outlet property="addressLabel" destination="iqP-HZ-k2g" id="Tqj-Hj-c6T"/>
                         <outlet property="descriptionTextView" destination="PLZ-cq-ZNe" id="Pgz-15-GVe"/>
                         <outlet property="employeeCountLabel" destination="JrW-vQ-RGe" id="LIv-EL-o0C"/>
                         <outlet property="marketCapLabel" destination="lsV-oY-fwI" id="mjq-9B-F5U"/>

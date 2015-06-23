@@ -35,6 +35,7 @@ class CompanyOverviewViewController: UIViewController {
     
     @IBOutlet weak var descriptionTextView: UITextView!
     
+    @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
     @IBOutlet weak var profitMarginLabel: UILabel!
@@ -103,6 +104,18 @@ class CompanyOverviewViewController: UIViewController {
     func updateLabels() {
         
         if company != nil {
+            
+            if company.city != "" {
+                if company.country != "" && company.state != "" {
+                    addressLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    addressLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+                } else {
+                    addressLabel.text = company.city.capitalizedString
+                }
+            } else {
+                addressLabel.text = ""
+            }
             
             if company.companyDescription != "" {
                 descriptionTextView.scrollEnabled = false

@@ -78,7 +78,13 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             self.splitViewController?.toggleMasterView()
-            title = company.name
+            let titleLabel = UILabel(frame: CGRectMake(0, 0, 150, 150))
+            titleLabel.text = company.name
+            titleLabel.textColor = UIColor.whiteColor()
+            titleLabel.font = UIFont.systemFontOfSize(23);
+            titleLabel.textAlignment = .Center
+            navigationItem.titleView = titleLabel
+            //title = company.name
         }
         
         navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
