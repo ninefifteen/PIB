@@ -155,7 +155,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 editButton.setTitle("DONE", forState: .Normal)
             }
             
-            peersTableViewController.setEditing(isPeersTableEditing, animated: true)
+            peersTableViewController.setTableEditing(isPeersTableEditing, animated: true)
         }
     }
     

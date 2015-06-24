@@ -51,7 +51,7 @@ class PeersTableViewController: UITableViewController {
         //editButtonItem()
         //navigationItem.rightBarButtonItem = editButtonItem()
         tableView.editing = isEditMode
-        editing = isEditMode
+        //editing = isEditMode
         
         //navigationController?.toolbarHidden = false
         //navigationController?.toolbar.barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
@@ -71,8 +71,9 @@ class PeersTableViewController: UITableViewController {
     
     // MARK: - Table View
     
-    override func setEditing(editing: Bool, animated: Bool) {
-        super.setEditing(editing, animated: animated)
+    func setTableEditing(editing: Bool, animated: Bool) {
+        isEditMode = editing
+        tableView.editing = editing
         tableView.reloadData()
     }
 
@@ -81,7 +82,7 @@ class PeersTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tableView.editing {
+        if isEditMode {
             return peers.count + 1
         } else {
             return peers.count
@@ -194,7 +195,12 @@ class PeersTableViewController: UITableViewController {
         }
     }
     
+    /*override func tableView(tableView: UITableView, willBeginEditingRowAtIndexPath indexPath: NSIndexPath) {
+        println("willBeginEditingRowAtIndexPath")
+    }*/
+    
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        
         if editingStyle == .Delete {
             // Delete the row from the data source
             let peerCompany = peers[indexPath.row] as Company
@@ -207,9 +213,6 @@ class PeersTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        
-        println("didSelectRowAtIndexPath")
-
         if indexPath.row == peers.count { }
     }
 
