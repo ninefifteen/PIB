@@ -112,12 +112,12 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - Subview Size Modification
     
     // Calculate tableview height based on screen height.
-    /*override func viewWillLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         
         if let screenHeight = view.window?.bounds.height {
             peersTableContainerHeightConstraint.constant = 0.35 * screenHeight
         }
-    }*/
+    }
     
     /*override func viewWillLayoutSubviews() {
     

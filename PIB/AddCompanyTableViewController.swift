@@ -64,7 +64,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "showWebServicesManagerAPIConnectionErrorMessage", name: "WebServicesManagerAPIConnectionErrorMessage", object: nil)
         
         if let backgroundImage = UIImage(named: "navBarBackground") {
-            navigationController?.navigationBar.setBackgroundImage(backgroundImage, forBarMetrics:UIBarMetrics.Default)
+            if let navigationController = navigationController {
+                navigationController.navigationBar.setBackgroundImage(backgroundImage, forBarMetrics:UIBarMetrics.Default)
+            }
         }
     }
 

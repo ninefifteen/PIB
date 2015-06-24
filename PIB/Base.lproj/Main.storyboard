@@ -397,6 +397,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Add Company" id="HSP-fN-yGS">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="JJB-Mk-9A4">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <segue destination="MiV-7M-y5L" kind="unwind" identifier="unwindFromAddCompany" unwindAction="unwindFromAddCompanySegue:" id="jrJ-1Z-bgd"/>
                             </connections>
@@ -984,7 +985,7 @@
                                 </tableViewCellContentView>
                                 <inset key="separatorInset" minX="15" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <connections>
-                                    <segue destination="DBh-A7-ixE" kind="show" identifier="addPeerCompany" id="xuI-Ga-zcs"/>
+                                    <segue destination="DBh-A7-ixE" kind="presentation" identifier="addPeerCompany" id="xuI-Ga-zcs"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -1039,7 +1040,7 @@
         <image name="navBarBackground" width="750" height="129"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="aJd-5J-TvG"/>
         <segue reference="VVC-je-NKy"/>
+        <segue reference="xuI-Ga-zcs"/>
     </inferredMetricsTieBreakers>
 </document>
