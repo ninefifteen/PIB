@@ -29,9 +29,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - Properties
     
-    @IBOutlet weak var nameView: UIView!
     @IBOutlet weak var containerView: UIView!
-    @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var companyNameLocationView: UIView!
     @IBOutlet weak var valueView: UIView!
@@ -44,6 +42,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var competitorsTitleBarHeightConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -83,7 +82,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             self.splitViewController?.toggleMasterView()
-            let titleLabel = UILabel(frame: CGRectMake(0, 0, 150, 150))
+            let titleLabel = UILabel(frame: CGRectMake(-5000, 0, 150, 150))
             titleLabel.text = company.name
             titleLabel.textColor = UIColor.whiteColor()
             titleLabel.font = UIFont.systemFontOfSize(23);
@@ -114,8 +113,20 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // Calculate tableview height based on screen height.
     override func viewWillLayoutSubviews() {
         
-        if let screenHeight = view.window?.bounds.height {
-            peersTableContainerHeightConstraint.constant = 0.35 * screenHeight
+        super.viewWillLayoutSubviews()
+        
+        let orientation = UIApplication.sharedApplication().statusBarOrientation
+        
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation) {
+            peersTableContainerHeightConstraint.constant = 0.0
+            competitorsTitleBarHeightConstraint.constant = 0.0
+            competitorsBarView.hidden = true
+        } else {
+            if let screenHeight = view.window?.bounds.height {
+                peersTableContainerHeightConstraint.constant = 0.35 * screenHeight
+                competitorsTitleBarHeightConstraint.constant = 30.0
+                competitorsBarView.hidden = false
+            }
         }
     }
     
@@ -188,8 +199,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         if company != nil {
             
-            nameLabel.text = company.name
-            
             if company.city != "" {
                 if company.country != "" && company.state != "" {
                     locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
@@ -208,7 +217,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             
         } else {
             
-            nameLabel.hidden = true
             locationLabel.hidden = true
             pageControl.hidden = true
             backgroundImageContainerView.hidden = true

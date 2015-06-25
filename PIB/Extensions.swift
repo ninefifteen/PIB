@@ -157,18 +157,26 @@ extension Company {
         totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
         
         if totalRevenueArray.count > 1 {
+            
             let revenueCurrent = Double(totalRevenueArray[0].value)
             let revenuePrevious = Double(totalRevenueArray[1].value)
-            let revenueDelta = revenueCurrent - revenuePrevious
-            let percentageDelta = (revenueDelta / revenuePrevious) * 100.0
-            let revenueGrowthLabelString = revenueDelta.pibStandardStyleValueString() + " (" + percentageDelta.pibPercentageStyleValueString() + ")"
-            if revenueDelta < 0 {
-                return revenueGrowthLabelString
+            println("\(name), \(revenueCurrent), \(revenuePrevious)")
+            
+            if revenueCurrent != 0.0 && revenuePrevious != 0.0 {
+                let revenueDelta = revenueCurrent - revenuePrevious
+                let percentageDelta = (revenueDelta / revenuePrevious) * 100.0
+                let revenueGrowthLabelString = revenueDelta.pibStandardStyleValueString() + " (" + percentageDelta.pibPercentageStyleValueString() + ")"
+                if revenueDelta < 0 {
+                    return revenueGrowthLabelString
+                } else {
+                    return "+" + revenueGrowthLabelString
+                }
             } else {
-                return "+" + revenueGrowthLabelString
+                return ""
             }
+            
         } else {
-            return "-"
+            return ""
         }
     }
 }

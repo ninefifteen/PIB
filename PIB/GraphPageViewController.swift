@@ -26,7 +26,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         super.viewDidLoad()
         
-        let graphContentViewController = self.viewControllerAtIndex(0, storyboard: storyboard!)
+        let graphContentViewController = self.viewControllerAtIndex(1, storyboard: storyboard!)
         
         if graphContentViewController != nil {
             self.dataSource = self

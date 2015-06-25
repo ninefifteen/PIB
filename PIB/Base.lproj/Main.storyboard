@@ -510,7 +510,7 @@
                                     <segue destination="dyh-yV-9fy" kind="embed" identifier="embedPeersTable" id="VBe-YV-W9m"/>
                                 </connections>
                             </containerView>
-                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="5" translatesAutoresizingMaskIntoConstraints="NO" id="uEj-i2-fX0">
+                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="5" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="uEj-i2-fX0">
                                 <rect key="frame" x="265" y="44" width="71" height="37"/>
                                 <color key="pageIndicatorTintColor" red="0.78431372549019607" green="0.78431372549019607" blue="0.78431372549019607" alpha="1" colorSpace="calibratedRGB"/>
                                 <color key="currentPageIndicatorTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -544,6 +544,7 @@
                     <connections>
                         <outlet property="backgroundImageContainerView" destination="dC7-1E-7LG" id="XZU-A7-znU"/>
                         <outlet property="competitorsBarView" destination="Xsz-IK-DTu" id="ekJ-fk-J9g"/>
+                        <outlet property="competitorsTitleBarHeightConstraint" destination="HUg-1X-YYV" id="pPZ-TE-Rmq"/>
                         <outlet property="containerView" destination="tqM-Rp-xFw" id="iTi-9S-rX4"/>
                         <outlet property="editButton" destination="0lK-BS-6JA" id="dpX-FL-xDn"/>
                         <outlet property="pageControl" destination="uEj-i2-fX0" id="Ios-SM-zBx"/>

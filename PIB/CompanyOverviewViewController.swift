@@ -124,15 +124,58 @@ class CompanyOverviewViewController: UIViewController {
                 descriptionTextView.text = company.companyDescription
             }
             
+            let revenueString = company.currencySymbol + company.revenueLabelString()
+            var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
+            revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
+            revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
+            revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(0, 1))
+            
+            if revenueString.hasSuffix("K") || revenueString.hasSuffix("M") || revenueString.hasSuffix("B") || revenueString.hasSuffix("T") {
+                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+            }
+            
+            revenueLabel.attributedText = revenueLabelAttributedString
+            
+            let profitMarginString = profitMarginLabelStringForCompany(company)
+            var profitMarginLabelAttributedString = NSMutableAttributedString(string: profitMarginString)
+            profitMarginLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, profitMarginLabelAttributedString.length))
+            profitMarginLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, profitMarginLabelAttributedString.length))
+            
+            if profitMarginString.hasSuffix("%") {
+                profitMarginLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(profitMarginLabelAttributedString.length - 1, 1))
+            }
+            
+            profitMarginLabel.attributedText = profitMarginLabelAttributedString
+            
             if company.employeeCount > 0 {
-                employeeCountLabel.text = company.employeeCount.doubleValue.pibStandardStyleValueString()
+                
+                let employeeCountString = company.employeeCount.doubleValue.pibStandardStyleValueString()
+                var employeeCountLabelAttributedString = NSMutableAttributedString(string: employeeCountString)
+                employeeCountLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, employeeCountLabelAttributedString.length))
+                employeeCountLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, employeeCountLabelAttributedString.length))
+                
+                if employeeCountString.hasSuffix("K") || employeeCountString.hasSuffix("M") || employeeCountString.hasSuffix("B") || employeeCountString.hasSuffix("T") {
+                    employeeCountLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(employeeCountLabelAttributedString.length - 1, 1))
+                }
+                
+                employeeCountLabel.attributedText = employeeCountLabelAttributedString
+                
             } else {
+                
                 employeeCountLabel.text = "-"
             }
             
-            revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-            profitMarginLabel.text = profitMarginLabelStringForCompany(company)
-            marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
+            let marketCapString = company.currencySymbol + company.revenueLabelString()
+            var marketCapLabelAttributedString = NSMutableAttributedString(string: marketCapString)
+            marketCapLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, marketCapLabelAttributedString.length))
+            marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, marketCapLabelAttributedString.length))
+            marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(0, 1))
+            
+            if marketCapString.hasSuffix("K") || marketCapString.hasSuffix("M") || marketCapString.hasSuffix("B") || marketCapString.hasSuffix("T") {
+                marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+            }
+            
+            marketCapLabel.attributedText = marketCapLabelAttributedString
             
             /*println("\n\(company.name) Targets:")
             for target in company.targets {

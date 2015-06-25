@@ -317,17 +317,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
                 revenueTitleLabel.text = company.revenueGrowthLabelString()
                 //revenueLabel.text = company.currencySymbol + company.revenueLabelString()
                 //let revenueString = company.currencySymbol + company.revenueLabelString()
-                let revenueString = company.currencySymbol + company.revenueLabelString()
-                var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
-                revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: PIBColor.blueColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
-                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(17.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
-                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(0, 1))
                 
-                if revenueString.hasSuffix("K") || revenueString.hasSuffix("M") || revenueString.hasSuffix("B") || revenueString.hasSuffix("T") {
-                    revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                if Double(company.mostRecentRevenue) != 0 {
+                    
+                    let revenueString = company.currencySymbol + company.revenueLabelString()
+                    var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
+                    revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: PIBColor.blueColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
+                    revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(17.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
+                    revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(0, 1))
+                    
+                    if revenueString.hasSuffix("K") || revenueString.hasSuffix("M") || revenueString.hasSuffix("B") || revenueString.hasSuffix("T") {
+                        revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.boldSystemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                    }
+                    
+                    revenueLabel.attributedText = revenueLabelAttributedString
+                    
+                } else {
+                    
+                    revenueLabel.text = ""
                 }
-                
-                revenueLabel.attributedText = revenueLabelAttributedString
                 
                 locationLabel.hidden = false
                 activityIndicator.hidden = true
