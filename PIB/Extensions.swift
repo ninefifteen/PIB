@@ -160,7 +160,6 @@ extension Company {
             
             let revenueCurrent = Double(totalRevenueArray[0].value)
             let revenuePrevious = Double(totalRevenueArray[1].value)
-            println("\(name), \(revenueCurrent), \(revenuePrevious)")
             
             if revenueCurrent != 0.0 && revenuePrevious != 0.0 {
                 let revenueDelta = revenueCurrent - revenuePrevious

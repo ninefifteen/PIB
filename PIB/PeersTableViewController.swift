@@ -124,6 +124,7 @@ class PeersTableViewController: UITableViewController {
                 cell.accessoryView = nil
                 cell.contentView.alpha = 1.0
                 revenueLabel.hidden = false
+                revenueTitleLabel.hidden = false
                 revenueTitleLabel.text = company.revenueGrowthLabelString()
                 
                 if Double(company.mostRecentRevenue) != 0 {
@@ -232,7 +233,9 @@ class PeersTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.row == peers.count { }
+        if indexPath.row == peers.count {
+            tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        }
     }
 
     /*
