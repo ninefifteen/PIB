@@ -81,6 +81,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     // MARK: - Properties
     
     weak var delegate: GraphContentViewControllerDelegate?
+    weak var companyOverviewViewControllerDelegate: DetailViewController!
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
     @IBOutlet weak var descriptionView: UIView!
@@ -181,6 +182,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let companyOverviewViewController = storyboard?.instantiateViewControllerWithIdentifier("CompanyOverviewViewController") as! CompanyOverviewViewController
             companyOverviewViewController.company = company
             companyOverviewViewController.managedObjectContext = managedObjectContext
+            companyOverviewViewController.delegate = companyOverviewViewControllerDelegate
             addChildViewController(companyOverviewViewController)
             companyOverviewViewController.view.frame = descriptionView.frame
             descriptionView.addSubview(companyOverviewViewController.view)

@@ -8,6 +8,12 @@
 
 import UIKit
 
+
+@objc protocol CompanyOverviewViewControllerDelegate: class {
+    optional func descriptionViewButtonPressed()
+}
+
+
 class CompanyOverviewViewController: UIViewController {
     
     
@@ -18,7 +24,6 @@ class CompanyOverviewViewController: UIViewController {
         struct SegueIdentifiers {
             static let kShowPeersTable = "showPeersTable"
             static let kShowPeersTableEditMode = "showPeersTableEditMode"
-            static let kShowDescriptionView = "showDescriptionView"
         }
         
         struct TableViewCellIdentifiers {
@@ -32,6 +37,8 @@ class CompanyOverviewViewController: UIViewController {
     
     
     // MARK: - Properties
+    
+    weak var delegate: CompanyOverviewViewControllerDelegate?
     
     @IBOutlet weak var descriptionTextView: UITextView!
     
@@ -97,6 +104,13 @@ class CompanyOverviewViewController: UIViewController {
             peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
         }
     }*/
+    
+    
+    // MARK: - IBActions
+    
+    @IBAction func descriptionTextViewButtonPressed(sender: UIButton) {
+        delegate?.descriptionViewButtonPressed!()
+    }
     
     
     // MARK: - Populate Labels
@@ -199,12 +213,12 @@ class CompanyOverviewViewController: UIViewController {
             controller.isEditMode = false
             controller.navigationItem.leftItemsSupplementBackButton = true
             
-        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+        } /*else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
             
             let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DescriptionViewController
             controller.company = company
             controller.navigationItem.leftItemsSupplementBackButton = true
-        }
+        }*/
     }
     
     

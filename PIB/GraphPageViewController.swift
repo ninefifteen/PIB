@@ -18,6 +18,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     var managedObjectContext: NSManagedObjectContext!
     
     weak var graphContentViewControllerDelegate: DetailViewController!
+    weak var companyOverviewViewControllerDelegate: DetailViewController!
     
     
     // MARK: - View Lifecycle
@@ -52,6 +53,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
             graphContentViewController.company = company
             graphContentViewController.managedObjectContext = managedObjectContext
             graphContentViewController.delegate = graphContentViewControllerDelegate
+            graphContentViewController.companyOverviewViewControllerDelegate = companyOverviewViewControllerDelegate
             return graphContentViewController
         } else {
             return nil

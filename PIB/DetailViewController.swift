@@ -9,7 +9,7 @@
 import UIKit
 import CoreData
 
-class DetailViewController: UIViewController, UIPageViewControllerDelegate, GraphContentViewControllerDelegate {
+class DetailViewController: UIViewController, UIPageViewControllerDelegate, GraphContentViewControllerDelegate, CompanyOverviewViewControllerDelegate {
     
     
     // MARK: - Types
@@ -17,6 +17,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     struct MainStoryboard {
         struct SegueIdentifiers {
             static let kShowCompanyOverView = "showCompanyOverview"
+            static let kShowDescriptionView = "showDescriptionView"
             static let kEmbedGraph = "embedGraph"
             static let kEmbedPeersTable = "embedPeersTable"
         }
@@ -37,7 +38,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var valueViewLabel: UILabel!
     @IBOutlet weak var competitorsBarView: UIView!
     @IBOutlet weak var backgroundImageContainerView: UIView!
-    
     @IBOutlet weak var editButton: UIButton!
     
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
@@ -394,6 +394,13 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     }
     
     
+    // MARK: - CompanyOverviewViewControllerDelegate
+    
+    func descriptionViewButtonPressed() {
+        performSegueWithIdentifier(MainStoryboard.SegueIdentifiers.kShowDescriptionView, sender: nil)
+    }
+    
+    
     // MARK: - Segues
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -407,6 +414,14 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             graphPageViewController.pageIdentifiers = pageIdentifiers
             graphPageViewController.delegate = self
             graphPageViewController.graphContentViewControllerDelegate = self
+            graphPageViewController.companyOverviewViewControllerDelegate = self
+        } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+            providesPresentationContextTransitionStyle = true
+            definesPresentationContext = true
+            let descriptionViewController = segue.destinationViewController as! DescriptionViewController
+            descriptionViewController.company = company
+            descriptionViewController.modalPresentationStyle = .OverFullScreen
+            descriptionViewController.modalTransitionStyle = .CrossDissolve
         } else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowCompanyOverView {
             let companyOverviewViewController = segue.destinationViewController as! CompanyOverviewViewController
             companyOverviewViewController.company = company
@@ -428,5 +443,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         } else {
             return true
         }
+    }
+    
+    @IBAction func unwindFromShowDescriptionViewSegue(segue: UIStoryboardSegue) {
+        
+        let controller = segue.sourceViewController as! DescriptionViewController
+        controller.dismissViewControllerAnimated(true, completion: nil)
     }
 }

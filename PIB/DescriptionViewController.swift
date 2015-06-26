@@ -25,7 +25,7 @@ class DescriptionViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         
-        title = company.name
+        //title = company.name
         
         updateLabels()
     }
@@ -39,9 +39,9 @@ class DescriptionViewController: UIViewController {
     
         super.viewWillLayoutSubviews()
         
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        /*dispatch_async(dispatch_get_main_queue(), { () -> Void in
             self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
-        })
+        })*/
     }
     
     
@@ -49,9 +49,9 @@ class DescriptionViewController: UIViewController {
     
     func updateLabels() {
         
-        if company != nil {
+        /*if company != nil {
             descriptionTextView.text = company.companyDescription
-        }
+        }*/
     }
     
 
