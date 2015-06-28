@@ -39,6 +39,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var competitorsBarView: UIView!
     @IBOutlet weak var backgroundImageContainerView: UIView!
     @IBOutlet weak var editButton: UIButton!
+    @IBOutlet weak var competitorsLabel: UILabel!
     
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
@@ -89,6 +90,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             titleLabel.textAlignment = .Center
             navigationItem.titleView = titleLabel
             //title = company.name
+        } else {
+            pageControl.hidden = true
+            competitorsLabel.hidden = true
+            editButton.hidden = true
         }
         
         navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
