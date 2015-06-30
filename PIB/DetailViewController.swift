@@ -84,6 +84,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleManagedObjectModelChangeNotification:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext)
         
+        /*if let backgroundImage = UIImage(named: "navBarBackground") {
+            UINavigationBar.appearance().setBackgroundImage(backgroundImage.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 0, 0, 0), resizingMode: .Stretch), forBarMetrics: .Default)
+        }*/
+        
         let backButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItemStyle.Plain, target: nil, action: nil)
         navigationItem.backBarButtonItem = backButtonItem
         
@@ -102,9 +106,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             editButton.hidden = true
         }
         
-        navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+        /*navigationController!.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         navigationController!.navigationBar.shadowImage = UIImage()
-        navigationController!.navigationBar.translucent = true
+        navigationController!.navigationBar.translucent = true*/
         
         let leftConstraint = NSLayoutConstraint(item: scrollContainer, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0)
         view.addConstraint(leftConstraint)
@@ -144,8 +148,13 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             }
         }*/
         
-        topViewHeightConstraint.constant = view.bounds.height * 0.65
-        imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation) {
+            topViewHeightConstraint.constant = view.bounds.height
+            imageBackgroundHeightConstraint.constant = view.bounds.height
+        } else {
+            topViewHeightConstraint.constant = view.bounds.height * 0.65
+            imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
+        }
         
         if company != nil {
             peersTableContainerHeightConstraint.constant = isPeersTableEditing ? CGFloat(Double(company.peers.count + 1) * 52.0) : CGFloat(Double(company.peers.count) * 52.0)

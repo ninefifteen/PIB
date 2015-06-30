@@ -9,7 +9,7 @@
         <scene sceneID="pY4-Hu-kfo">
             <objects>
                 <navigationController title="Master" id="RMx-3f-FxP" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="Pmd-2v-anx">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="Pmd-2v-anx">
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -38,7 +38,7 @@
         <scene sceneID="r7l-gg-dq7">
             <objects>
                 <navigationController id="vC3-pB-5Vb" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="DjV-YW-jjY">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translucent="NO" id="DjV-YW-jjY">
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -58,14 +58,14 @@
                         <viewControllerLayoutGuide type="bottom" id="4Yo-EG-pqR"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="eGI-Xl-PXi">
-                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="navBarBackground" translatesAutoresizingMaskIntoConstraints="NO" id="Ugc-xj-jBo">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PDM-ZY-WAK">
-                                <rect key="frame" x="0.0" y="64" width="300" height="40"/>
+                                <rect key="frame" x="0.0" y="0.0" width="300" height="40"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fKU-bS-Owf">
                                         <rect key="frame" x="0.0" y="39" width="300" height="1"/>
@@ -112,7 +112,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PCu-Hf-PG7">
-                                <rect key="frame" x="300" y="64" width="300" height="40"/>
+                                <rect key="frame" x="300" y="0.0" width="300" height="40"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="qof-j0-vfD">
                                         <rect key="frame" x="0.0" y="39" width="300" height="1"/>
@@ -148,7 +148,7 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="781-Dn-qJb">
-                                <rect key="frame" x="0.0" y="104" width="600" height="496"/>
+                                <rect key="frame" x="0.0" y="40" width="600" height="496"/>
                                 <subviews>
                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cd4-x3-PFU">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="496"/>
@@ -439,27 +439,27 @@
                         <viewControllerLayoutGuide type="bottom" id="bvf-tB-SnS"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="hw2-SP-5du">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dF5-DW-ra4">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
                                 <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="navBarBackground" translatesAutoresizingMaskIntoConstraints="NO" id="Di4-oE-KbF">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="navBarBackground" translatesAutoresizingMaskIntoConstraints="NO" id="Di4-oE-KbF">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
+                                    <constraint firstAttribute="bottom" secondItem="Di4-oE-KbF" secondAttribute="bottom" id="8EY-OP-mla"/>
                                     <constraint firstItem="Di4-oE-KbF" firstAttribute="top" secondItem="dF5-DW-ra4" secondAttribute="top" id="9SX-yW-lUO"/>
                                     <constraint firstItem="Di4-oE-KbF" firstAttribute="leading" secondItem="dF5-DW-ra4" secondAttribute="leading" id="Jw2-O8-QMM"/>
                                     <constraint firstAttribute="trailing" secondItem="Di4-oE-KbF" secondAttribute="trailing" id="VwN-lF-hoE"/>
                                     <constraint firstAttribute="height" constant="398" id="oiX-7N-AaM"/>
-                                    <constraint firstAttribute="bottom" secondItem="Di4-oE-KbF" secondAttribute="bottom" id="tkh-bV-sj5"/>
                                 </constraints>
                             </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lFC-Pz-YQr">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hWR-hL-yRm" userLabel="scrollContainer">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
@@ -471,7 +471,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
                                                     </imageView>
                                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tqM-Rp-xFw">
-                                                        <rect key="frame" x="0.0" y="64" width="600" height="334"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <connections>
                                                             <segue destination="48B-kN-GCi" kind="embed" identifier="embedGraph" id="rjD-4O-oHf"/>
@@ -487,7 +487,7 @@
                                                     <constraint firstAttribute="height" constant="398" id="a2t-lL-NP1"/>
                                                     <constraint firstAttribute="trailing" secondItem="tqM-Rp-xFw" secondAttribute="trailing" id="dP2-ru-7Av"/>
                                                     <constraint firstItem="GoX-CS-Srh" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" id="i4V-Hh-WaN"/>
-                                                    <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" constant="64" id="q7K-qX-ttV"/>
+                                                    <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" id="q7K-qX-ttV"/>
                                                     <constraint firstItem="tqM-Rp-xFw" firstAttribute="leading" secondItem="dC7-1E-7LG" secondAttribute="leading" id="sUT-p3-ejy"/>
                                                 </constraints>
                                             </view>
@@ -537,7 +537,7 @@
                                                 </connections>
                                             </containerView>
                                             <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="5" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="uEj-i2-fX0">
-                                                <rect key="frame" x="264" y="56" width="71" height="37"/>
+                                                <rect key="frame" x="264" y="0.0" width="71" height="37"/>
                                                 <color key="pageIndicatorTintColor" red="0.78431372549019607" green="0.78431372549019607" blue="0.78431372549019607" alpha="1" colorSpace="calibratedRGB"/>
                                                 <color key="currentPageIndicatorTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <connections>
@@ -549,7 +549,7 @@
                                         <constraints>
                                             <constraint firstItem="Xsz-IK-DTu" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="bottom" id="5X8-gY-qB5"/>
                                             <constraint firstAttribute="width" constant="600" placeholder="YES" id="Am6-Fx-6F4"/>
-                                            <constraint firstItem="uEj-i2-fX0" firstAttribute="top" secondItem="hWR-hL-yRm" secondAttribute="top" constant="56" id="aWz-Gj-9ze"/>
+                                            <constraint firstItem="uEj-i2-fX0" firstAttribute="top" secondItem="hWR-hL-yRm" secondAttribute="top" id="aWz-Gj-9ze"/>
                                             <constraint firstItem="6ap-cs-F81" firstAttribute="leading" secondItem="hWR-hL-yRm" secondAttribute="leading" id="dbQ-zJ-jKx"/>
                                             <constraint firstAttribute="trailing" secondItem="Xsz-IK-DTu" secondAttribute="trailing" id="eCJ-36-AVN"/>
                                             <constraint firstItem="6ap-cs-F81" firstAttribute="top" secondItem="Xsz-IK-DTu" secondAttribute="bottom" id="f1K-8k-Y8r"/>
@@ -1146,7 +1146,7 @@
         <image name="navBarBackground" width="750" height="129"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="VVC-je-NKy"/>
+        <segue reference="Tll-UG-LXB"/>
         <segue reference="xuI-Ga-zcs"/>
     </inferredMetricsTieBreakers>
 </document>

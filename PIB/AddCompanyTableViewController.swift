@@ -114,7 +114,6 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        println("prepareForSegue")
         navigationController?.presentTransparentNavigationBar()
         
         if let tableViewCell = sender as? UITableViewCell {
