@@ -50,6 +50,8 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var competitorsTitleBarHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var pageControlVerticalSpaceConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topContainerVerticalSpaceConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var pageControl: UIPageControl!
     
@@ -144,8 +146,17 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             }
         }*/
         
-        topViewHeightConstraint.constant = view.bounds.height * 0.65
-        imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
+        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation) {
+            topContainerVerticalSpaceConstraint.constant = 48
+            pageControlVerticalSpaceConstraint.constant = 40
+            topViewHeightConstraint.constant = view.bounds.height
+            imageBackgroundHeightConstraint.constant = view.bounds.height
+        } else {
+            topContainerVerticalSpaceConstraint.constant = 64
+            pageControlVerticalSpaceConstraint.constant = 56
+            topViewHeightConstraint.constant = view.bounds.height * 0.65
+            imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
+        }
         
         if company != nil {
             peersTableContainerHeightConstraint.constant = isPeersTableEditing ? CGFloat(Double(company.peers.count + 1) * 52.0) : CGFloat(Double(company.peers.count) * 52.0)

@@ -601,9 +601,11 @@
                         <outlet property="editButton" destination="0lK-BS-6JA" id="dpX-FL-xDn"/>
                         <outlet property="imageBackgroundHeightConstraint" destination="oiX-7N-AaM" id="jfX-Gi-ivR"/>
                         <outlet property="pageControl" destination="uEj-i2-fX0" id="Ios-SM-zBx"/>
+                        <outlet property="pageControlVerticalSpaceConstraint" destination="aWz-Gj-9ze" id="oEC-lC-zS4"/>
                         <outlet property="peersTableContainerHeightConstraint" destination="xDd-G2-Y35" id="1nd-yA-zLm"/>
                         <outlet property="scrollContainer" destination="hWR-hL-yRm" id="AfC-MQ-PuI"/>
                         <outlet property="scrollView" destination="lFC-Pz-YQr" id="14O-QQ-1mM"/>
+                        <outlet property="topContainerVerticalSpaceConstraint" destination="q7K-qX-ttV" id="acG-CY-C50"/>
                         <outlet property="topViewHeightConstraint" destination="a2t-lL-NP1" id="IDU-LD-o1y"/>
                         <segue destination="5gq-Jc-Pig" kind="presentation" identifier="showDescriptionView" id="wJb-hl-Adh"/>
                     </connections>
