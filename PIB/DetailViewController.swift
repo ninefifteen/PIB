@@ -30,6 +30,10 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - Properties
     
+    
+    @IBOutlet weak var scrollView: UIScrollView!
+    
+    @IBOutlet weak var scrollContainer: UIView!
     @IBOutlet weak var containerView: UIView!
     @IBOutlet weak var locationLabel: UILabel!
     @IBOutlet weak var companyNameLocationView: UIView!
@@ -41,6 +45,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var editButton: UIButton!
     @IBOutlet weak var competitorsLabel: UILabel!
     
+    @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var competitorsTitleBarHeightConstraint: NSLayoutConstraint!
@@ -100,6 +105,11 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         navigationController!.navigationBar.shadowImage = UIImage()
         navigationController!.navigationBar.translucent = true
         
+        let leftConstraint = NSLayoutConstraint(item: scrollContainer, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Left, multiplier: 1.0, constant: 0)
+        view.addConstraint(leftConstraint)
+        let rightConstraint = NSLayoutConstraint(item: scrollContainer, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Right, multiplier: 1.0, constant: 0)
+        view.addConstraint(rightConstraint)
+        
         //updateLabels()
     }
     
@@ -118,6 +128,9 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // Calculate tableview height based on screen height.
     override func viewWillLayoutSubviews() {
         
+        println("viewWillLayoutSubviews view width: \(view.bounds.width)")
+        println("viewWillLayoutSubviews scrollContainer width: \(scrollContainer.bounds.width)")
+        
         super.viewWillLayoutSubviews()
         
         let orientation = UIApplication.sharedApplication().statusBarOrientation
@@ -133,6 +146,22 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 competitorsBarView.hidden = false
             }
         }
+        
+        topViewHeightConstraint.constant = view.bounds.height * 0.65
+        
+        if company != nil {
+            peersTableContainerHeightConstraint.constant = CGFloat(Double(company.peers.count) * 52.0)
+        }
+        
+        println("viewWillLayoutSubviews view width: \(view.bounds.width)")
+        println("viewWillLayoutSubviews scrollContainer width: \(scrollContainer.bounds.width)")
+    }
+    
+    override func viewDidLayoutSubviews() {
+        
+        super.viewDidLayoutSubviews()
+        
+        println("viewDidLayoutSubviews view width: \(view.bounds.width)")
     }
     
     /*override func viewWillLayoutSubviews() {
