@@ -80,7 +80,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         
         super.viewWillAppear(animated)
         
-        /*if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
+        if let firstRunValueString = NSUserDefaults.standardUserDefaults().objectForKey("firstRun") as? String {
             if firstRunValueString == "true" {
                 WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
                     if success {
@@ -92,7 +92,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
         }
         
-        isFirstAppearanceOfView = false*/
+        isFirstAppearanceOfView = false
     }
     
     override func viewDidAppear(animated: Bool) {

@@ -132,7 +132,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         
         let orientation = UIApplication.sharedApplication().statusBarOrientation
         
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation) {
+        /*if UIDevice.currentDevice().userInterfaceIdiom == .Phone && UIInterfaceOrientationIsLandscape(orientation) {
             peersTableContainerHeightConstraint.constant = 0.0
             competitorsTitleBarHeightConstraint.constant = 0.0
             competitorsBarView.hidden = true
@@ -142,7 +142,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
                 competitorsTitleBarHeightConstraint.constant = 30.0
                 competitorsBarView.hidden = false
             }
-        }
+        }*/
         
         topViewHeightConstraint.constant = view.bounds.height * 0.65
         imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
@@ -155,27 +155,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
     }
-    
-    /*override func viewWillLayoutSubviews() {
-    
-        super.viewWillLayoutSubviews()
-    
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
-    
-            let orientation = UIApplication.sharedApplication().statusBarOrientation
-            
-            if !valueView.hidden && UIInterfaceOrientationIsLandscape(orientation) {
-                valueViewTypeLabel.text = ""
-                valueViewLabel.text = ""
-                valueView.hidden = true
-            }
-            descriptionView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
-            descriptionViewHeightConstraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
-            view.layoutIfNeeded()
-            
-            pageControl.hidden = false
-        }
-    }*/
     
     
     // MARK: - IBActions
@@ -190,6 +169,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             } else {
                 isPeersTableEditing = true
                 editButton.setTitle("DONE", forState: .Normal)
+                
             }
             
             peersTableViewController.setTableEditing(isPeersTableEditing, animated: true)
