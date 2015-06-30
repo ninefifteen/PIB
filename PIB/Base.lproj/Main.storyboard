@@ -433,7 +433,7 @@
         <!--Detail-->
         <scene sceneID="0zh-UF-liU">
             <objects>
-                <viewController title="Detail" id="QDx-Jf-XX2" customClass="DetailViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Detail" automaticallyAdjustsScrollViewInsets="NO" id="QDx-Jf-XX2" customClass="DetailViewController" customModule="PIB" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="84L-Ze-ivB"/>
                         <viewControllerLayoutGuide type="bottom" id="bvf-tB-SnS"/>
@@ -442,6 +442,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dF5-DW-ra4">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="navBarBackground" translatesAutoresizingMaskIntoConstraints="NO" id="Di4-oE-KbF">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstItem="Di4-oE-KbF" firstAttribute="top" secondItem="dF5-DW-ra4" secondAttribute="top" id="9SX-yW-lUO"/>
+                                    <constraint firstItem="Di4-oE-KbF" firstAttribute="leading" secondItem="dF5-DW-ra4" secondAttribute="leading" id="Jw2-O8-QMM"/>
+                                    <constraint firstAttribute="trailing" secondItem="Di4-oE-KbF" secondAttribute="trailing" id="VwN-lF-hoE"/>
+                                    <constraint firstAttribute="height" constant="398" id="oiX-7N-AaM"/>
+                                    <constraint firstAttribute="bottom" secondItem="Di4-oE-KbF" secondAttribute="bottom" id="tkh-bV-sj5"/>
+                                </constraints>
+                            </view>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lFC-Pz-YQr">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                                 <subviews>
@@ -455,14 +471,14 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
                                                     </imageView>
                                                     <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tqM-Rp-xFw">
-                                                        <rect key="frame" x="0.0" y="0.0" width="600" height="398"/>
+                                                        <rect key="frame" x="0.0" y="64" width="600" height="334"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                         <connections>
                                                             <segue destination="48B-kN-GCi" kind="embed" identifier="embedGraph" id="rjD-4O-oHf"/>
                                                         </connections>
                                                     </containerView>
                                                 </subviews>
-                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="GoX-CS-Srh" secondAttribute="trailing" id="7E3-wh-zW4"/>
                                                     <constraint firstAttribute="bottom" secondItem="GoX-CS-Srh" secondAttribute="bottom" id="Izj-9Z-o5I"/>
@@ -471,7 +487,7 @@
                                                     <constraint firstAttribute="height" constant="398" id="a2t-lL-NP1"/>
                                                     <constraint firstAttribute="trailing" secondItem="tqM-Rp-xFw" secondAttribute="trailing" id="dP2-ru-7Av"/>
                                                     <constraint firstItem="GoX-CS-Srh" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" id="i4V-Hh-WaN"/>
-                                                    <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" id="q7K-qX-ttV"/>
+                                                    <constraint firstItem="tqM-Rp-xFw" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="top" constant="64" id="q7K-qX-ttV"/>
                                                     <constraint firstItem="tqM-Rp-xFw" firstAttribute="leading" secondItem="dC7-1E-7LG" secondAttribute="leading" id="sUT-p3-ejy"/>
                                                 </constraints>
                                             </view>
@@ -520,8 +536,8 @@
                                                     <segue destination="dyh-yV-9fy" kind="embed" identifier="embedPeersTable" id="VBe-YV-W9m"/>
                                                 </connections>
                                             </containerView>
-                                            <pageControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="5" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="uEj-i2-fX0">
-                                                <rect key="frame" x="264" y="282" width="71" height="37"/>
+                                            <pageControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" numberOfPages="5" currentPage="1" translatesAutoresizingMaskIntoConstraints="NO" id="uEj-i2-fX0">
+                                                <rect key="frame" x="264" y="56" width="71" height="37"/>
                                                 <color key="pageIndicatorTintColor" red="0.78431372549019607" green="0.78431372549019607" blue="0.78431372549019607" alpha="1" colorSpace="calibratedRGB"/>
                                                 <color key="currentPageIndicatorTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                 <connections>
@@ -533,6 +549,7 @@
                                         <constraints>
                                             <constraint firstItem="Xsz-IK-DTu" firstAttribute="top" secondItem="dC7-1E-7LG" secondAttribute="bottom" id="5X8-gY-qB5"/>
                                             <constraint firstAttribute="width" constant="600" placeholder="YES" id="Am6-Fx-6F4"/>
+                                            <constraint firstItem="uEj-i2-fX0" firstAttribute="top" secondItem="hWR-hL-yRm" secondAttribute="top" constant="56" id="aWz-Gj-9ze"/>
                                             <constraint firstItem="6ap-cs-F81" firstAttribute="leading" secondItem="hWR-hL-yRm" secondAttribute="leading" id="dbQ-zJ-jKx"/>
                                             <constraint firstAttribute="trailing" secondItem="Xsz-IK-DTu" secondAttribute="trailing" id="eCJ-36-AVN"/>
                                             <constraint firstItem="6ap-cs-F81" firstAttribute="top" secondItem="Xsz-IK-DTu" secondAttribute="bottom" id="f1K-8k-Y8r"/>
@@ -540,6 +557,7 @@
                                             <constraint firstAttribute="trailing" secondItem="dC7-1E-7LG" secondAttribute="trailing" id="fQJ-lK-IeE"/>
                                             <constraint firstItem="dC7-1E-7LG" firstAttribute="leading" secondItem="hWR-hL-yRm" secondAttribute="leading" id="fXC-FI-w29"/>
                                             <constraint firstAttribute="height" constant="600" placeholder="YES" id="lxm-go-vqY"/>
+                                            <constraint firstAttribute="centerX" secondItem="uEj-i2-fX0" secondAttribute="centerX" id="oJQ-Qq-4Zl"/>
                                             <constraint firstItem="dC7-1E-7LG" firstAttribute="top" secondItem="hWR-hL-yRm" secondAttribute="top" id="qmp-CN-3Tu"/>
                                             <constraint firstAttribute="trailing" secondItem="6ap-cs-F81" secondAttribute="trailing" id="uaG-Xi-kGV"/>
                                             <constraint firstAttribute="bottom" secondItem="6ap-cs-F81" secondAttribute="bottom" id="vwP-lq-jE0"/>
@@ -558,10 +576,19 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="lFC-Pz-YQr" firstAttribute="leading" secondItem="hw2-SP-5du" secondAttribute="leading" id="FjZ-ea-Dcd"/>
+                            <constraint firstItem="bvf-tB-SnS" firstAttribute="top" secondItem="dF5-DW-ra4" secondAttribute="bottom" id="LgU-71-alG"/>
+                            <constraint firstItem="dF5-DW-ra4" firstAttribute="leading" secondItem="hw2-SP-5du" secondAttribute="leading" id="Nno-pq-KkS"/>
                             <constraint firstAttribute="trailing" secondItem="lFC-Pz-YQr" secondAttribute="trailing" id="PSC-jS-63q"/>
+                            <constraint firstItem="dF5-DW-ra4" firstAttribute="top" secondItem="hw2-SP-5du" secondAttribute="top" id="d91-y6-QVC"/>
                             <constraint firstItem="bvf-tB-SnS" firstAttribute="top" secondItem="lFC-Pz-YQr" secondAttribute="bottom" id="hKQ-tA-HxX"/>
                             <constraint firstItem="lFC-Pz-YQr" firstAttribute="top" secondItem="hw2-SP-5du" secondAttribute="top" id="jCQ-te-a70"/>
+                            <constraint firstAttribute="trailing" secondItem="dF5-DW-ra4" secondAttribute="trailing" id="oyy-8b-Mde"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="LgU-71-alG"/>
+                            </mask>
+                        </variation>
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="rSS-nq-bBg"/>
@@ -572,6 +599,7 @@
                         <outlet property="competitorsTitleBarHeightConstraint" destination="LbZ-pY-z2f" id="lgh-bv-iq7"/>
                         <outlet property="containerView" destination="tqM-Rp-xFw" id="iTi-9S-rX4"/>
                         <outlet property="editButton" destination="0lK-BS-6JA" id="dpX-FL-xDn"/>
+                        <outlet property="imageBackgroundHeightConstraint" destination="oiX-7N-AaM" id="jfX-Gi-ivR"/>
                         <outlet property="pageControl" destination="uEj-i2-fX0" id="Ios-SM-zBx"/>
                         <outlet property="peersTableContainerHeightConstraint" destination="xDd-G2-Y35" id="1nd-yA-zLm"/>
                         <outlet property="scrollContainer" destination="hWR-hL-yRm" id="AfC-MQ-PuI"/>

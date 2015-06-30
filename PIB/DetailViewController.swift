@@ -46,6 +46,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     @IBOutlet weak var competitorsLabel: UILabel!
     
     @IBOutlet weak var topViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageBackgroundHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var valueViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var competitorsTitleBarHeightConstraint: NSLayoutConstraint!
@@ -125,11 +126,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     // MARK: - Subview Size Modification
     
-    // Calculate tableview height based on screen height.
     override func viewWillLayoutSubviews() {
-        
-        println("viewWillLayoutSubviews view width: \(view.bounds.width)")
-        println("viewWillLayoutSubviews scrollContainer width: \(scrollContainer.bounds.width)")
         
         super.viewWillLayoutSubviews()
         
@@ -148,20 +145,15 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         }
         
         topViewHeightConstraint.constant = view.bounds.height * 0.65
+        imageBackgroundHeightConstraint.constant = view.bounds.height * 0.65
         
         if company != nil {
-            peersTableContainerHeightConstraint.constant = CGFloat(Double(company.peers.count) * 52.0)
+            peersTableContainerHeightConstraint.constant = isPeersTableEditing ? CGFloat(Double(company.peers.count + 1) * 52.0) : CGFloat(Double(company.peers.count) * 52.0)
         }
-        
-        println("viewWillLayoutSubviews view width: \(view.bounds.width)")
-        println("viewWillLayoutSubviews scrollContainer width: \(scrollContainer.bounds.width)")
     }
     
     override func viewDidLayoutSubviews() {
-        
         super.viewDidLayoutSubviews()
-        
-        println("viewDidLayoutSubviews view width: \(view.bounds.width)")
     }
     
     /*override func viewWillLayoutSubviews() {
