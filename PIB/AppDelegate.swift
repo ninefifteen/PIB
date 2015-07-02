@@ -14,31 +14,6 @@ let logAnalytics: Bool = false
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
     
-    /*var updateContextWithUbiquitousContentUpdates: Bool = false {
-        willSet {
-            println("willSet updateContextWithUbiquitousContentUpdates")
-            ubiquitousChangesObserver = newValue ? NSNotificationCenter.defaultCenter() : nil
-        }
-    }
-    
-    private var ubiquitousChangesObserver : NSNotificationCenter? {
-        didSet {
-            println("didSet ubiquitousChangesObserver")
-            oldValue?.removeObserver(self, name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
-            ubiquitousChangesObserver?.addObserver(self, selector: "persistentStoreDidImportUbiquitousContentChanges:", name: NSPersistentStoreDidImportUbiquitousContentChangesNotification, object: persistentStoreCoordinator)
-        }
-    }
-    
-    func persistentStoreDidImportUbiquitousContentChanges(notification: NSNotification) {
-        println("Merging ubiquitous content changes")
-        if let managedObjectContext = managedObjectContext {
-            managedObjectContext.performBlock({ () -> Void in
-                println("Merge ubiquitous content changes!!")
-                managedObjectContext.mergeChangesFromContextDidSaveNotification(notification)
-            })
-        }
-    }*/
-    
     struct GoogleAnalytics {
         static let kTrackerId = "UA-35969227-1"
     }
@@ -58,8 +33,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
-        //updateContextWithUbiquitousContentUpdates = true
         
         // Override point for customization after application launch.
         let defaults = NSUserDefaults.standardUserDefaults()
