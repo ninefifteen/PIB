@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DescriptionViewController: UIViewController, UITextViewDelegate {
+class DescriptionViewController: UIViewController {
 
     
     // MARK: - Properties
@@ -35,7 +35,6 @@ class DescriptionViewController: UIViewController, UITextViewDelegate {
         
         //title = company.name
         
-        descriptionTextView.delegate = self
         descriptionTextViewOriginalFrame = CGRectMake(descriptionTextView.frame.origin.x, descriptionTextView.frame.origin.y, descriptionTextView.frame.width, descriptionTextView.frame.height)
         
         descriptionViewBottomLayoutConstraintOriginalValue = descriptionViewBottomLayoutConstraint.constant
@@ -48,7 +47,6 @@ class DescriptionViewController: UIViewController, UITextViewDelegate {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        println("viewDidAppear descriptionTextView width: \(descriptionTextView.frame.width) height: \(descriptionTextView.frame.height)")
     }
 
     override func didReceiveMemoryWarning() {
@@ -77,13 +75,13 @@ class DescriptionViewController: UIViewController, UITextViewDelegate {
         let newSize = descriptionTextView.sizeThatFits(CGSizeMake(fixedWidth, CGFloat.max))
         var newFrame = descriptionTextView.frame
         newFrame.size = CGSizeMake(fmax(newSize.width, fixedWidth), newSize.height)
-        descriptionTextView.frame = newFrame
+        let newTextViewHeight = newFrame.size.height
         
-        let textViewHeightDelta = textViewStartingHeight - descriptionTextView.frame.height
+        let textViewHeightDelta = textViewStartingHeight - newFrame.size.height
         let newDescriptionViewBottomConstraintValue = descriptionViewBottomConstraintStartingValue + textViewHeightDelta
         let newDescriptionTextViewBottomConstraintValue = descriptionTextViewBottomConstraintStartingValue + textViewHeightDelta
-        descriptionViewBottomLayoutConstraint.constant = newDescriptionViewBottomConstraintValue > 74.0 ? newDescriptionViewBottomConstraintValue : 74.0
-        descriptionTextViewBottomLayoutConstraint.constant = newDescriptionTextViewBottomConstraintValue > 82.0 ? newDescriptionTextViewBottomConstraintValue : 82.0
+        descriptionViewBottomLayoutConstraint.constant = newDescriptionViewBottomConstraintValue > 46.0 ? newDescriptionViewBottomConstraintValue : 46.0
+        descriptionTextViewBottomLayoutConstraint.constant = newDescriptionTextViewBottomConstraintValue > 54.0 ? newDescriptionTextViewBottomConstraintValue : 54.0
     }
     
     
@@ -108,20 +106,6 @@ class DescriptionViewController: UIViewController, UITextViewDelegate {
             
             descriptionTextView.text = company.companyDescription
         }
-    }
-    
-    
-    // MARK: - Text View Delegate
-    
-    func textViewDidChange(textView: UITextView) {
-        
-        println("textViewDidChange")
-        
-        let fixedWidth = descriptionTextView.frame.size.width
-        let newSize = descriptionTextView.sizeThatFits(CGSizeMake(fixedWidth, CGFloat.max))
-        var newFrame = descriptionTextView.frame
-        newFrame.size = CGSizeMake(fmax(newSize.width, fixedWidth), newSize.height)
-        descriptionTextView.frame = newFrame
     }
     
 
