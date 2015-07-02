@@ -77,9 +77,10 @@ class DescriptionViewController: UIViewController, UITextViewDelegate {
         let newSize = descriptionTextView.sizeThatFits(CGSizeMake(fixedWidth, CGFloat.max))
         var newFrame = descriptionTextView.frame
         newFrame.size = CGSizeMake(fmax(newSize.width, fixedWidth), newSize.height)
-        descriptionTextView.frame = newFrame
+        let newTextViewHeight = newFrame.size.height
+        //descriptionTextView.frame = newFrame
         
-        let textViewHeightDelta = textViewStartingHeight - descriptionTextView.frame.height
+        let textViewHeightDelta = textViewStartingHeight - newFrame.size.height
         let newDescriptionViewBottomConstraintValue = descriptionViewBottomConstraintStartingValue + textViewHeightDelta
         let newDescriptionTextViewBottomConstraintValue = descriptionTextViewBottomConstraintStartingValue + textViewHeightDelta
         descriptionViewBottomLayoutConstraint.constant = newDescriptionViewBottomConstraintValue > 74.0 ? newDescriptionViewBottomConstraintValue : 74.0
