@@ -48,13 +48,9 @@ class CompanyOverviewViewController: UIViewController {
     @IBOutlet weak var profitMarginLabel: UILabel!
     @IBOutlet weak var marketCapLabel: UILabel!
     
-    //@IBOutlet weak var peersTableView: UITableView!
-    
-    //@IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
-    
     var company: Company!
     var managedObjectContext: NSManagedObjectContext!
-
+    
     var peers = [Company]()
     var peersTableCellCount = 0
     
@@ -73,9 +69,6 @@ class CompanyOverviewViewController: UIViewController {
             tracker.send(build)
         }
         
-        //peersTableView.dataSource = self
-        //peersTableView.delegate = self
-        
         updateLabels()
     }
     
@@ -86,34 +79,37 @@ class CompanyOverviewViewController: UIViewController {
     
     // Calculate tableview height based on screen height.
     /*override func viewWillLayoutSubviews() {
-        
-        /*var maxCellsToDisplay = 0
-        let rowHeight = peersTableView.rowHeight
-        let buffer: CGFloat = 46.0
-        
-        if let screenHeight = view.window?.bounds.height {
-            
-            if screenHeight >= 1024 {
-                maxCellsToDisplay = 7
-            } else if screenHeight >= 736 {
-                maxCellsToDisplay = 5
-            } else if screenHeight >= 667 {
-                maxCellsToDisplay = 4
-            } else if screenHeight >= 568 {
-                maxCellsToDisplay = 3
-            } else if screenHeight >= 480 {
-                maxCellsToDisplay = 2
-            } else {
-                maxCellsToDisplay = 1
-            }
-            
-            peersTableContainerHeightConstraint.constant = CGFloat(maxCellsToDisplay) * rowHeight + buffer
-            peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
-        }*/
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-            self.descriptionTextView.setContentOffset(CGPointZero, animated: false)
-        })
+    
+    var maxCellsToDisplay = 0
+    let rowHeight = peersTableView.rowHeight
+    let buffer: CGFloat = 46.0
+    
+    if let screenHeight = view.window?.bounds.height {
+    
+    if screenHeight >= 1024 {
+    maxCellsToDisplay = 7
+    } else if screenHeight >= 736 {
+    maxCellsToDisplay = 5
+    } else if screenHeight >= 667 {
+    maxCellsToDisplay = 4
+    } else if screenHeight >= 568 {
+    maxCellsToDisplay = 3
+    } else if screenHeight >= 480 {
+    maxCellsToDisplay = 2
+    } else {
+    maxCellsToDisplay = 1
+    }
+    
+    peersTableContainerHeightConstraint.constant = CGFloat(maxCellsToDisplay) * rowHeight + buffer
+    peersTableCellCount = maxCellsToDisplay < peers.count ? maxCellsToDisplay : peers.count
+    }
+    }*/
+    
+    
+    // MARK: - IBActions
+    
+    @IBAction func descriptionTextViewButtonPressed(sender: UIButton) {
+        delegate?.descriptionViewButtonPressed!()
     }
     
     
@@ -136,9 +132,9 @@ class CompanyOverviewViewController: UIViewController {
             }
             
             if company.companyDescription != "" {
-                /*descriptionTextView.scrollEnabled = false
+                descriptionTextView.scrollEnabled = false
                 descriptionTextView.textContainer.maximumNumberOfLines = 0
-                descriptionTextView.textContainer.lineBreakMode = NSLineBreakMode.ByTruncatingTail*/
+                descriptionTextView.textContainer.lineBreakMode = NSLineBreakMode.ByTruncatingTail
                 descriptionTextView.text = company.companyDescription
             }
             
@@ -197,68 +193,10 @@ class CompanyOverviewViewController: UIViewController {
             
             /*println("\n\(company.name) Targets:")
             for target in company.targets {
-                if let targetCompany = target as? Company {
-                    println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
-                }
-            }*/
-            
-            /*if company.peers.count > 0 {
-                peers = company.peers.allObjects as [Company]
-                peers.sort({ $0.name < $1.name })
-                peersTableView.reloadData()
-            }*/
-        }
-    }
-    
-    
-    // MARK: - Table View
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peersTableCellCount
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kPeerTableCell, forIndexPath: indexPath) as UITableViewCell
-        
-        let company = peers[indexPath.row] as Company
-        
-        let nameLabel = cell.viewWithTag(101) as UILabel
-        let locationLabel = cell.viewWithTag(102) as UILabel
-        let revenueLabel = cell.viewWithTag(103) as UILabel
-        
-        nameLabel.text = company.name
-        
-        if company.city != "" {
-            if company.country != "" && company.state != "" {
-                locationLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
-            } else if company.country != "" {
-                locationLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
-            } else {
-                locationLabel.text = company.city.capitalizedString
+            if let targetCompany = target as? Company {
+            println("tickerSymbol: \(targetCompany.tickerSymbol), companyName: \(targetCompany.name), exchangeDisplayName: \(targetCompany.exchangeDisplayName)")
             }
-        } else {
-            locationLabel.text = " "
-        }
-        
-        revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-        
-        return cell
-    }
-    
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
-        if cell.respondsToSelector("setSeparatorInset:") {
-            cell.separatorInset = UIEdgeInsetsZero
-        }
-        if cell.respondsToSelector("setPreservesSuperviewLayoutMargins:") {
-            cell.preservesSuperviewLayoutMargins = false
-        }
-        if cell.respondsToSelector("setLayoutMargins:") {
-            cell.layoutMargins = UIEdgeInsetsMake(0.0, 8.0, 0.0, 0.0)
+            }*/
         }
     }
     
@@ -276,10 +214,10 @@ class CompanyOverviewViewController: UIViewController {
             controller.navigationItem.leftItemsSupplementBackButton = true
             
         } /*else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
-            
-            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DescriptionViewController
-            controller.company = company
-            controller.navigationItem.leftItemsSupplementBackButton = true
+        
+        let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DescriptionViewController
+        controller.company = company
+        controller.navigationItem.leftItemsSupplementBackButton = true
         }*/
     }
     

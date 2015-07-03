@@ -137,23 +137,23 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     
     /*override func viewWillLayoutSubviews() {
     
-        super.viewWillLayoutSubviews()
+    super.viewWillLayoutSubviews()
     
-        if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
+    if UIDevice.currentDevice().userInterfaceIdiom == .Phone {
     
-            let orientation = UIApplication.sharedApplication().statusBarOrientation
-            
-            if !valueView.hidden && UIInterfaceOrientationIsLandscape(orientation) {
-                valueViewTypeLabel.text = ""
-                valueViewLabel.text = ""
-                valueView.hidden = true
-            }
-            descriptionView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
-            descriptionViewHeightConstraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
-            view.layoutIfNeeded()
-            
-            pageControl.hidden = false
-        }
+    let orientation = UIApplication.sharedApplication().statusBarOrientation
+    
+    if !valueView.hidden && UIInterfaceOrientationIsLandscape(orientation) {
+    valueViewTypeLabel.text = ""
+    valueViewLabel.text = ""
+    valueView.hidden = true
+    }
+    descriptionView.hidden = UIInterfaceOrientationIsLandscape(orientation) ? true : false
+    descriptionViewHeightConstraint.constant = UIInterfaceOrientationIsLandscape(orientation) ? 0.0 : 94.0
+    view.layoutIfNeeded()
+    
+    pageControl.hidden = false
+    }
     }*/
     
     
@@ -270,7 +270,7 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
             request.predicate = netIncomeGrowthPredicate
             var netIncomeGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
             if error != nil {
-                println("Fetch request error: \(error?.description)")
+            println("Fetch request error: \(error?.description)")
             }*/
             
             let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
@@ -378,20 +378,20 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
     // MARK: - GraphContentViewControllerDelegate
     
     /*func userSelectedGraphPointOfType(type: String, forDate date: String, withValue value: String) {
-        
-        let valueViewLabelString = date + "  " + value
-        
-        if valueViewLabelString == valueViewLabel.text && type == valueViewTypeLabel.text {
-            valueViewTypeLabel.text = ""
-            valueViewLabel.text = ""
-            valueView.hidden = true
-            companyNameLocationView.hidden = false
-        } else {
-            valueViewTypeLabel.text = type
-            valueViewLabel.text = valueViewLabelString
-            valueView.hidden = false
-            companyNameLocationView.hidden = true
-        }
+    
+    let valueViewLabelString = date + "  " + value
+    
+    if valueViewLabelString == valueViewLabel.text && type == valueViewTypeLabel.text {
+    valueViewTypeLabel.text = ""
+    valueViewLabel.text = ""
+    valueView.hidden = true
+    companyNameLocationView.hidden = false
+    } else {
+    valueViewTypeLabel.text = type
+    valueViewLabel.text = valueViewLabelString
+    valueView.hidden = false
+    companyNameLocationView.hidden = true
+    }
     }*/
     
     @IBAction func cancelValueViewButtonPressed(sender: UIButton) {

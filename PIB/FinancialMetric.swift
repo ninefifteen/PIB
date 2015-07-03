@@ -10,10 +10,10 @@ import Foundation
 import CoreData
 
 class FinancialMetric: NSManagedObject {
-
+    
     @NSManaged var type: String
     @NSManaged var value: NSNumber
     @NSManaged var date: NSDate
     @NSManaged var company: NSManagedObject
-
+    
 }

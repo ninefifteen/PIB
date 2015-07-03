@@ -16,7 +16,7 @@ enum DataState: Int16 {
 }
 
 class Company: NSManagedObject {
-
+    
     @NSManaged var city: String
     @NSManaged var companyDescription: String
     @NSManaged var country: String
@@ -62,24 +62,24 @@ class Company: NSManagedObject {
         
         var totalRevenueArray1 = Array<FinancialMetric>()
         for (index, financialMetric) in enumerate(metrics1) {
-            if financialMetric.type == "Total Revenue" {
-                totalRevenueArray1.append(financialMetric)
-            }
+        if financialMetric.type == "Total Revenue" {
+        totalRevenueArray1.append(financialMetric)
+        }
         }
         totalRevenueArray1.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         var totalRevenueArray2 = Array<FinancialMetric>()
         for (index, financialMetric) in enumerate(metrics2) {
-            if financialMetric.type == "Total Revenue" {
-                totalRevenueArray2.append(financialMetric)
-            }
+        if financialMetric.type == "Total Revenue" {
+        totalRevenueArray2.append(financialMetric)
+        }
         }
         totalRevenueArray2.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
         
         if totalRevenueArray1.last!.value < totalRevenueArray1.last!.value {
-            return NSComparisonResult.OrderedAscending
+        return NSComparisonResult.OrderedAscending
         } else {
-            return NSComparisonResult.OrderedDescending
+        return NSComparisonResult.OrderedDescending
         }*/
         
         return NSComparisonResult.OrderedDescending
@@ -157,15 +157,58 @@ class Company: NSManagedObject {
             })
         }
         
-        /*dispatch_group_enter(dispatchGroup)
-        WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompany(company, withCompletion: { (success) -> Void in
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in*/
-                company.relatedCompaniesDownloadComplete = true
-                //company.relatedCompaniesDownloadError = !success
-                company.relatedCompaniesDownloadError = false
-                /*dispatch_group_leave(dispatchGroup)
+        dispatch_group_enter(dispatchGroup)
+        WebServicesManagerAPI.sharedInstance.downloadGoogleRelatedCompaniesForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName) { (peerCompanies, success) -> Void in
+            
+            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                
+                var savedRelatedCompanies = [Company]()
+                var unsavedRelatedCompanies = [Company]()
+                
+                for peerCompany in peerCompanies {
+                    if Company.isSavedCompanyWithTickerSymbol(peerCompany.tickerSymbol, exchangeDisplayName: peerCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
+                        let savedCompany = Company.savedCompanyWithTickerSymbol(peerCompany.tickerSymbol, exchangeDisplayName: peerCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                        savedRelatedCompanies.append(savedCompany!)
+                    } else {
+                        unsavedRelatedCompanies.append(peerCompany)
+                    }
+                }
+                
+                for savedRelatedCompany in savedRelatedCompanies {
+                    company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                }
+                
+                if unsavedRelatedCompanies.count > 0 {
+                    
+                    let innerDispatchGroup = dispatch_group_create()
+                    
+                    for unsavedRelatedCompany in unsavedRelatedCompanies {
+                        
+                        dispatch_group_enter(innerDispatchGroup)
+                        
+                        Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
+                            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                                if success {
+                                    company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
+                                }
+                                dispatch_group_leave(innerDispatchGroup)
+                            })
+                        })
+                    }
+                    
+                    dispatch_group_notify(innerDispatchGroup, dispatch_get_main_queue()) { () -> Void in
+                        company.relatedCompaniesDownloadComplete = true
+                        company.relatedCompaniesDownloadError = !success
+                        dispatch_group_leave(dispatchGroup)
+                    }
+                    
+                } else {
+                    company.relatedCompaniesDownloadComplete = true
+                    company.relatedCompaniesDownloadError = !success
+                    dispatch_group_leave(dispatchGroup)
+                }
             })
-        })*/
+        }
         
         dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
             company.setDataStatusForCompanyInManagedObjectContext(managedObjectContext)
@@ -257,7 +300,7 @@ class Company: NSManagedObject {
     }
     
     class func newUserAddedPeerCompanyWithName(name: String, tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company {
-            
+        
         // Create new company managed object.
         let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
         let company: Company! = Company(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
@@ -286,7 +329,7 @@ class Company: NSManagedObject {
     }
     
     
-
+    
     class func savedCompanyWithTickerSymbol(tickerSymbol: String, exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) -> Company? {
         
         let alternateContext = NSManagedObjectContext()
@@ -322,7 +365,7 @@ class Company: NSManagedObject {
     }
     
     class func removeIncompleteDataCompaniesInManagedObjectContext(managedObjectContext: NSManagedObjectContext!) {
-                
+        
         // Delete companies with incomplete data (download interrupted).
         
         let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
@@ -516,9 +559,9 @@ class Company: NSManagedObject {
             abort()
         }
     }
-
+    
     func addPeerCompanyWithTickerSymbol(tickerSymbol: String, withExchangeDisplayName exchangeDisplayName: String, inManagedObjectContext managedObjectContext: NSManagedObjectContext!) {
-                
+        
         let savedPeerCompany = Company.savedCompanyWithTickerSymbol(tickerSymbol, exchangeDisplayName: exchangeDisplayName, inManagedObjectContext: managedObjectContext)
         
         if let peerCompany = savedPeerCompany {

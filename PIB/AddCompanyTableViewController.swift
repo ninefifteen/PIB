@@ -40,7 +40,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     var webServicesManagerAPIMessages = [String]()
     
     @IBOutlet weak var searchBar: UISearchBar!
-
+    
     
     // MARK: - View Lifecycle
     
@@ -54,7 +54,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             let build = GAIDictionaryBuilder.createAppView().build() as [NSObject : AnyObject]
             tracker.send(build)
         }
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
         
@@ -69,7 +69,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             }
         }
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -88,7 +88,7 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
-
+        
         if !searchText.isEmpty {
             
             WebServicesManagerAPI.sharedInstance.downloadCompaniesMatchingSearchTerm(searchText, withCompletion: { (companies, success) -> Void in
@@ -128,14 +128,14 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             companyToAdd = nil
         }
     }
-
+    
     
     // MARK: - Table view data source
-
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1;
     }
-
+    
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if searchBar.text.isEmpty {
@@ -148,9 +148,9 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             }
         }
     }
-
+    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-
+        
         if searchResultsCompanies.count > 0 {
             
             let cell = tableView.dequeueReusableCellWithIdentifier(MainStoryboard.TableViewCellIdentifiers.kAddCompanyViewCompanyCell, forIndexPath: indexPath) as! UITableViewCell
@@ -206,5 +206,5 @@ class AddCompanyTableViewController: UITableViewController, UISearchBarDelegate 
             self.tableView.reloadData()
         })
     }
-
+    
 }

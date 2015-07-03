@@ -42,6 +42,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     
     //let masterViewTitle = "Companies"
     
+    var isFirstAppearanceOfView = true
+    
+    @IBOutlet weak var searchBar: UISearchBar!
     
     // MARK: - View Lifecycle
     
@@ -100,7 +103,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             if firstRunValueString == "true" {
                 WebServicesManagerAPI.sharedInstance.checkConnectionToGoogleFinanceWithCompletion({ (success) -> Void in
                     /*if success {
-                        self.loadSampleCompaniesForFirstRun()
+                    self.loadSampleCompaniesForFirstRun()
                     }*/
                 })
             } else if isFirstAppearanceOfView {
@@ -126,7 +129,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDetail {
             
             if let sender = sender as? UITableViewCell {
-                    
+                
                 if let indexPath = self.tableView.indexPathForSelectedRow() {
                     let company = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Company
                     let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DetailViewController
@@ -158,17 +161,6 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return true
     }
     
-    @IBAction func unwindFromAddCompanySegue(segue: UIStoryboardSegue) {
-        
-        let controller = segue.sourceViewController as AddCompanyTableViewController
-        
-        if let companyToAdd = controller.companyToAdd? {
-            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-            Company.saveNewTargetCompanyWithName(companyToAdd.name, tickerSymbol: companyToAdd.tickerSymbol, exchangeDisplayName: companyToAdd.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-        } else {
-            controller.navigationController?.dismissViewControllerAnimated(true, completion: nil)
-        }
-    }
     
     // MARK: - General Methods
     
@@ -247,7 +239,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionInfo = self.fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
+        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
         return sectionInfo.numberOfObjects
     }
     
@@ -453,7 +445,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             //println("Unresolved error \(error), \(error.userInfo)")
             abort()
         }
-                
+        
         return _fetchedResultsController!
     }
     
@@ -619,7 +611,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            tableView.insertRowsAtIndexPaths([newIndexPath], withRowAnimation: .Fade)
+            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: UITableViewRowAnimation.Fade)
         case .Delete:
             tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Fade)
         case .Update:
