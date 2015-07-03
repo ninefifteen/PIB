@@ -36,6 +36,9 @@
 		45126A051A435D56005A01CC /* AddCompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */; };
 		45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A031A435D56005A01CC /* GraphContentViewController.swift */; };
 		45126A081A435D56005A01CC /* GraphPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45126A041A435D56005A01CC /* GraphPageViewController.swift */; };
+		4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */; };
+		453DFD5F1B0237C600515EC4 /* PIBColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 453DFD5E1B0237C600515EC4 /* PIBColor.swift */; };
+		456F31761AD617EF002A2FC4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 456F31751AD617EF002A2FC4 /* CloudKit.framework */; };
 		45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DD81A83D16B001AB107 /* PeersTableViewController.swift */; };
 		45914DE11A83D955001AB107 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE01A83D955001AB107 /* Extensions.swift */; };
 		45914DE31A845904001AB107 /* CompanyOverviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45914DE21A845904001AB107 /* CompanyOverviewViewController.swift */; };
@@ -177,7 +180,11 @@
 		45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddCompanyTableViewController.swift; sourceTree = "<group>"; };
 		45126A031A435D56005A01CC /* GraphContentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphContentViewController.swift; sourceTree = "<group>"; };
 		45126A041A435D56005A01CC /* GraphPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphPageViewController.swift; sourceTree = "<group>"; };
+		4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MasterTableContainerViewController.swift; sourceTree = "<group>"; };
+		453DFD5E1B0237C600515EC4 /* PIBColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PIBColor.swift; sourceTree = "<group>"; };
 		45630B371A7863E2005316F5 /* PIB v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "PIB v2.xcdatamodel"; sourceTree = "<group>"; };
+		456F31741AD617E6002A2FC4 /* PIB.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PIB.entitlements; sourceTree = "<group>"; };
+		456F31751AD617EF002A2FC4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		45914DD81A83D16B001AB107 /* PeersTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PeersTableViewController.swift; sourceTree = "<group>"; };
 		45914DE01A83D955001AB107 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		45914DE21A845904001AB107 /* CompanyOverviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyOverviewViewController.swift; sourceTree = "<group>"; };
@@ -196,6 +203,7 @@
 				451269941A43363C005A01CC /* QuartzCore.framework in Frameworks */,
 				451269921A433634005A01CC /* CoreData.framework in Frameworks */,
 				451269901A43362A005A01CC /* SystemConfiguration.framework in Frameworks */,
+				456F31761AD617EF002A2FC4 /* CloudKit.framework in Frameworks */,
 				4512698E1A43361F005A01CC /* libz.dylib in Frameworks */,
 				4512698C1A433612005A01CC /* libsqlite3.dylib in Frameworks */,
 				4512698A1A433603005A01CC /* AdSupport.framework in Frameworks */,
@@ -234,6 +242,7 @@
 		451269461A433020005A01CC /* PIB */ = {
 			isa = PBXGroup;
 			children = (
+				456F31741AD617E6002A2FC4 /* PIB.entitlements */,
 				4512696F1A433095005A01CC /* Model */,
 				451269701A4330A1005A01CC /* View */,
 				4512696E1A43308B005A01CC /* Controller */,
@@ -255,6 +264,7 @@
 				451269481A433020005A01CC /* Info.plist */,
 				451269821A433497005A01CC /* PIB-Bridging-Header.h */,
 				45914DE01A83D955001AB107 /* Extensions.swift */,
+				453DFD5E1B0237C600515EC4 /* PIBColor.swift */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -280,6 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				451269491A433020005A01CC /* AppDelegate.swift */,
+				4520665C1B001AFC00258B78 /* MasterTableContainerViewController.swift */,
 				4512694E1A433020005A01CC /* MasterViewController.swift */,
 				45126A011A435D56005A01CC /* AddCompanyTableViewController.swift */,
 				451269501A433020005A01CC /* DetailViewController.swift */,
@@ -366,6 +377,7 @@
 		4512699F1A4337B5005A01CC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				456F31751AD617EF002A2FC4 /* CloudKit.framework */,
 				4512699D1A4336DA005A01CC /* libGoogleAnalyticsServices.a */,
 				4512699B1A4336D1005A01CC /* libCorePlot-CocoaTouch.a */,
 				451269991A4336C8005A01CC /* libAdIdAccess.a */,
@@ -517,6 +529,11 @@
 					451269431A433020005A01CC = {
 						CreatedOnToolsVersion = 6.1.1;
 						DevelopmentTeam = LWF39996CW;
+						SystemCapabilities = {
+							com.apple.iCloud = {
+								enabled = 1;
+							};
+						};
 					};
 					4512695D1A433021005A01CC = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -585,7 +602,9 @@
 				45914DE11A83D955001AB107 /* Extensions.swift in Sources */,
 				4512697E1A43340A005A01CC /* XPathQuery.swift in Sources */,
 				45126A071A435D56005A01CC /* GraphContentViewController.swift in Sources */,
+				4520665D1B001AFC00258B78 /* MasterTableContainerViewController.swift in Sources */,
 				451269511A433020005A01CC /* DetailViewController.swift in Sources */,
+				453DFD5F1B0237C600515EC4 /* PIBColor.swift in Sources */,
 				45914DD91A83D16B001AB107 /* PeersTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -730,6 +749,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = PIB/PIB.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = PIB/Info.plist;
@@ -751,6 +771,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = PIB/PIB.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = PIB/Info.plist;

@@ -30,23 +30,37 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         struct Color {
             
             // Base CPTColors used in Graphs.
-            private static let kRedColor = CPTColor(componentRed: 237.0/255.0, green: 68.0/255.0, blue: 4.0/255.0, alpha: 1.0)
-            private static let kDarkGreenColor = CPTColor(componentRed: 23.0/255.0, green: 98.0/255.0, blue: 55.0/255.0, alpha: 1.0)
-            private static let kTealColor = CPTColor(componentRed: 44.0/255.0, green: 146.0/255.0, blue: 172.0/255.0, alpha: 1.0)
-            private static let kMagentaColor = CPTColor(componentRed: 233.0/255.0, green: 31.0/255.0, blue: 100.0/255.0, alpha: 1.0)
+            private static let kRedColor = CPTColor(componentRed: 237/255, green: 68/255, blue: 4/255, alpha: 1.0)
+            private static let kDarkGreenColor = CPTColor(componentRed: 23/255, green: 98/255, blue: 55/255, alpha: 1.0)
+            private static let kTealColor = CPTColor(componentRed: 44/255, green: 146/255, blue: 172/255, alpha: 1.0)
+            private static let kMagentaColor = CPTColor(componentRed: 233/255, green: 31/255, blue: 100/255, alpha: 1.0)
+            private static let kDarkSeaGreenColor = CPTColor(componentRed: 143/255, green: 188/255, blue: 143/255, alpha: 1.0)
+            private static let kSandyBrownColor = CPTColor(componentRed: 244/255, green: 164/255, blue: 96/255, alpha: 1.0)
+            private static let kLightGreyColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
+            private static let kOrangeColor = CPTColor(componentRed: 245/255, green: 239/255, blue: 14/255, alpha: 1.0)
+            private static let kRevenueBarColor = CPTColor(componentRed: 119/255, green: 169/255, blue: 113/255, alpha: 1.0)
+            private static let kBlueColor = CPTColor(componentRed: 52/255, green: 157/255, blue: 221/255, alpha: 1.0)
             
-            static let kGridLineColor = CPTColor(componentRed: 200.0/255.0, green: 200.0/255.0, blue: 200.0/255.0, alpha: 1.0)
             
-            static let kXAxisLabelColor = kDarkGreenColor
+            static let kGridLineColor = CPTColor(componentRed: 200/255, green: 200/255, blue: 200/255, alpha: 1.0)
+            
+            static let kXAxisLabelColor = kLightGreyColor
             static let kYAxisLabelColor = kRedColor
             
-            static let kRevenuePlotColor = kTealColor
-            static let kProfitMarginPlotColor = kMagentaColor
-            static let kGrossMarginPlotColor = kMagentaColor
-            static let kRAndDPlotColor = kTealColor
-            static let kSgAndAPlotColor = kTealColor
+            static let kRevenuePlotColor = kOrangeColor
+            static let kPeersRevenuePlotColor = kDarkSeaGreenColor
+            static let kProfitMarginPlotColor = CPTColor.whiteColor()
+            static let kPeersProfitMarginPlotColor = kSandyBrownColor
+            static let kRevenueGrowthPlotColor = CPTColor.whiteColor()
+            static let kPeersRevenueGrowthPlotColor = kOrangeColor
+            static let kGrossMarginPlotColor = CPTColor.whiteColor()
+            static let kPeersGrossMarginPlotColor = kOrangeColor
+            static let kRAndDPlotColor = CPTColor.whiteColor()
+            static let kPeersRAndDPlotColor = kOrangeColor
+            static let kSgAndAPlotColor = CPTColor.whiteColor()
+            static let kPeersSgAndAPlotColor = kOrangeColor
             
-            static let kPlotSymbolFillColor = CPTColor.whiteColor()
+            static let kPlotSymbolFillColor = kBlueColor
         }
         
         struct Font {
@@ -67,6 +81,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     // MARK: - Properties
     
     weak var delegate: GraphContentViewControllerDelegate?
+    weak var companyOverviewViewControllerDelegate: DetailViewController!
     
     @IBOutlet weak var graphView: CPTGraphHostingView!
     @IBOutlet weak var descriptionView: UIView!
@@ -81,13 +96,21 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var pageIdentifier: String = ""
     
     var totalRevenueArray = Array<FinancialMetric>()
+    var peersTotalRevenueArray = Array<FinancialMetric>()
     var profitMarginArray = Array<FinancialMetric>()
+    var peersProfitMarginArray = Array<FinancialMetric>()
     var revenueGrowthArray = Array<FinancialMetric>()
+    var peersRevenueGrowthArray = Array<FinancialMetric>()
     var netIncomeGrowthArray = Array<FinancialMetric>()
+    var peersNetIncomeGrowthArray = Array<FinancialMetric>()
     var grossProfitArray = Array<FinancialMetric>()
+    var peersGrossProfitArray = Array<FinancialMetric>()
     var grossMarginArray = Array<FinancialMetric>()
+    var peersGrossMarginArray = Array<FinancialMetric>()
     var rAndDArray = Array<FinancialMetric>()
+    var peersRAndDArray = Array<FinancialMetric>()
     var sgAndAArray = Array<FinancialMetric>()
+    var peersSgAndAArray = Array<FinancialMetric>()
     
     var numberOfDataPointPerPlot: Int = 0
     
@@ -126,8 +149,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     let annotationTextStyle = CPTMutableTextStyle()
     let titleTextStyle = CPTMutableTextStyle()
     
-    let graphLegendAnchor = CPTRectAnchor.Top
-    let graphLegendDisplacement = CGPointMake(0.0, 0.0)
+    let graphLegendAnchor = CPTRectAnchor.TopLeft
+    let graphLegendDisplacement = CGPointMake(5.0, -24.0)
     
     var scatterPlotOffset: Double = 0.5
     let scatterPlotLineWidth: CGFloat = 3.5
@@ -149,13 +172,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Do any additional setup after loading the view.
         
+        view.backgroundColor = UIColor.clearColor()
+        
         if pageIdentifier == "CompanyOverview" {
             
             doubleTapGestureRecognizer.enabled = false
             graphView.hidden = true
             
-            let companyOverviewViewController = storyboard?.instantiateViewControllerWithIdentifier("CompanyOverviewViewController") as CompanyOverviewViewController
+            let companyOverviewViewController = storyboard?.instantiateViewControllerWithIdentifier("CompanyOverviewViewController") as! CompanyOverviewViewController
             companyOverviewViewController.company = company
+            companyOverviewViewController.managedObjectContext = managedObjectContext
+            companyOverviewViewController.delegate = companyOverviewViewControllerDelegate
             addChildViewController(companyOverviewViewController)
             companyOverviewViewController.view.frame = descriptionView.frame
             descriptionView.addSubview(companyOverviewViewController.view)
@@ -184,31 +211,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Total Revenue')", company)
                 request.predicate = totalRevenuePredicate
-                totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
+                
+                //peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
                 
                 let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
-                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
+                
+                //peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
                 
                 let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
                 request.predicate = revenueGrowthPredicate
-                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                //peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+                
                 numberOfDataPointPerPlot = totalRevenueArray.count
                 
-                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray)
-                
-                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray)
-                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray)
+                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray + peersProfitMarginArray)
+                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
+                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
                 
                 calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
                 
@@ -229,24 +261,28 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
                 request.predicate = revenueGrowthPredicate
-                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+                peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+                
+                /*let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
                 request.predicate = profitMarginPredicate
                 profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }
+                peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
+                
+                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }*/
                 
                 numberOfDataPointPerPlot = revenueGrowthArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray) < minimumValueInFinancialMetricArray(profitMarginArray) ? minimumValueInFinancialMetricArray(revenueGrowthArray) : minimumValueInFinancialMetricArray(profitMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray) > maximumValueInFinancialMetricArray(profitMarginArray) ? maximumValueInFinancialMetricArray(revenueGrowthArray) : maximumValueInFinancialMetricArray(profitMarginArray)
+                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -268,13 +304,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
                 request.predicate = grossMarginPredicate
-                grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
-                var minValue = minimumValueInFinancialMetricArray(grossMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray)
+                peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
+                
+                var minValue = minimumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
+                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
                 
                 numberOfDataPointPerPlot = grossMarginArray.count
                 
@@ -298,15 +336,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
                 request.predicate = sgAndAPredicate
-                sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
+                
                 numberOfDataPointPerPlot = sgAndAArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(sgAndAArray)
-                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray)
+                var minValue = minimumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
+                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -328,15 +368,17 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
                 let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
                 request.predicate = rAndDPredicate
-                rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+                rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
                 if error != nil {
                     println("Fetch request error: \(error?.description)")
                 }
                 
+                peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
+                
                 numberOfDataPointPerPlot = rAndDArray.count
                 
-                var minValue = minimumValueInFinancialMetricArray(rAndDArray)
-                var maxValue = maximumValueInFinancialMetricArray(rAndDArray)
+                var minValue = minimumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
+                var maxValue = maximumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
                 
                 let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
                 calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
@@ -375,7 +417,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y2AxisLabelTextStyle.fontSize = GraphContent.Font.Size.kYAxisLabelFontSize
         y2AxisLabelTextStyle.textAlignment = CPTTextAlignment.Left
         
-        legendTextStyle.color = CPTColor.darkGrayColor()
+        legendTextStyle.color = CPTColor.whiteColor()
         legendTextStyle.fontSize = GraphContent.Font.Size.kLegendFontSize
         
         annotationTextStyle.color = CPTColor.grayColor()
@@ -390,7 +432,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     func legendForGraph() -> CPTLegend {
         
         let legend = CPTLegend(graph: graph)
-        legend.fill = CPTFill(color: CPTColor.whiteColor())
+        legend.fill = CPTFill(color: CPTColor.clearColor())
         legend.borderLineStyle = nil
         legend.cornerRadius = 10.0
         legend.swatchSize = CGSizeMake(14.0, 14.0)
@@ -415,13 +457,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func configureBaseGraph() {
         
-        graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
+        //graph.applyTheme(CPTTheme(named: kCPTPlainWhiteTheme))
         graph.plotAreaFrame.plotArea.delegate = self
         
         // Graph border.
         graph.plotAreaFrame.borderLineStyle = nil
         graph.plotAreaFrame.cornerRadius = 0.0
         graph.plotAreaFrame.masksToBorder = false
+        graph.plotAreaFrame.fill = CPTFill(color: CPTColor.clearColor())
+        graph.plotAreaFrame.plotArea.fill = CPTFill(color: CPTColor.clearColor())
         
         // Graph paddings.
         graph.paddingLeft = 0.0
@@ -444,9 +488,15 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         } else {
             graph.plotAreaFrame.paddingLeft = 10.0
         }
-        graph.plotAreaFrame.paddingTop = 34.0
+        
+        if pageIdentifier == "Revenue" {
+            graph.plotAreaFrame.paddingTop = 64.0
+        } else {
+            graph.plotAreaFrame.paddingTop = 64.0
+        }
+        
         graph.plotAreaFrame.paddingRight = 10.0
-        graph.plotAreaFrame.paddingBottom = 64.0
+        graph.plotAreaFrame.paddingBottom = 34.0
     }
     
     func configureBaseBarGraph() {
@@ -454,11 +504,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseGraph()
         
         // Plot space.
-        plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
+        plotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
         
-        axisSet = graph.axisSet as CPTXYAxisSet
+        axisSet = graph.axisSet as! CPTXYAxisSet
         
         x = axisSet.xAxis
         x.axisLineStyle = nil
@@ -484,7 +534,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             xAxisCustomLabels.addObject(newLabel)
         }
         
-        x.axisLabels = xAxisCustomLabels
+        x.axisLabels = xAxisCustomLabels as Set<NSObject>
         
         // Create y-axis custom tick locations.
         for index in 0...Int(yAxisIntervals) {
@@ -501,7 +551,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y.axisLineStyle = nil
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
-        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations)
+        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations) as Set<NSObject>
         y.majorGridLineStyle = yMajorGridLineStyle
         y.majorIntervalLength = yAxisInterval
         y.orthogonalPosition = 0.0
@@ -527,7 +577,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 yAxisCustomLabels.addObject(newLabel)
             }
             
-            y.axisLabels = yAxisCustomLabels
+            y.axisLabels = yAxisCustomLabels as Set<NSObject>
         }
         
         // Create bar line style.
@@ -540,11 +590,11 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseGraph()
         
         // Plot space.
-        plotSpace = graph.defaultPlotSpace as CPTXYPlotSpace
+        plotSpace = graph.defaultPlotSpace as! CPTXYPlotSpace
         plotSpace.yRange = CPTPlotRange(location: yAxisMin, length: yAxisRange)
         plotSpace.xRange = CPTPlotRange(location: 0.0, length: plotSpaceLength)
         
-        axisSet = graph.axisSet as CPTXYAxisSet
+        axisSet = graph.axisSet as! CPTXYAxisSet
         
         x = axisSet.xAxis
         x.axisLineStyle = nil
@@ -570,7 +620,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             xAxisCustomLabels.addObject(newLabel)
         }
         
-        x.axisLabels = xAxisCustomLabels
+        x.axisLabels = xAxisCustomLabels as Set<NSObject>
         
         // Create y-axis custom tick locations.
         for index in 0...Int(yAxisIntervals) {
@@ -587,7 +637,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         y.axisLineStyle = nil
         y.majorTickLineStyle = nil
         y.minorTickLineStyle = nil
-        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations)
+        y.majorTickLocations = NSSet(array: yAxisCustomTickLocations) as Set<NSObject>
         y.majorGridLineStyle = yMajorGridLineStyle
         y.majorIntervalLength = yAxisInterval
         y.orthogonalPosition = 0.0
@@ -613,7 +663,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 yAxisCustomLabels.addObject(newLabel)
             }
             
-            y.axisLabels = yAxisCustomLabels
+            y.axisLabels = yAxisCustomLabels as Set<NSObject>
         }
     }
     
@@ -624,6 +674,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //configureTitleForGraph(graphTitle)
         
         let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        let isDataForPeersProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(peersProfitMarginArray) != 0.0
+        let isDataForPeersTotalRevenuePlot: Bool = minimumValueInFinancialMetricArray(peersTotalRevenueArray) != 0.0 || maximumValueInFinancialMetricArray(peersTotalRevenueArray) != 0.0
         
         if isDataForProfitMarginPlot {
             
@@ -642,7 +694,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             y2.axisLineStyle = nil
             y2.majorTickLineStyle = nil
             y2.minorTickLineStyle = nil
-            y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations)
+            y2.majorTickLocations = NSSet(array: y2AxisCustomTickLocations) as Set<NSObject>
             y2.majorGridLineStyle = nil
             y2.majorIntervalLength = y2AxisInterval
             y2.orthogonalPosition = plotSpaceLength
@@ -653,7 +705,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             // Custom Labels for 2nd Y Axis.
             if showYAxis {
                 for (index, value) in enumerate(y2AxisCustomTickLocations) {
-                    var label: String = NSString(format: "%.0f", y2AxisCustomTickLocations[index]) + "%"
+                    var label: String = (NSString(format: "%.0f", y2AxisCustomTickLocations[index]) as String) + "%"
                     y2AxisLabels.append(label)
                 }
                 
@@ -666,7 +718,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                     newLabel.alignment = CPTAlignment.Left
                     y2AxisCustomLabels.addObject(newLabel)
                 }
-                y2.axisLabels = y2AxisCustomLabels
+                y2.axisLabels = y2AxisCustomLabels as Set<NSObject>
             }
             
             graph.axisSet.axes = [x, y2, y]
@@ -681,7 +733,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.barsAreHorizontal = false
         revenueBarPlot.lineStyle = nil
         revenueBarPlot.fill = CPTFill(color: GraphContent.Color.kRevenuePlotColor)
-        revenueBarPlot.barWidth = 0.60
+        revenueBarPlot.barWidth = 0.25
         revenueBarPlot.baseValue = 0.0
         revenueBarPlot.barOffset = 0.50
         revenueBarPlot.barCornerRadius = 2.0
@@ -691,6 +743,24 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         revenueBarPlot.dataSource = self
         graph.addPlot(revenueBarPlot, toPlotSpace:plotSpace)
         plots.append(revenueBarPlot)
+        
+        if isDataForPeersTotalRevenuePlot {
+            
+            let peersRevenueBarPlot = CPTBarPlot()
+            peersRevenueBarPlot.barsAreHorizontal = false
+            peersRevenueBarPlot.lineStyle = nil
+            peersRevenueBarPlot.fill = CPTFill(color: GraphContent.Color.kPeersRevenuePlotColor)
+            peersRevenueBarPlot.barWidth = 0.30
+            peersRevenueBarPlot.baseValue = 0.0
+            peersRevenueBarPlot.barOffset = 0.75
+            peersRevenueBarPlot.barCornerRadius = 2.0
+            let peersRevenueBarPlotIdentifier = "Peers Revenue (" + company.currencyCode + ")"
+            peersRevenueBarPlot.identifier = peersRevenueBarPlotIdentifier
+            peersRevenueBarPlot.delegate = self
+            peersRevenueBarPlot.dataSource = self
+            graph.addPlot(peersRevenueBarPlot, toPlotSpace:plotSpace)
+            plots.append(peersRevenueBarPlot)
+        }
         
         if isDataForProfitMarginPlot {
             
@@ -704,7 +774,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let profitMarginLinePlot = CPTScatterPlot()
             profitMarginLinePlot.delegate = self
             profitMarginLinePlot.dataSource = self
-            profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+            profitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
             profitMarginLinePlot.dataLineStyle = profitMarginPlotLineStyle
             profitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             profitMarginLinePlot.identifier = "Profit Margin"
@@ -721,10 +791,45 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             graph.addPlot(profitMarginLinePlot, toPlotSpace:plotSpace2)
             plots.append(profitMarginLinePlot)
+            
+            if isDataForPeersProfitMarginPlot {
+                
+                // Peers Profit Margin line plot.
+                let peersProfitMarginPlotColor = GraphContent.Color.kPeersProfitMarginPlotColor
+                
+                let peersProfitMarginPlotLineStyle = CPTMutableLineStyle()
+                peersProfitMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+                peersProfitMarginPlotLineStyle.lineColor = peersProfitMarginPlotColor
+                
+                let peersProfitMarginLinePlot = CPTScatterPlot()
+                peersProfitMarginLinePlot.delegate = self
+                peersProfitMarginLinePlot.dataSource = self
+                peersProfitMarginLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
+                peersProfitMarginLinePlot.dataLineStyle = peersProfitMarginPlotLineStyle
+                peersProfitMarginLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+                peersProfitMarginLinePlot.identifier = "Peers Profit Margin"
+                
+                let peersSymbolLineStyle = CPTMutableLineStyle()
+                peersSymbolLineStyle.lineColor = peersProfitMarginPlotColor
+                peersSymbolLineStyle.lineWidth = scatterPlotLineWidth
+                let peersPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+                //peersPlotSymbol.fill = CPTFill(color: profitMarginPlotColor)
+                peersPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+                peersPlotSymbol.lineStyle = peersSymbolLineStyle
+                peersPlotSymbol.size = scatterPlotSymbolSize
+                peersProfitMarginLinePlot.plotSymbol = peersPlotSymbol
+                
+                graph.addPlot(peersProfitMarginLinePlot, toPlotSpace:plotSpace2)
+                plots.append(peersProfitMarginLinePlot)
+            }
         }
         
         // Add legend.
         graph.legend = legendForGraph()
+        if plots.count > 2 {
+            graph.legend.numberOfRows = 2
+            graph.plotAreaFrame.paddingTop = 58.0
+        }
         graph.legendAnchor = graphLegendAnchor
         graph.legendDisplacement = graphLegendDisplacement
         
@@ -737,11 +842,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         //configureTitleForGraph("Growth Dynamics")
         
         let isDataForRevenueGrowthPlot: Bool = minimumValueInFinancialMetricArray(revenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(revenueGrowthArray) != 0.0
-        let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        //let isDataForProfitMarginPlot: Bool = minimumValueInFinancialMetricArray(profitMarginArray) != 0.0 || maximumValueInFinancialMetricArray(profitMarginArray) != 0.0
+        //let isDataForProfitMarginPlot: Bool = false
+        let isDataForPeersRevenueGrowthArray: Bool = minimumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0 || maximumValueInFinancialMetricArray(peersRevenueGrowthArray) != 0.0
         
         if isDataForRevenueGrowthPlot {
             
-            let revenueGrowthPlotColor = GraphContent.Color.kRevenuePlotColor
+            let revenueGrowthPlotColor = GraphContent.Color.kRevenueGrowthPlotColor
             
             let revenueGrowthPlotLineStyle = CPTMutableLineStyle()
             revenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
@@ -750,7 +857,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             let revenueGrowthPlot = CPTScatterPlot()
             revenueGrowthPlot.delegate = self
             revenueGrowthPlot.dataSource = self
-            revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Curved
+            revenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Linear
             revenueGrowthPlot.dataLineStyle = revenueGrowthPlotLineStyle
             revenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
             revenueGrowthPlot.identifier = "Revenue Growth"
@@ -759,6 +866,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             revenueGrowthSymbolLineStyle.lineColor = revenueGrowthPlotColor
             revenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
             let revenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //revenueGrowthPlotSymbol.fill = CPTFill(color: revenueGrowthPlotColor)
             revenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
             revenueGrowthPlotSymbol.lineStyle = revenueGrowthSymbolLineStyle
             revenueGrowthPlotSymbol.size = scatterPlotSymbolSize
@@ -768,7 +876,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             plots.append(revenueGrowthPlot)
         }
         
-        if isDataForProfitMarginPlot {
+        /*if isDataForProfitMarginPlot {
             
             let profitMarginPlotColor = GraphContent.Color.kProfitMarginPlotColor
             
@@ -795,6 +903,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             graph.addPlot(profitMarginPlot, toPlotSpace:plotSpace)
             plots.append(profitMarginPlot)
+        }*/
+        
+        if isDataForPeersRevenueGrowthArray {
+            
+            let peersRevenueGrowthPlotColor = GraphContent.Color.kPeersRevenueGrowthPlotColor
+            
+            let peersRevenueGrowthPlotLineStyle = CPTMutableLineStyle()
+            peersRevenueGrowthPlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersRevenueGrowthPlotLineStyle.lineColor = peersRevenueGrowthPlotColor
+            
+            let peersRevenueGrowthPlot = CPTScatterPlot()
+            peersRevenueGrowthPlot.delegate = self
+            peersRevenueGrowthPlot.dataSource = self
+            peersRevenueGrowthPlot.interpolation = CPTScatterPlotInterpolation.Linear
+            peersRevenueGrowthPlot.dataLineStyle = peersRevenueGrowthPlotLineStyle
+            peersRevenueGrowthPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersRevenueGrowthPlot.identifier = "Peers Revenue Growth"
+            
+            let peersRevenueGrowthSymbolLineStyle = CPTMutableLineStyle()
+            peersRevenueGrowthSymbolLineStyle.lineColor = peersRevenueGrowthPlotColor
+            peersRevenueGrowthSymbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersRevenueGrowthPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //peersRevenueGrowthPlotSymbol.fill = CPTFill(color: peersRevenueGrowthPlotColor)
+            peersRevenueGrowthPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRevenueGrowthPlotSymbol.lineStyle = peersRevenueGrowthSymbolLineStyle
+            peersRevenueGrowthPlotSymbol.size = scatterPlotSymbolSize
+            peersRevenueGrowthPlot.plotSymbol = peersRevenueGrowthPlotSymbol
+            
+            graph.addPlot(peersRevenueGrowthPlot, toPlotSpace:plotSpace)
+            plots.append(peersRevenueGrowthPlot)
         }
         
         // Add legend.
@@ -810,6 +948,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("Gross Margin")
         
+        let isDataForPeersGrossMarginPlot: Bool = minimumValueInFinancialMetricArray(peersGrossMarginArray) != 0.0 || maximumValueInFinancialMetricArray(peersGrossMarginArray) != 0.0
+        
         let grossMarginPlotColor = GraphContent.Color.kGrossMarginPlotColor
         
         let grossMarginPlotLineStyle = CPTMutableLineStyle()
@@ -819,7 +959,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let grossMarginPlot = CPTScatterPlot()
         grossMarginPlot.delegate = self
         grossMarginPlot.dataSource = self
-        grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        grossMarginPlot.interpolation = CPTScatterPlotInterpolation.Linear
         grossMarginPlot.dataLineStyle = grossMarginPlotLineStyle
         grossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         grossMarginPlot.identifier = "Gross Margin"
@@ -828,6 +968,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = grossMarginPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let grossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        //grossMarginPlotSymbol.fill = CPTFill(color: grossMarginPlotColor)
         grossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         grossMarginPlotSymbol.lineStyle = symbolLineStyle
         grossMarginPlotSymbol.size = scatterPlotSymbolSize
@@ -835,6 +976,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         graph.addPlot(grossMarginPlot, toPlotSpace:plotSpace)
         plots.append(grossMarginPlot)
+        
+        if isDataForPeersGrossMarginPlot {
+            
+            let peersGrossMarginPlotColor = GraphContent.Color.kPeersGrossMarginPlotColor
+            
+            let peersGrossMarginPlotLineStyle = CPTMutableLineStyle()
+            peersGrossMarginPlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersGrossMarginPlotLineStyle.lineColor = peersGrossMarginPlotColor
+            
+            let peersGrossMarginPlot = CPTScatterPlot()
+            peersGrossMarginPlot.delegate = self
+            peersGrossMarginPlot.dataSource = self
+            peersGrossMarginPlot.interpolation = CPTScatterPlotInterpolation.Linear
+            peersGrossMarginPlot.dataLineStyle = peersGrossMarginPlotLineStyle
+            peersGrossMarginPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersGrossMarginPlot.identifier = "Peers Gross Margin"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersGrossMarginPlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersGrossMarginPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //peersGrossMarginPlotSymbol.fill = CPTFill(color: peersGrossMarginPlotColor)
+            peersGrossMarginPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersGrossMarginPlotSymbol.lineStyle = symbolLineStyle
+            peersGrossMarginPlotSymbol.size = scatterPlotSymbolSize
+            peersGrossMarginPlot.plotSymbol = peersGrossMarginPlotSymbol
+            
+            graph.addPlot(peersGrossMarginPlot, toPlotSpace:plotSpace)
+            plots.append(peersGrossMarginPlot)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -849,6 +1020,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("R & D")
         
+        let isDataForPeersRAndDLinePlot: Bool = minimumValueInFinancialMetricArray(peersRAndDArray) != 0.0 || maximumValueInFinancialMetricArray(peersRAndDArray) != 0.0
+        
         let rAndDLinePlotColor = GraphContent.Color.kRAndDPlotColor
         
         let rAndDLinePlotLineStyle = CPTMutableLineStyle()
@@ -858,7 +1031,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let rAndDLinePlot = CPTScatterPlot()
         rAndDLinePlot.delegate = self
         rAndDLinePlot.dataSource = self
-        rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Curved
+        rAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
         rAndDLinePlot.dataLineStyle = rAndDLinePlotLineStyle
         rAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         rAndDLinePlot.identifier = "R&D"
@@ -867,6 +1040,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = rAndDLinePlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let plotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        //plotSymbol.fill = CPTFill(color: rAndDLinePlotColor)
         plotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         plotSymbol.lineStyle = symbolLineStyle
         plotSymbol.size = scatterPlotSymbolSize
@@ -874,6 +1048,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         graph.addPlot(rAndDLinePlot, toPlotSpace:plotSpace)
         plots.append(rAndDLinePlot)
+        
+        if isDataForPeersRAndDLinePlot {
+            
+            let peersRAndDLinePlotColor = GraphContent.Color.kPeersRAndDPlotColor
+            
+            let peersRAndDLinePlotLineStyle = CPTMutableLineStyle()
+            peersRAndDLinePlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersRAndDLinePlotLineStyle.lineColor = peersRAndDLinePlotColor
+            
+            let peersRAndDLinePlot = CPTScatterPlot()
+            peersRAndDLinePlot.delegate = self
+            peersRAndDLinePlot.dataSource = self
+            peersRAndDLinePlot.interpolation = CPTScatterPlotInterpolation.Linear
+            peersRAndDLinePlot.dataLineStyle = peersRAndDLinePlotLineStyle
+            peersRAndDLinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersRAndDLinePlot.identifier = "Peers R&D"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersRAndDLinePlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersRAndDLinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //peersRAndDLinePlotSymbol.fill = CPTFill(color: peersRAndDLinePlotColor)
+            peersRAndDLinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersRAndDLinePlotSymbol.lineStyle = symbolLineStyle
+            peersRAndDLinePlotSymbol.size = scatterPlotSymbolSize
+            peersRAndDLinePlot.plotSymbol = peersRAndDLinePlotSymbol
+            
+            graph.addPlot(peersRAndDLinePlot, toPlotSpace:plotSpace)
+            plots.append(peersRAndDLinePlot)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -888,6 +1092,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         configureBaseCurvedLineGraph()
         //configureTitleForGraph("SG & A")
         
+        let isDataForPeersSgAndALinePlot: Bool = minimumValueInFinancialMetricArray(peersSgAndAArray) != 0.0 || maximumValueInFinancialMetricArray(peersSgAndAArray) != 0.0
+        
         let sgAndAPlotColor = GraphContent.Color.kSgAndAPlotColor
         
         let sgAndAPlotLineStyle = CPTMutableLineStyle()
@@ -897,7 +1103,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let sgAndAPlot = CPTScatterPlot()
         sgAndAPlot.delegate = self
         sgAndAPlot.dataSource = self
-        sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Curved
+        sgAndAPlot.interpolation = CPTScatterPlotInterpolation.Linear
         sgAndAPlot.dataLineStyle = sgAndAPlotLineStyle
         sgAndAPlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
         sgAndAPlot.identifier = "SG&A"
@@ -906,6 +1112,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         symbolLineStyle.lineColor = sgAndAPlotColor
         symbolLineStyle.lineWidth = scatterPlotLineWidth
         let sgAndAPlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+        //sgAndAPlotSymbol.fill = CPTFill(color: sgAndAPlotColor)
         sgAndAPlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
         sgAndAPlotSymbol.lineStyle = symbolLineStyle
         sgAndAPlotSymbol.size = scatterPlotSymbolSize
@@ -913,6 +1120,36 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         graph.addPlot(sgAndAPlot, toPlotSpace:plotSpace)
         plots.append(sgAndAPlot)
+        
+        if isDataForPeersSgAndALinePlot {
+            
+            let peersSgAndALinePlotColor = GraphContent.Color.kPeersSgAndAPlotColor
+            
+            let peersSgAndALinePlotLineStyle = CPTMutableLineStyle()
+            peersSgAndALinePlotLineStyle.lineWidth = scatterPlotLineWidth
+            peersSgAndALinePlotLineStyle.lineColor = peersSgAndALinePlotColor
+            
+            let peersSgAndALinePlot = CPTScatterPlot()
+            peersSgAndALinePlot.delegate = self
+            peersSgAndALinePlot.dataSource = self
+            peersSgAndALinePlot.interpolation = CPTScatterPlotInterpolation.Linear
+            peersSgAndALinePlot.dataLineStyle = peersSgAndALinePlotLineStyle
+            peersSgAndALinePlot.plotSymbolMarginForHitDetection = plotSymbolMarginForHitDetection
+            peersSgAndALinePlot.identifier = "Peers SG&A"
+            
+            let symbolLineStyle = CPTMutableLineStyle()
+            symbolLineStyle.lineColor = peersSgAndALinePlotColor
+            symbolLineStyle.lineWidth = scatterPlotLineWidth
+            let peersSgAndALinePlotSymbol = CPTPlotSymbol.ellipsePlotSymbol()
+            //peersSgAndALinePlotSymbol.fill = CPTFill(color: peersSgAndALinePlotColor)
+            peersSgAndALinePlotSymbol.fill = CPTFill(color: GraphContent.Color.kPlotSymbolFillColor)
+            peersSgAndALinePlotSymbol.lineStyle = symbolLineStyle
+            peersSgAndALinePlotSymbol.size = scatterPlotSymbolSize
+            peersSgAndALinePlot.plotSymbol = peersSgAndALinePlotSymbol
+            
+            graph.addPlot(peersSgAndALinePlot, toPlotSpace:plotSpace)
+            plots.append(peersSgAndALinePlot)
+        }
         
         // Add legend.
         graph.legend = legendForGraph()
@@ -1017,14 +1254,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         yAxisRange = yAxisIntervals * interval
         
         y2AxisMax = 100.0
-        y2AxisMin = (yAxisMin / yAxisMax) * 100.0
+        
+        while profitMarginMinimumValue < -2.75 * y2AxisMax {
+            y2AxisMax *= 2.0
+        }
+        
+        y2AxisMin = (yAxisMin / yAxisMax) * y2AxisMax
         y2AxisRange = y2AxisMax - y2AxisMin
         y2AxisInterval = y2AxisRange / yAxisIntervals
         
+        let minimumValueRangePercentageLowerLimit = 0.05
         let minimumValueRangePercentage = (profitMarginMinimumValue + abs(y2AxisMin)) / y2AxisRange
         let maximumValueRangePercentage = (maximumValue + abs(yAxisMin)) / yAxisRange
         
-        let minimumValueRangePercentageLowerLimit = 0.05
         //let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.90 : 0.95    // Values to use for 1 line annotations.
         let maximumRangePercentageUpperLimit = UIDevice.currentDevice().userInterfaceIdiom == .Phone ? 0.87 : 0.92  // Values to use for 2 line annotations.
         
@@ -1098,6 +1340,74 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return xAxisLabels
     }
     
+    func averageValueForFinancialMetrics(financialMetrics: Array<FinancialMetric>) -> Double {
+        
+        var sum = 0.0
+        
+        for financialMetric in financialMetrics {
+            sum += financialMetric.value as Double
+        }
+        
+        return sum / Double(financialMetrics.count)
+    }
+    
+    func correspondingPeersAverageArrayForTargetFinancialMetrics(targetFinancialMetrics: Array<FinancialMetric>) -> Array<FinancialMetric> {
+        
+        var peersAverageArray = Array<FinancialMetric>()
+        
+        if targetFinancialMetrics.count > 0 {
+            
+            let type = targetFinancialMetrics[0].type
+            
+            var peersAverageCalculationArray = Array<Array<FinancialMetric>>()
+            let reversedTargetFinancialMetrics = targetFinancialMetrics.reverse()
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: false)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            for index in 1...reversedTargetFinancialMetrics.count {
+                var metricArray = [FinancialMetric]()
+                peersAverageCalculationArray.append(metricArray)
+            }
+            
+            let peerCompanies = company.peers.allObjects as! [Company]
+            for peerCompany in peerCompanies {
+                
+                let predicate = NSPredicate(format: "(company == %@) AND (type == %@)", peerCompany, type)
+                request.predicate = predicate
+                let peerMetricArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+                if error != nil {
+                    println("Fetch request error: \(error?.description)")
+                }
+                
+                for (index, peerMetric) in enumerate(peerMetricArray) {
+                    if index < peersAverageCalculationArray.count {
+                        peersAverageCalculationArray[index].append(peerMetric)
+                    }
+                }
+            }
+            
+            for (index, metricArray) in enumerate(peersAverageCalculationArray) {
+                
+                let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+                let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
+                financialMetric.date = reversedTargetFinancialMetrics[index].date
+                financialMetric.type = reversedTargetFinancialMetrics[index].type
+                financialMetric.value = averageValueForFinancialMetrics(peersAverageCalculationArray[index])
+                
+                peersAverageArray.append(financialMetric)
+            }
+        }
+        
+        return peersAverageArray.reverse()
+    }
+    
     
     // MARK: - CPTPlotDataSource
     
@@ -1105,26 +1415,45 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         return UInt(plotSpaceLength)
     }
     
-    func numberForPlot(plot: CPTPlot!, field: UInt, recordIndex: UInt) -> NSNumber! {
-        
+    func numberForPlot(plot: CPTPlot!, field fieldEnum: UInt, recordIndex idx: UInt) -> AnyObject! {
         switch pageIdentifier {
             
         case "Revenue":
             
-            let plotID = plot.identifier as String
+            let plotID = plot.identifier as! String
             let revenuePlotIdentifier = "Revenue (" + company.currencyCode + ")"
+            let peersRevenuePlotIdentifier = "Peers Revenue (" + company.currencyCode + ")"
             
             if plotID == revenuePlotIdentifier {
                 
-                switch CPTBarPlotField(rawValue: Int(field))! {
+                switch CPTBarPlotField(rawValue: Int(fieldEnum))! {
                     
                 case .BarLocation:
-                    return recordIndex as NSNumber
+                    return idx as NSNumber
                     
                 case .BarTip:
                     
                     if plotID == revenuePlotIdentifier {
-                        return totalRevenueArray[Int(recordIndex)].value
+                        return totalRevenueArray[Int(idx)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
+            } else if plotID == peersRevenuePlotIdentifier {
+                
+                switch CPTBarPlotField(rawValue: Int(fieldEnum))! {
+                    
+                case .BarLocation:
+                    return idx as NSNumber
+                    
+                case .BarTip:
+                    
+                    if plotID == peersRevenuePlotIdentifier {
+                        return peersTotalRevenueArray[Int(idx)].value
                     } else {
                         return nil
                     }
@@ -1135,17 +1464,38 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
                 
             } else if plotID == "Profit Margin" {
                 
-                switch CPTScatterPlotField(rawValue: Int(field))! {
+                switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
                     
                 case .X:
-                    let x = Double(recordIndex) + 0.50
+                    let x = Double(idx) + 0.50
                     return x as NSNumber
                     
                 case .Y:
-                    let plotID = plot.identifier as String
+                    let plotID = plot.identifier as! String
                     
                     if plotID == "Profit Margin" {
-                        return profitMarginArray[Int(recordIndex)].value
+                        return profitMarginArray[Int(idx)].value
+                    } else {
+                        return nil
+                    }
+                    
+                default:
+                    return nil
+                }
+                
+            } else if plotID == "Peers Profit Margin" {
+                
+                switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
+                    
+                case .X:
+                    let x = Double(idx) + 0.50
+                    return x as NSNumber
+                    
+                case .Y:
+                    let plotID = plot.identifier as! String
+                    
+                    if plotID == "Peers Profit Margin" {
+                        return peersProfitMarginArray[Int(idx)].value
                     } else {
                         return nil
                     }
@@ -1160,19 +1510,21 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case "Growth":
             
-            switch CPTScatterPlotField(rawValue: Int(field))! {
+            switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
                 
             case .X:
-                let x = Double(recordIndex) + scatterPlotOffset
+                let x = Double(idx) + scatterPlotOffset
                 return x as NSNumber
                 
             case .Y:
-                let plotID = plot.identifier as String
+                let plotID = plot.identifier as! String
                 
                 if plotID == "Revenue Growth" {
-                    return revenueGrowthArray[Int(recordIndex)].value
+                    return revenueGrowthArray[Int(idx)].value
                 } else if plotID == "Profit Margin" {
-                    return profitMarginArray[Int(recordIndex)].value
+                    return profitMarginArray[Int(idx)].value
+                } else if plotID == "Peers Revenue Growth" {
+                    return peersRevenueGrowthArray[Int(idx)].value
                 } else {
                     return nil
                 }
@@ -1183,17 +1535,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case "GrossMargin":
             
-            switch CPTScatterPlotField(rawValue: Int(field))! {
+            switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
                 
             case .X:
-                let x = Double(recordIndex) + scatterPlotOffset
+                let x = Double(idx) + scatterPlotOffset
                 return x as NSNumber
                 
             case .Y:
-                let plotID = plot.identifier as String
+                let plotID = plot.identifier as! String
                 
                 if plotID == "Gross Margin" {
-                    return grossMarginArray[Int(recordIndex)].value
+                    return grossMarginArray[Int(idx)].value
+                } else if plotID == "Peers Gross Margin" {
+                    return peersGrossMarginArray[Int(idx)].value
                 } else {
                     return nil
                 }
@@ -1204,17 +1558,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case "SG&A":
             
-            switch CPTScatterPlotField(rawValue: Int(field))! {
+            switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
                 
             case .X:
-                let x = Double(recordIndex) + scatterPlotOffset
+                let x = Double(idx) + scatterPlotOffset
                 return x as NSNumber
                 
             case .Y:
-                let plotID = plot.identifier as String
+                let plotID = plot.identifier as! String
                 
                 if plotID == "SG&A" {
-                    return sgAndAArray[Int(recordIndex)].value
+                    return sgAndAArray[Int(idx)].value
+                } else if plotID == "Peers SG&A" {
+                    return peersSgAndAArray[Int(idx)].value
                 } else {
                     return nil
                 }
@@ -1225,17 +1581,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         case "R&D":
             
-            switch CPTScatterPlotField(rawValue: Int(field))! {
+            switch CPTScatterPlotField(rawValue: Int(fieldEnum))! {
                 
             case .X:
-                let x = Double(recordIndex) + scatterPlotOffset
+                let x = Double(idx) + scatterPlotOffset
                 return x as NSNumber
                 
             case .Y:
-                let plotID = plot.identifier as String
+                let plotID = plot.identifier as! String
                 
                 if plotID == "R&D" {
-                    return rAndDArray[Int(recordIndex)].value
+                    return rAndDArray[Int(idx)].value
+                } else if plotID == "Peers R&D" {
+                    return peersRAndDArray[Int(idx)].value
                 } else {
                     return nil
                 }
@@ -1254,21 +1612,24 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func barPlot(plot: CPTBarPlot!, barWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
                 
-        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
+        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx) as! NSNumber
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
-        let y: NSNumber = value as NSNumber
+        let y: NSNumber = value
         
-        let typeString = plot.identifier as String
-        var valueString = company.currencySymbol + Double(value).pibStandardStyleValueString()
+        let typeString = plot.identifier as! String
+        let currencySymbol = company.currencySymbol
+        let doubleValue : Double = Double(value)
+        
+        var valueString : String = company.currencySymbol + Double(value).pibStandardStyleValueString()
         var revenueGrowthValueString: String = ""
         
         if idx > 0 {
-            let revenueGrowthValue = Double(revenueGrowthArray[idx - 1].value)
+            let revenueGrowthValue = Double(revenueGrowthArray[Int(idx) - 1].value)
             let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "(" + revenueGrowthValue.pibPercentageStyleValueString() + ")" : "(+" + revenueGrowthValue.pibPercentageStyleValueString() + ")"
             valueString = valueString + " " + revenueGrowthValueString
         }
         
-        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
+        //delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
@@ -1276,14 +1637,14 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func scatterPlot(plot: CPTScatterPlot!, plotSymbolWasSelectedAtRecordIndex idx: UInt, withEvent event: UIEvent!) {
         
-        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
+        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx) as! NSNumber
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
-        let y: NSNumber = value as NSNumber
+        let y: NSNumber = value
         
         //println("index: \(idx), date: \(xAxisLabels[Int(idx)]), type: \(plot.identifier), value: \(value)")
-        let typeString = plot.identifier as String
+        let typeString = plot.identifier as! String
         let valueString = Double(value).pibPercentageStyleValueString()
-        delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
+        //delegate?.userSelectedGraphPointOfType!(typeString, forDate: xAxisLabels[Int(idx)], withValue: valueString)
     }
     
     
@@ -1292,25 +1653,19 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     @IBAction func handleDoubleTapGesture(recognizer: UITapGestureRecognizer) {
         
         if plots.count == 1 {
-            plotLabelState = plotLabelState == 0 ? 3 : 0
+            plotLabelState = plotLabelState == 0 ? plots.count + 1 : 0
         } else {
             plotLabelState++
-            if plotLabelState > 3 { plotLabelState = 0 }
+            if plotLabelState > plots.count + 1 { plotLabelState = 0 }
         }
         
-        switch plotLabelState {
-        case 0:
+        if plotLabelState == 0 {
             addRemoveAnnotationsAllPlots()
-        case 1:
-            graph.plotAreaFrame.plotArea.removeAllAnnotations()
-            addAnnotationsToPlot(plots[0])
-        case 2:
-            graph.plotAreaFrame.plotArea.removeAllAnnotations()
-            addAnnotationsToPlot(plots[1])
-        case 3:
+        } else if plotLabelState > plots.count {
             addRemoveAnnotationsAllPlots()
-        default:
-            break
+        } else {
+            graph.plotAreaFrame.plotArea.removeAllAnnotations()
+            addAnnotationsToPlot(plots[plotLabelState - 1])
         }
     }
     
@@ -1372,9 +1727,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func addAnnotationsToBarPlot(plot: CPTBarPlot!, atSelectedRecordIndex idx: UInt) {
         
-        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx)
+        let value = numberForPlot(plot, field: UInt(CPTBarPlotField.BarTip.rawValue), recordIndex: idx) as! NSNumber
         let x: NSNumber = (Double(idx) + plot.barOffset.doubleValue) as NSNumber
-        let y: NSNumber = value as NSNumber
+        let y: NSNumber = value
         
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.alignment = NSTextAlignment.Center
@@ -1386,7 +1741,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         var attributedRevenueGrowthValueString = NSMutableAttributedString()
         
         if idx > 0 {
-            let revenueGrowthValue = Double(revenueGrowthArray[idx - 1].value)
+            let revenueGrowthValue = Double(revenueGrowthArray[Int(idx) - 1].value)
             let revenueGrowthValueString = revenueGrowthValue < 0.0 ? "\n(" + revenueGrowthValue.pibPercentageStyleValueString() + ")" : "\n(+" + revenueGrowthValue.pibPercentageStyleValueString() + ")"
             let attributesRevenueGrowthValueString = [NSFontAttributeName : UIFont.systemFontOfSize(GraphContent.Font.Size.kAnnotationSubFontSize), NSForegroundColorAttributeName : UIColor.grayColor(), NSParagraphStyleAttributeName : paragraphStyle]
             attributedRevenueGrowthValueString = NSMutableAttributedString(string: revenueGrowthValueString, attributes: attributesRevenueGrowthValueString)
@@ -1419,9 +1774,9 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     func addAnnotationsToScatterPlot(plot: CPTScatterPlot!, atSelectedRecordIndex idx: UInt) {
         
-        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx)
+        let value = numberForPlot(plot, field: UInt(CPTScatterPlotField.Y.rawValue), recordIndex: idx) as! NSNumber
         let x: NSNumber = (Double(idx) + scatterPlotOffset) as NSNumber
-        let y: NSNumber = value as NSNumber
+        let y: NSNumber = value
         
         let annotationString = Double(value).pibPercentageStyleValueString()
         
@@ -1440,7 +1795,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let newAnnotation = CPTPlotSpaceAnnotation(plotSpace: plot.plotSpace, anchorPlotPoint: [x, y])
         newAnnotation.contentLayer = textLayer
 
-        let plotIdentifier = plot.identifier as String
+        let plotIdentifier = plot.identifier as! String
         
         newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 25.0) : CGPointMake(0.0, 21.0)
         

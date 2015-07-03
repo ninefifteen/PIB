@@ -18,6 +18,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     var managedObjectContext: NSManagedObjectContext!
     
     weak var graphContentViewControllerDelegate: DetailViewController!
+    weak var companyOverviewViewControllerDelegate: DetailViewController!
     
     
     // MARK: - View Lifecycle
@@ -26,7 +27,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         super.viewDidLoad()
         
-        let graphContentViewController = self.viewControllerAtIndex(0, storyboard: storyboard!)
+        let graphContentViewController = self.viewControllerAtIndex(1, storyboard: storyboard!)
         
         if graphContentViewController != nil {
             self.dataSource = self
@@ -46,12 +47,13 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
         
         // Create a new view controller and pass suitable data.
         if  company != nil {
-            let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as GraphContentViewController
+            let graphContentViewController = storyboard.instantiateViewControllerWithIdentifier("GraphContentViewController") as! GraphContentViewController
             graphContentViewController.pageIdentifier = pageIdentifiers[index]
             graphContentViewController.pageIndex = index
             graphContentViewController.company = company
             graphContentViewController.managedObjectContext = managedObjectContext
             graphContentViewController.delegate = graphContentViewControllerDelegate
+            graphContentViewController.companyOverviewViewControllerDelegate = companyOverviewViewControllerDelegate
             return graphContentViewController
         } else {
             return nil
@@ -70,7 +72,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as GraphContentViewController).pageIndex
+        var index = (viewController as! GraphContentViewController).pageIndex
         if (index == 0) || (index == NSNotFound) {
             return nil
         }
@@ -81,7 +83,7 @@ class GraphPageViewController: UIPageViewController, UIPageViewControllerDataSou
     
     func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as GraphContentViewController).pageIndex
+        var index = (viewController as! GraphContentViewController).pageIndex
         if index == NSNotFound {
             return nil
         }

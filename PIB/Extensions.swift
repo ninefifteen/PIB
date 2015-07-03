@@ -125,8 +125,8 @@ extension Company {
     
     func revenueLabelString() -> String {
         
-        var totalRevenueArray = Array<FinancialMetric>()
-        var financialMetrics = self.financialMetrics.allObjects as [FinancialMetric]
+        /*var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics = self.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Total Revenue" {
                 totalRevenueArray.append(financialMetric)
@@ -139,6 +139,43 @@ extension Company {
             return Double(totalRevenueArray.last!.value).pibStandardStyleValueString()
         } else {
             return "-"
+        }*/
+        
+        return Double(mostRecentRevenue).pibStandardStyleValueString()
+    }
+    
+    func revenueGrowthLabelString() -> String {
+        
+        var totalRevenueArray = Array<FinancialMetric>()
+        var financialMetrics = self.financialMetrics.allObjects as! [FinancialMetric]
+        for (index, financialMetric) in enumerate(financialMetrics) {
+            if financialMetric.type == "Total Revenue" {
+                totalRevenueArray.append(financialMetric)
+            }
+        }
+        
+        totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedDescending })
+        
+        if totalRevenueArray.count > 1 {
+            
+            let revenueCurrent = Double(totalRevenueArray[0].value)
+            let revenuePrevious = Double(totalRevenueArray[1].value)
+            
+            if revenueCurrent != 0.0 && revenuePrevious != 0.0 {
+                let revenueDelta = revenueCurrent - revenuePrevious
+                let percentageDelta = (revenueDelta / revenuePrevious) * 100.0
+                let revenueGrowthLabelString = revenueDelta.pibStandardStyleValueString() + " (" + percentageDelta.pibPercentageStyleValueString() + ")"
+                if revenueDelta < 0 {
+                    return revenueGrowthLabelString
+                } else {
+                    return "+" + revenueGrowthLabelString
+                }
+            } else {
+                return ""
+            }
+            
+        } else {
+            return ""
         }
     }
 }
@@ -168,5 +205,43 @@ extension UIImage {
         
         return newImage
     }
-    
 }
+
+
+extension UISplitViewController {
+    
+    func toggleMasterView() {
+        let barButtonItem = self.displayModeButtonItem()
+        UIApplication.sharedApplication().sendAction(barButtonItem.action, to: barButtonItem.target, from: nil, forEvent: nil)
+    }
+}
+
+
+extension UINavigationController {
+    
+    public func presentTransparentNavigationBar() {
+        navigationBar.setBackgroundImage(UIImage(), forBarMetrics:UIBarMetrics.Default)
+        navigationBar.translucent = true
+        navigationBar.shadowImage = UIImage()
+        setNavigationBarHidden(false, animated:true)
+    }
+    
+    public func hideTransparentNavigationBar() {
+        setNavigationBarHidden(true, animated:false)
+        navigationBar.setBackgroundImage(UINavigationBar.appearance().backgroundImageForBarMetrics(UIBarMetrics.Default), forBarMetrics:UIBarMetrics.Default)
+        navigationBar.translucent = UINavigationBar.appearance().translucent
+        navigationBar.shadowImage = UINavigationBar.appearance().shadowImage
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+

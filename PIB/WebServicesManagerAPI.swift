@@ -28,7 +28,7 @@ class WebServicesManagerAPI: NSObject {
     var activeDataTask: NSURLSessionDataTask?
     
     var customAllowedCharacterSet: NSCharacterSet {
-        var _customAllowedCharacterSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as NSMutableCharacterSet
+        var _customAllowedCharacterSet = NSMutableCharacterSet(charactersInString: "!*'();:@&=+$,[]").invertedSet.mutableCopy() as! NSMutableCharacterSet
         _customAllowedCharacterSet.formIntersectionWithCharacterSet(NSCharacterSet.URLHostAllowedCharacterSet())
         return _customAllowedCharacterSet
     }
@@ -99,7 +99,7 @@ class WebServicesManagerAPI: NSObject {
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadCompaniesMatchingSearchTerm rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -141,7 +141,7 @@ class WebServicesManagerAPI: NSObject {
             
             if error == nil {
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
@@ -169,49 +169,52 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadGoogleSummaryForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadGoogleSummaryForCompanyWithTickerSymbol(tickerSymbol: String, onExchange exchangeDisplayName: String, withCompletion completion: ((summaryDictionary: [String: String], success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
-        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
+        googleSummaryUrlString = urlStringForGoogleSummaryForCompanyWithTickerSymbol(tickerSymbol, onExchange: exchangeDisplayName)
         let url = NSURL(string: googleSummaryUrlString)
         //println("Google Finance Summary URL: \(url!)")
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
+            var summaryDictionary = [String: String]()
+            
             if error == nil {
                 
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                //println("WebServicesManagerAPI downloadGoogleSummaryForCompany rawStringData:\n\(rawStringData)")
+                //println("WebServicesManagerAPI downloadGoogleSummaryForCompanyWithTickerSymbol(_:onExchange:withCompletion:) rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
-                    let parseSuccess = self.parseAndAddGoogleSummaryData(data, forCompany: company)
+                    summaryDictionary = self.parseGoogleSummaryData(data)
+                    let parseSuccess = summaryDictionary.count > 0 ? true : false
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
                         if completion != nil {
-                            completion!(success: parseSuccess)
+                            completion!(summaryDictionary: summaryDictionary, success: parseSuccess)
                         }
                     })
                     
                 } else {
                     println("Unable To Download Company Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
-                        completion!(success: false)
+                        completion!(summaryDictionary: summaryDictionary, success: false)
                     }
                     self.sendGeneralErrorMessage()
                 }
             } else if error.code == -999 {  // Error caused by cancelling of the data task.
                 println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(summaryDictionary: summaryDictionary, success: false)
                 }
             } else {  // Any other error.
                 println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(summaryDictionary: summaryDictionary, success: false)
                 }
                 self.sendConnectionErrorMessage()
             }
@@ -221,49 +224,52 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadGoogleFinancialsForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadGoogleFinancialsForCompanyWithTickerSymbol(tickerSymbol: String, onExchange exchangeDisplayName: String, withCompletion completion: ((financialDictionary: [String: AnyObject], success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
-        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
+        googleFinancialMetricsUrlString = urlStringForGoogleFinancialsForCompanyWithTickerSymbol(tickerSymbol, onExchange: exchangeDisplayName)
         let url = NSURL(string: googleFinancialMetricsUrlString)
         //println("Google Finance Financials URL: \(url!)")
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
+            
+            var financialDictionary = [String: AnyObject]()
             
             if error == nil {
                 
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
                 //println("WebServicesManagerAPI downloadGoogleFinancialsForCompany rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
-                    let parseSuccess = self.parseAndAddGoogleFinancialData(data, forCompany: company)
+                    let financialDictionary = self.parseGoogleFinancialData(data)
+                    let parseSuccess = financialDictionary.count > 0 ? true : false
                     
                     dispatch_sync(dispatch_get_main_queue(), { () -> Void in
                         if completion != nil {
-                            completion!(success: parseSuccess)
+                            completion!(financialDictionary: financialDictionary, success: parseSuccess)
                         }
                     })
                     
                 } else {
                     println("Unable To Download Company Financial Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
-                        completion!(success: false)
+                        completion!(financialDictionary: financialDictionary, success: false)
                     }
                     self.sendGeneralErrorMessage()
                 }
             } else if error.code == -999 {  // Error caused by cancelling of the data task.
                 println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(financialDictionary: financialDictionary, success: false)
                 }
             } else {  // Any other error.
                 println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(financialDictionary: financialDictionary, success: false)
                 }
                 self.sendConnectionErrorMessage()
             }
@@ -273,47 +279,49 @@ class WebServicesManagerAPI: NSObject {
         dataTask.resume()
     }
     
-    func downloadGoogleRelatedCompaniesForCompany(company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func downloadGoogleRelatedCompaniesForCompanyWithTickerSymbol(tickerSymbol: String, onExchange exchangeDisplayName: String, withCompletion completion: ((peerCompanies: [Company], success: Bool) -> Void)?) {
         
         incrementNetworkActivityCount()
         
-        googleRelatedCompaniesUrlString = urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(company.tickerSymbol, onExchange: company.exchangeDisplayName)
+        googleRelatedCompaniesUrlString = urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(tickerSymbol, onExchange: exchangeDisplayName)
         let url = NSURL(string: googleRelatedCompaniesUrlString)
         //println("Google Related Companies URL: \(url!)")
         
         let dataTask = NSURLSession.sharedSession().dataTaskWithURL(url!, completionHandler: { (data, response, error) -> Void in
             
+            var peerCompanies = [Company]()
+            
             if error == nil {
                 
                 //let rawStringData: String = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                //println("WebServicesManagerAPI downloadGoogleRelatedCompaniesForCompany rawStringData:\n\(rawStringData)")
+                //println("WebServicesManagerAPI downloadGoogleRelatedCompaniesForCompanyWithTickerSymbol(_:onExchange:withCompletion:) rawStringData:\n\(rawStringData)")
                 
-                let httpResponse = response as NSHTTPURLResponse
+                let httpResponse = response as! NSHTTPURLResponse
                 
                 if httpResponse.statusCode == 200 {
                     
-                    self.addGoogleRelatedCompaniesFromData(data, forCompany: company, withCompletion: { (success) -> Void in
-                        if completion != nil {
-                            completion!(success: success)
-                        }
-                    })
+                    peerCompanies = self.parseGoogleRelatedCompaniesData(data)
+                    
+                    if completion != nil {
+                        completion!(peerCompanies: peerCompanies, success: true)
+                    }
                     
                 } else {
                     println("Unable To Download Related Companies Data. HTTP Response Status Code: \(httpResponse.statusCode)")
                     if completion != nil {
-                        completion!(success: false)
+                        completion!(peerCompanies: peerCompanies, success: false)
                     }
                     self.sendGeneralErrorMessage()
                 }
             } else if error.code == -999 {  // Error caused by cancelling of the data task.
                 println("Error caused by cancelling of the data task. Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(peerCompanies: peerCompanies, success: false)
                 }
             } else {  // Any other error.
                 println("Unable To Download Company Data. Connection Error: \(error.localizedDescription)")
                 if completion != nil {
-                    completion!(success: false)
+                    completion!(peerCompanies: peerCompanies, success: false)
                 }
                 self.sendConnectionErrorMessage()
             }
@@ -339,7 +347,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleSummaryForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol!
         //println("urlStringForGoogleSummaryForCompanyWithTickerSymbol: \(urlString)")
@@ -347,7 +356,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleFinancialsForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance?q=" + escapedExchange! + "%3A" + escapedSymbol! + "&fstype=ii"
         //println("urlStringForGoogleFinancialsForCompanyWithTickerSymbol: \(urlString)")
@@ -355,7 +365,8 @@ class WebServicesManagerAPI: NSObject {
     }
     
     func urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol(symbol: String, onExchange exchange: String) -> String {
-        let escapedSymbol = symbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
+        let cleanedSymbol = symbol.stringByReplacingOccurrencesOfString("-", withString: ".", options: .LiteralSearch, range: nil)
+        let escapedSymbol = cleanedSymbol.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         let escapedExchange = exchange.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)
         var urlString = "http://www.google.com/finance/related?q=" + escapedExchange! + "%3A" + escapedSymbol!
         //println("urlStringForGoogleRelatedCompaniesForCompanyWithTickerSymbol: \(urlString)")
@@ -410,6 +421,29 @@ class WebServicesManagerAPI: NSObject {
         default:
             return "(" + currencyCode + ")"
         }
+    }
+    
+    func marketCapValueStringFromRawString(rawString: String) -> String {
+        
+        var cleanedString = rawString.stringByReplacingOccurrencesOfString("\n", withString: "", options: .LiteralSearch, range: nil)
+        var value: Double = 0.0
+        if cleanedString.hasSuffix("T") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("T", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000000
+        } else if cleanedString.hasSuffix("B") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("B", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000000
+        } else if cleanedString.hasSuffix("M") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("M", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000000
+        } else if cleanedString.hasSuffix("K") {
+            value = NSString(string: rawString.stringByReplacingOccurrencesOfString("K", withString: "", options: .LiteralSearch, range: nil)).doubleValue
+            value *= 1000
+        } else {
+            value = NSString(string: cleanedString).doubleValue
+        }
+        
+        return toString(value)
     }
     
     func marketCapDoubleValueFromRawString(rawString: String) -> Double {
@@ -475,13 +509,13 @@ class WebServicesManagerAPI: NSObject {
     
     // MARK: - Parsing
     
-    func parseAndAddGoogleSummaryData(data: NSData, forCompany company: Company) -> Bool {
+    func parseGoogleSummaryData(data: NSData) -> [String: String] {
+        
+        var emptyReturn = [String: String]()
+        var summaryDictionary = ["Market Cap": "", "companyDescription": "", "street": "", "city": "", "state": "", "zipCode": "", "country": "", "employeeCount": "", "webLink": ""]
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
-        
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        let parser = NDHpple(HTMLData: html! as String)
         
         var marketCapHeadingFound: Bool = false
         var marketCapTableRowIndex: Int = 0
@@ -505,11 +539,7 @@ class WebServicesManagerAPI: NSObject {
                                 for node in valuePathArray {
                                     
                                     if let rawValueString: String = node.firstChild?.content {
-                                        let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
-                                        financialMetric.type = "Market Cap"
-                                        financialMetric.date = NSDate()
-                                        financialMetric.value = marketCapDoubleValueFromRawString(rawValueString)
-                                        financialMetrics.addObject(financialMetric)
+                                        summaryDictionary["Market Cap"] = marketCapValueStringFromRawString(rawValueString)
                                         marketCapHeadingFound = true
                                         break
                                     }
@@ -521,7 +551,6 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
         }
-        company.financialMetrics = financialMetrics.copy() as NSSet
         
         var isDescriptionSet = false
         let descriptionPath = "//div[@class='companySummary']"
@@ -531,15 +560,15 @@ class WebServicesManagerAPI: NSObject {
                     if var rawCompanyDescriptionString: String = node.firstChild?.content {
                         rawCompanyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("�", withString: "’", options: NSStringCompareOptions.LiteralSearch, range: nil)
                         let companyDescriptionString = rawCompanyDescriptionString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                        company.companyDescription = companyDescriptionString
+                        summaryDictionary["companyDescription"] = companyDescriptionString
                         isDescriptionSet = true
                     }
                 }
             }
         }
         if !isDescriptionSet {
-            println("Description data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
-            return false
+            println("Description data not found at URL: \(googleSummaryUrlString).")
+            return emptyReturn
         }
         
         // Determine Address div index.
@@ -571,7 +600,7 @@ class WebServicesManagerAPI: NSObject {
                         
                     case 0:
                         if let rawStreetString: String = addressLine.content {
-                            company.street = rawStreetString
+                            summaryDictionary["street"] = rawStreetString
                         }
                         
                     case 2:
@@ -581,28 +610,28 @@ class WebServicesManagerAPI: NSObject {
                             
                             if commaSplit.count > 0 {
                                 
-                                company.city = commaSplit[0]
+                                summaryDictionary["city"] = commaSplit[0]
                                 
                                 if commaSplit.count > 1 {
                                     var spaceSplit = commaSplit[1].componentsSeparatedByString(" ")
                                     if spaceSplit.count > 2 {
-                                        company.state = spaceSplit[1]
-                                        company.zipCode = spaceSplit[2]
+                                        summaryDictionary["state"] = spaceSplit[1]
+                                        summaryDictionary["zipCode"] = spaceSplit[2]
                                     } else if spaceSplit.count > 1 {
-                                        company.state = ""
-                                        company.zipCode = spaceSplit[1]
+                                        summaryDictionary["state"] = ""
+                                        summaryDictionary["zipCode"] = spaceSplit[1]
                                     }
                                 }
                                 
                             } else {
-                                company.city = "NA"
+                                summaryDictionary["city"] = "NA"
                             }
                         }
                         
                     case 4:
                         if let rawCountryString: String = addressLine.content {
                             let countryString = rawCountryString.stringByReplacingOccurrencesOfString("\n-", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            company.country = countryString
+                            summaryDictionary["country"] = countryString
                         }
                         
                     default:
@@ -611,8 +640,8 @@ class WebServicesManagerAPI: NSObject {
                 }
             }
         } else {
-            println("Address data not found at URL: \(googleSummaryUrlString), for company name: \(company.name). Return false.")
-            return false
+            println("Address data not found at URL: \(googleSummaryUrlString).")
+            return emptyReturn
         }
         
         // Determine Key Stats and Ratios div index.
@@ -639,14 +668,12 @@ class WebServicesManagerAPI: NSObject {
             for node in employeeCount {
                 if let rawEmployeeCountString: String = node.firstChild?.content {
                     let employeeCountString = rawEmployeeCountString.stringByReplacingOccurrencesOfString("[^0-9]", withString: "", options: NSStringCompareOptions.RegularExpressionSearch, range: nil)
-                    if let employeeCountInt = employeeCountString.toInt() {
-                        company.employeeCount = employeeCountInt
-                        isEmployeeCountSet = true
-                    }
+                    summaryDictionary["employeeCount"] = employeeCountString
+                    isEmployeeCountSet = true
                 }
             }
         }
-        if !isEmployeeCountSet { println("Employee count data not found for company name: \(company.name).") }
+        if !isEmployeeCountSet { println("Employee count data not found.") }
         
         var isWebLinkSet = false
         let webLinkPath = "//div[@class='g-section g-tpl-right-1 sfe-break-top-5']/div[@class='g-unit g-first']/div[@class='g-c']/div[10]/div/a"
@@ -654,17 +681,26 @@ class WebServicesManagerAPI: NSObject {
             for node in webLink {
                 if let rawWebLinkString: String = node.firstChild?.content {
                     let webLinkString = rawWebLinkString.stringByReplacingOccurrencesOfString("\n", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                    company.webLink = webLinkString
+                    summaryDictionary["webLink"] = webLinkString
                     isWebLinkSet = true
                 }
             }
         }
         if !isWebLinkSet { println("Web link not found.") }
         
-        return true
+        return summaryDictionary
     }
     
-    func parseAndAddGoogleFinancialData(data: NSData, forCompany company: Company) -> Bool {
+    func parseGoogleFinancialData(data: NSData) -> [String: AnyObject] {
+        
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        
+        var emptyReturn = [String: AnyObject]()
+        var financialDictionary = [String: AnyObject]()
+        var financialMetrics = [FinancialMetric]()
+        
+        var currencyCode = ""
         
         // Arrays for calculating data.
         var revenueArray = Array<FinancialMetric>()
@@ -690,11 +726,11 @@ class WebServicesManagerAPI: NSObject {
         
         let valueMultiplier: Double = 1000000.0 // Data from Google Finance is in millions.
         
-        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-        var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
+        let entity = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: alternateContext)
+        //var financialMetrics = company.financialMetrics.mutableCopy() as NSMutableSet
         
         let html = NSString(data: data, encoding: NSUTF8StringEncoding)
-        let parser = NDHpple(HTMLData: html!)
+        let parser = NDHpple(HTMLData: html! as String)
         
         // Currency type.
         var isCurrencySet = false
@@ -703,26 +739,28 @@ class WebServicesManagerAPI: NSObject {
             if currencyTypeArray.count > 0 {
                 if let currencyTypeStringRaw = currencyTypeArray[0].firstChild?.content {
                     var spaceSplit = currencyTypeStringRaw.componentsSeparatedByString(" ")
-                    company.currencyCode = spaceSplit[3]
-                    company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                    currencyCode = spaceSplit[3]
+                    financialDictionary["currencyCode"] = currencyCode
+                    financialDictionary["currencySymbol"] = currencySymbolForCurrencyCode(currencyCode)
                     isCurrencySet = true
                 }
             }
         }
         if !isCurrencySet {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-            return false
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString). Return false.")
+            return emptyReturn
         }
         
         // Download currency exchange rate if necessary.
         var exchangeRate: Double = 1.0
-        if company.currencyCode != "USD" {
-            exchangeRate = downloadCurrencyExchangeRateFrom(company.currencyCode, to: "USD")
+        if currencyCode != "USD" {
+            exchangeRate = downloadCurrencyExchangeRateFrom(currencyCode, to: "USD")
             if exchangeRate < 0.0 { // Exchange rate was not available.
                 exchangeRate = 1.0
             } else {
-                company.currencyCode = "USD"
-                company.currencySymbol = currencySymbolForCurrencyCode(company.currencyCode)
+                currencyCode = "USD"
+                financialDictionary["currencyCode"] = currencyCode
+                financialDictionary["currencySymbol"] = currencySymbolForCurrencyCode(currencyCode)
             }
         }
         
@@ -740,15 +778,15 @@ class WebServicesManagerAPI: NSObject {
                         if let date = dateFormatter.dateFromString(cleanedDateString) {
                             datesArray.append(date)
                         } else {
-                            println("Unable to read data found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-                            return false
+                            println("Unable to read data found at URL: \(googleFinancialMetricsUrlString). Return false.")
+                            return emptyReturn
                         }
                     }
                 }
             }
         } else {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-            return false
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString). Return false.")
+            return emptyReturn
         }
         
         // Metrics from Google Finance.
@@ -784,11 +822,11 @@ class WebServicesManagerAPI: NSObject {
                                 rawValueString = "0.0"
                             }
                             let valueString = rawValueString.stringByReplacingOccurrencesOfString(",", withString: "", options: NSStringCompareOptions.LiteralSearch, range: nil)
-                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                            let financialMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                             financialMetric.date = datesArray[tdIndex - 1]
                             financialMetric.type = financialMetricType
                             financialMetric.value = NSString(string: valueString).doubleValue * valueMultiplier * exchangeRate
-                            financialMetrics.addObject(financialMetric)
+                            financialMetrics.append(financialMetric)
                             if logMetricsToConsole { println("Type: \(financialMetric.type), Date: \(dateFormatter.stringFromDate(financialMetric.date)), Value: \(financialMetric.value)") }
                             
                             // Populate arrays for calculating metrics.
@@ -839,78 +877,78 @@ class WebServicesManagerAPI: NSObject {
                 
                 let date = operatingIncomeMetric.date
                 
-                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let netOperatingIncomeMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 netOperatingIncomeMetric.type = "EBIT"
                 netOperatingIncomeMetric.date = date
                 netOperatingIncomeMetric.value = Double(operatingIncomeMetric.value) + Double(interestExpenseArray[index].value)
                 netOperatingIncomeArray.append(netOperatingIncomeMetric)
-                financialMetrics.addObject(netOperatingIncomeMetric)
+                financialMetrics.append(netOperatingIncomeMetric)
                 
-                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let ebitMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 ebitMetric.type = "Normal Net Operating Income"
                 ebitMetric.date = date
                 ebitMetric.value = Double(netOperatingIncomeMetric.value) + Double(unusualExpenseArray[index].value)
                 ebitArray.append(ebitMetric)
-                financialMetrics.addObject(ebitMetric)
+                financialMetrics.append(ebitMetric)
                 
-                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let ebitdaMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 ebitdaMetric.type = "EBITDA"
                 ebitdaMetric.date = date
                 ebitdaMetric.value = Double(ebitMetric.value) + Double(depreciationAmortizationArray[index].value)
                 ebitdaArray.append(ebitdaMetric)
-                financialMetrics.addObject(ebitdaMetric)
+                financialMetrics.append(ebitdaMetric)
                 
-                let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let ebitdaMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 ebitdaMarginMetric.type = "EBITDA Margin"
                 ebitdaMarginMetric.date = date
                 ebitdaMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(ebitdaMetric.value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 ebitdaMarginArray.append(ebitdaMarginMetric)
-                financialMetrics.addObject(ebitdaMarginMetric)
+                financialMetrics.append(ebitdaMarginMetric)
                 
-                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let profitMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 profitMarginMetric.type = "Profit Margin"
                 profitMarginMetric.date = date
                 profitMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(netIncomeArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 profitMarginArray.append(profitMarginMetric)
-                financialMetrics.addObject(profitMarginMetric)
+                financialMetrics.append(profitMarginMetric)
                 
-                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let grossMarginMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 grossMarginMetric.type = "Gross Margin"
                 grossMarginMetric.date = date
                 grossMarginMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(grossProfitArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 grossMarginArray.append(grossMarginMetric)
-                financialMetrics.addObject(grossMarginMetric)
+                financialMetrics.append(grossMarginMetric)
                 
-                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let sgAndAPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 sgAndAPercentOfRevenueMetric.type = "SG&A As Percent Of Revenue"
                 sgAndAPercentOfRevenueMetric.date = date
                 sgAndAPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(sgAndAArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 sgAndAPercentOfRevenueArray.append(sgAndAPercentOfRevenueMetric)
-                financialMetrics.addObject(sgAndAPercentOfRevenueMetric)
+                financialMetrics.append(sgAndAPercentOfRevenueMetric)
                 
-                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                let rAndDPercentOfRevenueMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                 rAndDPercentOfRevenueMetric.type = "R&D As Percent Of Revenue"
                 rAndDPercentOfRevenueMetric.date = date
                 rAndDPercentOfRevenueMetric.value = Double(totalRevenueArray[index].value) != 0.0 ? (Double(rAndDArray[index].value) / Double(totalRevenueArray[index].value)) * 100.0 : 0.0
                 rAndDPercentOfRevenueArray.append(rAndDPercentOfRevenueMetric)
-                financialMetrics.addObject(rAndDPercentOfRevenueMetric)
+                financialMetrics.append(rAndDPercentOfRevenueMetric)
                 
                 // Calculate and add growth metrics after first date has been iterated.
                 if index > 0 {
                     
-                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    let revenueGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                     revenueGrowthMetric.type = "Revenue Growth"
                     revenueGrowthMetric.date = date
                     revenueGrowthMetric.value = Double(totalRevenueArray[index - 1].value) != 0.0 ? ((Double(totalRevenueArray[index].value) - Double(totalRevenueArray[index - 1].value)) / Double(totalRevenueArray[index - 1].value)) * 100.0 : 0.0
                     revenueGrowthArray.append(revenueGrowthMetric)
-                    financialMetrics.addObject(revenueGrowthMetric)
+                    financialMetrics.append(revenueGrowthMetric)
                     
-                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: managedObjectContext)
+                    let netIncomeGrowthMetric: FinancialMetric! = FinancialMetric(entity: entity!, insertIntoManagedObjectContext: nil)
                     netIncomeGrowthMetric.type = "Net Income Growth"
                     netIncomeGrowthMetric.date = date
                     netIncomeGrowthMetric.value = Double(netIncomeArray[index - 1].value) != 0.0 ? ((Double(netIncomeArray[index].value) - Double(netIncomeArray[index - 1].value))  / Double(netIncomeArray[index - 1].value)) * 100.0 : 0.0
                     netIncomeGrowthArray.append(netIncomeGrowthMetric)
-                    financialMetrics.addObject(netIncomeGrowthMetric)
+                    financialMetrics.append(netIncomeGrowthMetric)
                 }
             }
             
@@ -951,78 +989,32 @@ class WebServicesManagerAPI: NSObject {
             }
             
             if financialMetrics.count < 1 {
-                println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-                return false
+                println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString). Return false.")
+                return emptyReturn
             }
             
-            company.financialMetrics = financialMetrics.copy() as NSSet
+            financialDictionary["financialMetrics"] = financialMetrics
             
         } else {
-            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString), for company name: \(company.name). Return false.")
-            return false
+            println("Financial metrics not found at URL: \(googleFinancialMetricsUrlString). Return false.")
+            return emptyReturn
         }
         
-        return true
+        return financialDictionary
     }
     
-    func addGoogleRelatedCompaniesFromData(data: NSData, forCompany company: Company, withCompletion completion: ((success: Bool) -> Void)?) {
+    func parseGoogleRelatedCompaniesData(data: NSData) -> [Company] {
         
-        let relatedCompanies = parseGoogleRelatedCompaniesData(data)
-        var savedRelatedCompanies = [Company]()
-        var unsavedRelatedCompanies = [Company]()
-        
-        if relatedCompanies.count > 0 {
-            
-            for relatedCompany in relatedCompanies {
-                if Company.isSavedCompanyWithTickerSymbol(relatedCompany.tickerSymbol, exchangeDisplayName: relatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext) {
-                    savedRelatedCompanies.append(relatedCompany)
-                } else {
-                    unsavedRelatedCompanies.append(relatedCompany)
-                }
-            }
-            
-            for savedRelatedCompany in savedRelatedCompanies {
-                company.addPeerCompanyWithTickerSymbol(savedRelatedCompany.tickerSymbol, withExchangeDisplayName: savedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext)
-            }
-            
-            let dispatchGroup = dispatch_group_create()
-            
-            let count = unsavedRelatedCompanies.count
-            var index = 1
-            for unsavedRelatedCompany in unsavedRelatedCompanies {
-                dispatch_group_enter(dispatchGroup)
-                Company.saveNewPeerCompanyWithName(unsavedRelatedCompany.name, tickerSymbol: unsavedRelatedCompany.tickerSymbol, exchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: managedObjectContext, withCompletion: { (success) -> Void in
-                    if success {
-                        company.addPeerCompanyWithTickerSymbol(unsavedRelatedCompany.tickerSymbol, withExchangeDisplayName: unsavedRelatedCompany.exchangeDisplayName, inManagedObjectContext: self.managedObjectContext)
-                    }
-                    dispatch_group_leave(dispatchGroup)
-                })
-                index++
-            }
-            
-            dispatch_group_notify(dispatchGroup, dispatch_get_main_queue()) { () -> Void in
-                if completion != nil {
-                    completion!(success: true)
-                }
-            }
-            
-        } else {
-            
-            if completion != nil {
-                completion!(success: true)
-            }
-        }
-    }
-    
-    func parseGoogleRelatedCompaniesData(data: NSData) -> Array<Company> {
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
         
         var companies = [Company]()
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
         
         let rawStringData = NSString(data: data, encoding: NSNonLossyASCIIStringEncoding)! as String
         //println("WebServicesManagerAPI parseGoogleRelatedCompaniesData rawStringData:\n\(rawStringData)")
         
-        var rawCompaniesInfoStringArray = Array<String>()
+        var rawCompaniesInfoStringArray = [String]()
         
         if rawStringData.rangeOfString("google.finance.data = ", options: .LiteralSearch, range: nil, locale: nil) != nil {
             let firstSplit = rawStringData.componentsSeparatedByString("google.finance.data = ")
@@ -1078,7 +1070,9 @@ class WebServicesManagerAPI: NSObject {
     func companiesFromYahooData(data: NSData) -> [Company] {
         
         var companies = [Company]()
-        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext)
+        let alternateContext = NSManagedObjectContext()
+        alternateContext.persistentStoreCoordinator = managedObjectContext.persistentStoreCoordinator
+        let entity = NSEntityDescription.entityForName("Company", inManagedObjectContext: alternateContext)
         
         // Use SwiftyJSON for handling JSON.
         let json = JSON(data: data)["ResultSet"]["Result"]

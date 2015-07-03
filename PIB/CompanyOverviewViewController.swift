@@ -8,7 +8,13 @@
 
 import UIKit
 
-class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+@objc protocol CompanyOverviewViewControllerDelegate: class {
+    optional func descriptionViewButtonPressed()
+}
+
+
+class CompanyOverviewViewController: UIViewController {
     
     
     // MARK: - Types
@@ -17,7 +23,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         struct SegueIdentifiers {
             static let kShowPeersTable = "showPeersTable"
-            static let kShowDescriptionView = "showDescriptionView"
+            static let kShowPeersTableEditMode = "showPeersTableEditMode"
         }
         
         struct TableViewCellIdentifiers {
@@ -32,8 +38,11 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     
     // MARK: - Properties
     
+    weak var delegate: CompanyOverviewViewControllerDelegate?
+    
     @IBOutlet weak var descriptionTextView: UITextView!
     
+    @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var revenueLabel: UILabel!
     @IBOutlet weak var employeeCountLabel: UILabel!
     @IBOutlet weak var profitMarginLabel: UILabel!
@@ -44,6 +53,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     //@IBOutlet weak var peersTableContainerHeightConstraint: NSLayoutConstraint!
     
     var company: Company!
+    var managedObjectContext: NSManagedObjectContext!
+
     var peers = [Company]()
     var peersTableCellCount = 0
     
@@ -58,7 +69,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         if logAnalytics {
             let tracker = GAI.sharedInstance().defaultTracker
             tracker.set(kGAIScreenName, value: GoogleAnalytics.kCompanyOverviewScreenName)
-            tracker.send(GAIDictionaryBuilder.createAppView().build())
+            let build = GAIDictionaryBuilder.createAppView().build() as [NSObject : AnyObject]
+            tracker.send(build)
         }
         
         //peersTableView.dataSource = self
@@ -72,7 +84,8 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         // Dispose of any resources that can be recreated.
     }
     
-    override func viewWillLayoutSubviews() {
+    // Calculate tableview height based on screen height.
+    /*override func viewWillLayoutSubviews() {
         
         /*var maxCellsToDisplay = 0
         let rowHeight = peersTableView.rowHeight
@@ -110,6 +123,18 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
         
         if company != nil {
             
+            if company.city != "" {
+                if company.country != "" && company.state != "" {
+                    addressLabel.text = company.city.capitalizedString + ", " + company.state.uppercaseString + " " + company.country.capitalizedString
+                } else if company.country != "" {
+                    addressLabel.text = company.city.capitalizedString + " " + company.country.capitalizedString
+                } else {
+                    addressLabel.text = company.city.capitalizedString
+                }
+            } else {
+                addressLabel.text = ""
+            }
+            
             if company.companyDescription != "" {
                 /*descriptionTextView.scrollEnabled = false
                 descriptionTextView.textContainer.maximumNumberOfLines = 0
@@ -117,15 +142,58 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
                 descriptionTextView.text = company.companyDescription
             }
             
+            let revenueString = company.currencySymbol + company.revenueLabelString()
+            var revenueLabelAttributedString = NSMutableAttributedString(string: revenueString)
+            revenueLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, revenueLabelAttributedString.length))
+            revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, revenueLabelAttributedString.length))
+            revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(0, 1))
+            
+            if revenueString.hasSuffix("K") || revenueString.hasSuffix("M") || revenueString.hasSuffix("B") || revenueString.hasSuffix("T") {
+                revenueLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+            }
+            
+            revenueLabel.attributedText = revenueLabelAttributedString
+            
+            let profitMarginString = profitMarginLabelStringForCompany(company)
+            var profitMarginLabelAttributedString = NSMutableAttributedString(string: profitMarginString)
+            profitMarginLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, profitMarginLabelAttributedString.length))
+            profitMarginLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, profitMarginLabelAttributedString.length))
+            
+            if profitMarginString.hasSuffix("%") {
+                profitMarginLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(profitMarginLabelAttributedString.length - 1, 1))
+            }
+            
+            profitMarginLabel.attributedText = profitMarginLabelAttributedString
+            
             if company.employeeCount > 0 {
-                employeeCountLabel.text = company.employeeCount.doubleValue.pibStandardStyleValueString()
+                
+                let employeeCountString = company.employeeCount.doubleValue.pibStandardStyleValueString()
+                var employeeCountLabelAttributedString = NSMutableAttributedString(string: employeeCountString)
+                employeeCountLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, employeeCountLabelAttributedString.length))
+                employeeCountLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, employeeCountLabelAttributedString.length))
+                
+                if employeeCountString.hasSuffix("K") || employeeCountString.hasSuffix("M") || employeeCountString.hasSuffix("B") || employeeCountString.hasSuffix("T") {
+                    employeeCountLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(employeeCountLabelAttributedString.length - 1, 1))
+                }
+                
+                employeeCountLabel.attributedText = employeeCountLabelAttributedString
+                
             } else {
+                
                 employeeCountLabel.text = "-"
             }
             
-            revenueLabel.text = company.currencySymbol + company.revenueLabelString()
-            profitMarginLabel.text = profitMarginLabelStringForCompany(company)
-            marketCapLabel.text = "$" + marketCapLabelStringForCompany(company)
+            let marketCapString = company.currencySymbol + company.revenueLabelString()
+            var marketCapLabelAttributedString = NSMutableAttributedString(string: marketCapString)
+            marketCapLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, marketCapLabelAttributedString.length))
+            marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, marketCapLabelAttributedString.length))
+            marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(0, 1))
+            
+            if marketCapString.hasSuffix("K") || marketCapString.hasSuffix("M") || marketCapString.hasSuffix("B") || marketCapString.hasSuffix("T") {
+                marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+            }
+            
+            marketCapLabel.attributedText = marketCapLabelAttributedString
             
             /*println("\n\(company.name) Targets:")
             for target in company.targets {
@@ -200,16 +268,19 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
         if segue.identifier == MainStoryboard.SegueIdentifiers.kShowPeersTable {
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as PeersTableViewController
-            controller.peers = peers
+            
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! PeersTableViewController
+            controller.company = company
+            controller.managedObjectContext = managedObjectContext
+            controller.isEditMode = false
             controller.navigationItem.leftItemsSupplementBackButton = true
-        }
-        
-        if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
-            let controller = (segue.destinationViewController as UINavigationController).topViewController as DescriptionViewController
+            
+        } /*else if segue.identifier == MainStoryboard.SegueIdentifiers.kShowDescriptionView {
+            
+            let controller = (segue.destinationViewController as! UINavigationController).topViewController as! DescriptionViewController
             controller.company = company
             controller.navigationItem.leftItemsSupplementBackButton = true
-        }
+        }*/
     }
     
     
@@ -218,7 +289,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func ebitdaLabelStringForCompany(company: Company) -> String {
         
         var ebitdaArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "EBITDA" {
                 ebitdaArray.append(financialMetric)
@@ -237,7 +308,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func ebitdaMarginLabelStringForCompany(company: Company) -> String {
         
         var ebitdaMarginArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "EBITDA Margin" {
                 ebitdaMarginArray.append(financialMetric)
@@ -256,7 +327,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func profitMarginLabelStringForCompany(company: Company) -> String {
         
         var profitMarginArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Profit Margin" {
                 profitMarginArray.append(financialMetric)
@@ -275,7 +346,7 @@ class CompanyOverviewViewController: UIViewController, UITableViewDelegate, UITa
     func marketCapLabelStringForCompany(company: Company) -> String {
         
         var marketCapArray = Array<FinancialMetric>()
-        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as [FinancialMetric]
+        var financialMetrics: [FinancialMetric] = company.financialMetrics.allObjects as! [FinancialMetric]
         for (index, financialMetric) in enumerate(financialMetrics) {
             if financialMetric.type == "Market Cap" {
                 marketCapArray.append(financialMetric)

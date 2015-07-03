@@ -21,12 +21,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     var window: UIWindow?
     
     func customizeAppearance() {
-        UINavigationBar.appearance().barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
+        //UINavigationBar.appearance().barTintColor = UIColor(red: 227.0/255.0, green: 48.0/255.0, blue: 53.0/255.0, alpha: 1.0)
+        //UINavigationBar.appearance().setBackgroundImage(UIImage(contentsOfFile: "navBarBackground"), forBarMetrics: UIBarMetrics.Default)
+        
+        /*if let backgroundImage = UIImage(named: "navBarBackground") {
+            UINavigationBar.appearance().setBackgroundImage(backgroundImage.resizableImageWithCapInsets(UIEdgeInsetsMake(0, 0, 0, 0), resizingMode: .Stretch), forBarMetrics: .Default)
+        }*/
+        
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName: UIColor.whiteColor()]
         UIApplication.sharedApplication().statusBarStyle = UIStatusBarStyle.LightContent
     }
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        
         // Override point for customization after application launch.
         let defaults = NSUserDefaults.standardUserDefaults()
         if defaults.objectForKey("firstRun") == nil {
@@ -39,27 +46,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
             GAI.sharedInstance().dispatchInterval = 10
             GAI.sharedInstance().dryRun = false
             let tracker = GAI.sharedInstance().trackerWithTrackingId(GoogleAnalytics.kTrackerId)
-            let version = NSBundle.mainBundle().objectForInfoDictionaryKey(kCFBundleVersionKey) as String
+            let version = NSBundle.mainBundle().objectForInfoDictionaryKey(kCFBundleVersionKey as String) as! String
             tracker.set(kGAIAppVersion, value: version)
             tracker.allowIDFACollection = true
         }
         
         WebServicesManagerAPI.sharedInstance.managedObjectContext = managedObjectContext
         
-        let splitViewController = self.window!.rootViewController as UISplitViewController
-        splitViewController.view.tintColor = UIColor.whiteColor()
-        let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as UINavigationController
+        let splitViewController = self.window!.rootViewController as! UISplitViewController
+        let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
         navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem()
         splitViewController.delegate = self
         
-        let masterNavigationController = splitViewController.viewControllers[0] as UINavigationController
-        let controller = masterNavigationController.topViewController as MasterViewController
+        let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
+        let controller = masterNavigationController.topViewController as! MasterTableContainerViewController
         
         controller.managedObjectContext = managedObjectContext
         
         splitViewController.preferredDisplayMode = UISplitViewControllerDisplayMode.AllVisible
+        splitViewController.view.tintColor = UIColor.whiteColor()
         
         customizeAppearance()
+        
+        checkForCompaniesWithoutMostRecentRevenueValue()
         
         return true
     }
@@ -109,7 +118,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     lazy var applicationDocumentsDirectory: NSURL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "com.scoutly.PIB" in the application's documents Application Support directory.
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
-        return urls[urls.count-1] as NSURL
+        return urls[urls.count-1] as! NSURL
     }()
 
     lazy var managedObjectModel: NSManagedObjectModel = {
@@ -125,15 +134,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("PIB.sqlite")
         var error: NSError? = nil
         var failureReason = "There was an error creating or loading the application's saved data."
-        let migrationOptions = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
-        if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: migrationOptions, error: &error) == nil {
+        let options = [NSMigratePersistentStoresAutomaticallyOption: true, NSInferMappingModelAutomaticallyOption: true]
+        if coordinator!.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: options, error: &error) == nil {
             coordinator = nil
             // Report any error we got.
             let dict = NSMutableDictionary()
             dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
             dict[NSLocalizedFailureReasonErrorKey] = failureReason
             dict[NSUnderlyingErrorKey] = error
-            error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
+            error = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict as [NSObject : AnyObject])
             // Replace this with code to handle the error appropriately.
             // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             NSLog("Unresolved error \(error), \(error!.userInfo)")
@@ -165,6 +174,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
                 NSLog("Unresolved error \(error), \(error!.userInfo)")
                 abort()
             }
+        }
+    }
+    
+    
+    // MARK: - Maintenance
+    
+    func checkForCompaniesWithoutMostRecentRevenueValue() {
+        
+        let entityDescription = NSEntityDescription.entityForName("Company", inManagedObjectContext: managedObjectContext!)
+        let request = NSFetchRequest()
+        request.entity = entityDescription
+        
+        let predicate = NSPredicate(format: "mostRecentRevenue == 0")
+        request.predicate = predicate
+        var error: NSError? = nil
+        
+        let noMostRecentRevenueCompanies = managedObjectContext!.executeFetchRequest(request, error: &error) as! [Company]
+        println(noMostRecentRevenueCompanies.count)
+        
+        if error != nil {
+            println("Fetch request error: \(error?.description)")
+        }
+        
+        for company in noMostRecentRevenueCompanies {
+            
+            var totalRevenueArray = Array<FinancialMetric>()
+            var financialMetrics = company.financialMetrics.allObjects as! [FinancialMetric]
+            for (index, financialMetric) in enumerate(financialMetrics) {
+                if financialMetric.type == "Total Revenue" {
+                    totalRevenueArray.append(financialMetric)
+                }
+            }
+            
+            totalRevenueArray.sort({ $0.date.compare($1.date) == NSComparisonResult.OrderedAscending })
+            
+            if totalRevenueArray.count > 0 {
+                company.mostRecentRevenue = totalRevenueArray.last!.value
+            }
+        }
+        
+        var saveError: NSError? = nil
+        if !managedObjectContext!.save(&saveError) {
+            println("Save Error in setDataStatusForCompanyInManagedObjectContext(_:).")
+            // Replace this implementation with code to handle the error appropriately.
+            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+            //println("Unresolved error \(saveError), \(saveError.userInfo)")
+            abort()
         }
     }
 
