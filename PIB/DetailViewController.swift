@@ -108,10 +108,6 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         // Dispose of any resources that can be recreated.
     }
     
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
-    }
-    
     
     // MARK: - Subview Size Modification
     
@@ -455,4 +451,5 @@ class DetailViewController: UIViewController, UIPageViewControllerDelegate, Grap
         let controller = segue.sourceViewController as! DescriptionViewController
         controller.dismissViewControllerAnimated(true, completion: nil)
     }
+    
 }

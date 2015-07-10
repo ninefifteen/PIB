@@ -227,6 +227,7 @@ class PeersTableViewController: UITableViewController {
             company.removePeerCompany(peerCompany, inManagedObjectContext: managedObjectContext)
             peers.removeAtIndex(indexPath.row)
             tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            NSNotificationCenter.defaultCenter().postNotificationName("PeerCompanyAddRemoveNotification", object: nil)
         } else if editingStyle == .Insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
@@ -291,6 +292,7 @@ class PeersTableViewController: UITableViewController {
                     self.peers = self.company.peers.allObjects as! [Company]
                     self.peers.sort({ $0.name.lowercaseString < $1.name.lowercaseString })
                     self.tableView.reloadData()
+                    NSNotificationCenter.defaultCenter().postNotificationName("PeerCompanyAddRemoveNotification", object: nil)
                 }
                 
             } else {
@@ -326,6 +328,7 @@ class PeersTableViewController: UITableViewController {
                             }
                             
                             self.tableView.reloadData()
+                            NSNotificationCenter.defaultCenter().postNotificationName("PeerCompanyAddRemoveNotification", object: nil)
                         })
                     })
                 }

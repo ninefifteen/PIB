@@ -190,6 +190,8 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
         } else {
             
+            NSNotificationCenter.defaultCenter().addObserver(self, selector: "reloadGraphDueToPeerCompanyAddRemoveNotification:", name: "PeerCompanyAddRemoveNotification", object: nil)
+            
             descriptionView.hidden = true
             
             yAxisIntervals = showYAxis ? 4.0 : 8.0
@@ -395,6 +397,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             addRemoveAnnotationsAllPlots()
             
         }
+    }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -1800,6 +1806,105 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         newAnnotation.displacement = UIDevice.currentDevice().userInterfaceIdiom == .Pad ? CGPointMake(0.0, 25.0) : CGPointMake(0.0, 21.0)
         
         graph.plotAreaFrame.plotArea.addAnnotation(newAnnotation)
+    }
+    
+    
+    // MARK: - Peer Data Change
+    
+    func reloadGraphDueToPeerCompanyAddRemoveNotification(notification: NSNotification) {
+        updatePeerGraphData()
+        graph.reloadData()
+        plotLabelState = 0
+        addRemoveAnnotationsAllPlots()
+    }
+    
+    func updatePeerGraphData() {
+        
+        switch pageIdentifier {
+            
+        case "Growth":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+            
+        case "GrossMargin":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
+            request.predicate = grossMarginPredicate
+            grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
+            
+        case "SG&A":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
+            request.predicate = sgAndAPredicate
+            sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
+            
+        case "R&D":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
+            request.predicate = rAndDPredicate
+            rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
+            
+        default:
+            break
+        }
     }
     
     
