@@ -58,7 +58,7 @@ class PeersTableViewController: UITableViewController {
         
         if company.peers.count > 0 {
             peers = company.peers.allObjects as! [Company]
-            peers.sort({ $0.name < $1.name })
+            peers.sort({ $0.mostRecentRevenue > $1.mostRecentRevenue })
             tableView.reloadData()
         }
     }
