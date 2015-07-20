@@ -179,14 +179,14 @@ class CompanyOverviewViewController: UIViewController {
                 employeeCountLabel.text = "-"
             }
             
-            let marketCapString = company.currencySymbol + company.revenueLabelString()
+            let marketCapString = company.currencySymbol + marketCapLabelStringForCompany(company)
             var marketCapLabelAttributedString = NSMutableAttributedString(string: marketCapString)
             marketCapLabelAttributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.whiteColor(), range: NSMakeRange(0, marketCapLabelAttributedString.length))
             marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16.0), range: NSMakeRange(0, marketCapLabelAttributedString.length))
             marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(0, 1))
             
             if marketCapString.hasSuffix("K") || marketCapString.hasSuffix("M") || marketCapString.hasSuffix("B") || marketCapString.hasSuffix("T") {
-                marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(revenueLabelAttributedString.length - 1, 1))
+                marketCapLabelAttributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(12.0), range: NSMakeRange(marketCapLabelAttributedString.length - 1, 1))
             }
             
             marketCapLabel.attributedText = marketCapLabelAttributedString
