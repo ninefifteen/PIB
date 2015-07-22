@@ -921,7 +921,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         }*/
         
         if isDataForPeersRevenueGrowthArray {
-            
+                        
             let peersRevenueGrowthPlotColor = GraphContent.Color.kPeersRevenueGrowthPlotColor
             
             let peersRevenueGrowthPlotLineStyle = CPTMutableLineStyle()
@@ -1372,7 +1372,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         var peersAverageArray = Array<FinancialMetric>()
         
-        if targetFinancialMetrics.count > 0 {
+        if targetFinancialMetrics.count > 0 && company.peers.count > 0 {
             
             let type = targetFinancialMetrics[0].type
             
