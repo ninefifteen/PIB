@@ -91,7 +91,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     var company: Company!
     var managedObjectContext: NSManagedObjectContext!
     
-    let graph = CPTXYGraph()
+    var graph = CPTXYGraph()
     var pageIndex: Int = 0
     var pageIdentifier: String = ""
     
@@ -194,208 +194,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             descriptionView.hidden = true
             
-            yAxisIntervals = showYAxis ? 4.0 : 8.0
-            
-            configureTextStyles()
-            
-            switch pageIdentifier {
-                
-            case "Revenue":
-                
-                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-                let request = NSFetchRequest()
-                request.entity = entityDescription
-                
-                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-                request.sortDescriptors = [sortDescriptor]
-                
-                var error: NSError? = nil
-                
-                let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Total Revenue')", company)
-                request.predicate = totalRevenuePredicate
-                totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                //peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
-                
-                let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
-                request.predicate = profitMarginPredicate
-                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                //peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
-                
-                let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
-                request.predicate = revenueGrowthPredicate
-                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                //peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
-                
-                numberOfDataPointPerPlot = totalRevenueArray.count
-                
-                var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray + peersProfitMarginArray)
-                var minValue = minimumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
-                var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
-                
-                calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
-                
-                xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
-                
-                configureRevenueIncomeMarginGraph()
-                
-            case "Growth":
-                
-                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-                let request = NSFetchRequest()
-                request.entity = entityDescription
-                
-                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-                request.sortDescriptors = [sortDescriptor]
-                
-                var error: NSError? = nil
-                
-                let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
-                request.predicate = revenueGrowthPredicate
-                revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
-                
-                /*let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
-                request.predicate = profitMarginPredicate
-                profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
-                
-                if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }*/
-                
-                numberOfDataPointPerPlot = revenueGrowthArray.count
-                
-                var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
-                
-                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-                
-                xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
-                
-                configureRevenueGrowthProfitMarginGraph()
-                
-            case "GrossMargin":
-                
-                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-                let request = NSFetchRequest()
-                request.entity = entityDescription
-                
-                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-                request.sortDescriptors = [sortDescriptor]
-                
-                var error: NSError? = nil
-                
-                let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
-                request.predicate = grossMarginPredicate
-                grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
-                
-                var minValue = minimumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
-                var maxValue = maximumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
-                
-                numberOfDataPointPerPlot = grossMarginArray.count
-                
-                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-                
-                xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
-                
-                configureGrossMarginGraph()
-                
-            case "SG&A":
-                
-                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-                let request = NSFetchRequest()
-                request.entity = entityDescription
-                
-                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-                request.sortDescriptors = [sortDescriptor]
-                
-                var error: NSError? = nil
-                
-                let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
-                request.predicate = sgAndAPredicate
-                sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
-                
-                numberOfDataPointPerPlot = sgAndAArray.count
-                
-                var minValue = minimumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
-                var maxValue = maximumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
-                
-                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-                
-                xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
-                
-                configureSGAndAGraph()
-                
-            case "R&D":
-                
-                let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-                let request = NSFetchRequest()
-                request.entity = entityDescription
-                
-                let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-                request.sortDescriptors = [sortDescriptor]
-                
-                var error: NSError? = nil
-                
-                let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
-                request.predicate = rAndDPredicate
-                rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-                if error != nil {
-                    println("Fetch request error: \(error?.description)")
-                }
-                
-                peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
-                
-                numberOfDataPointPerPlot = rAndDArray.count
-                
-                var minValue = minimumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
-                var maxValue = maximumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
-                
-                let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
-                calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
-                
-                xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
-                
-                configureRAndDGraph()
-                
-            default:
-                break
-            }
-            
-            plotLabelState = 0  // All plots labeled.
-            addRemoveAnnotationsAllPlots()
-            
+            configureGraph()
         }
     }
     
@@ -410,6 +209,211 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     
     
     // MARK: - Graph Configure Methods
+    
+    func configureGraph() {
+        
+        yAxisIntervals = showYAxis ? 4.0 : 8.0
+        
+        configureTextStyles()
+        
+        switch pageIdentifier {
+            
+        case "Revenue":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let totalRevenuePredicate = NSPredicate(format: "(company == %@) AND (type == 'Total Revenue')", company)
+            request.predicate = totalRevenuePredicate
+            totalRevenueArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            //peersTotalRevenueArray = correspondingPeersAverageArrayForTargetFinancialMetrics(totalRevenueArray)
+            
+            let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+            request.predicate = profitMarginPredicate
+            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            //peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
+            
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            //peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+            
+            numberOfDataPointPerPlot = totalRevenueArray.count
+            
+            var minPercentageValue = minimumValueInFinancialMetricArray(profitMarginArray + peersProfitMarginArray)
+            var minValue = minimumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
+            var maxValue = maximumValueInFinancialMetricArray(totalRevenueArray + peersTotalRevenueArray)
+            
+            calculateRevenueChartYAndY2AxisForRevenueMaximumValue(maxValue, initialRevenueYAxisMinimum: 0.0, initialRevenueYAxisMaximum: maxValue, profitMarginMinimumPercentageValue: minPercentageValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(totalRevenueArray)
+            
+            configureRevenueIncomeMarginGraph()
+            
+        case "Growth":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
+            request.predicate = revenueGrowthPredicate
+            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
+            
+            /*let profitMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Profit Margin')", company)
+            request.predicate = profitMarginPredicate
+            profitMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as [FinancialMetric]
+            if error != nil {
+            println("Fetch request error: \(error?.description)")
+            }
+            
+            peersProfitMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(profitMarginArray)
+            
+            if profitMarginArray.count > 0 { profitMarginArray.removeAtIndex(0) }*/
+            
+            numberOfDataPointPerPlot = revenueGrowthArray.count
+            
+            var minValue = minimumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
+            var maxValue = maximumValueInFinancialMetricArray(revenueGrowthArray + peersRevenueGrowthArray + profitMarginArray + peersProfitMarginArray)
+            
+            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(revenueGrowthArray)
+            
+            configureRevenueGrowthProfitMarginGraph()
+            
+        case "GrossMargin":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
+            request.predicate = grossMarginPredicate
+            grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
+            
+            var minValue = minimumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
+            var maxValue = maximumValueInFinancialMetricArray(grossMarginArray + peersGrossMarginArray)
+            
+            numberOfDataPointPerPlot = grossMarginArray.count
+            
+            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(grossMarginArray)
+            
+            configureGrossMarginGraph()
+            
+        case "SG&A":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
+            request.predicate = sgAndAPredicate
+            sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
+            
+            numberOfDataPointPerPlot = sgAndAArray.count
+            
+            var minValue = minimumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
+            var maxValue = maximumValueInFinancialMetricArray(sgAndAArray + peersSgAndAArray)
+            
+            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(sgAndAArray)
+            
+            configureSGAndAGraph()
+            
+        case "R&D":
+            
+            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
+            let request = NSFetchRequest()
+            request.entity = entityDescription
+            
+            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
+            request.sortDescriptors = [sortDescriptor]
+            
+            var error: NSError? = nil
+            
+            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
+            request.predicate = rAndDPredicate
+            rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
+            if error != nil {
+                println("Fetch request error: \(error?.description)")
+            }
+            
+            peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
+            
+            numberOfDataPointPerPlot = rAndDArray.count
+            
+            var minValue = minimumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
+            var maxValue = maximumValueInFinancialMetricArray(rAndDArray + peersRAndDArray)
+            
+            let initialYAxisMinimum = minValue < 0.0 ? minValue : 0.0
+            calculateYAxisMinMaxAndIntervalForDataMinimumValue(minValue, dataMaximumValue: maxValue, initialYAxisMinimum: initialYAxisMinimum, initialYAxisMaximum: maxValue)
+            
+            xAxisLabels = xAxisLabelsForFinancialMetrics(rAndDArray)
+            
+            configureRAndDGraph()
+            
+        default:
+            break
+        }
+        
+        plotLabelState = 0  // All plots labeled.
+        addRemoveAnnotationsAllPlots()
+    }
     
     func configureTextStyles() {
         
@@ -543,6 +547,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels as Set<NSObject>
         
         // Create y-axis custom tick locations.
+        yAxisCustomTickLocations.removeAll(keepCapacity: true)
         for index in 0...Int(yAxisIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
@@ -569,6 +574,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Custom Y Axis Labels
         if showYAxis {
+            yAxisLabels.removeAll(keepCapacity: true)
             for (index, value) in enumerate(yAxisCustomTickLocations) {
                 var label = Double(value).pibGraphYAxisStyleValueString()
                 yAxisLabels.append(label)
@@ -629,6 +635,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         x.axisLabels = xAxisCustomLabels as Set<NSObject>
         
         // Create y-axis custom tick locations.
+        yAxisCustomTickLocations.removeAll(keepCapacity: true)
         for index in 0...Int(yAxisIntervals) {
             let tickLocation: Double = yAxisMin + (Double(index) * yAxisInterval)
             yAxisCustomTickLocations.append(tickLocation)
@@ -655,6 +662,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         
         // Custom Y Axis Labels
         if showYAxis {
+            yAxisLabels.removeAll(keepCapacity: true)
             for (index, value) in enumerate(yAxisCustomTickLocations) {
                 var label = Double(value).pibGraphYAxisStyleValueString() + "%"
                 yAxisLabels.append(label)
@@ -710,6 +718,7 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
             
             // Custom Labels for 2nd Y Axis.
             if showYAxis {
+                y2AxisLabels.removeAll(keepCapacity: true)
                 for (index, value) in enumerate(y2AxisCustomTickLocations) {
                     var label: String = (NSString(format: "%.0f", y2AxisCustomTickLocations[index]) as String) + "%"
                     y2AxisLabels.append(label)
@@ -1332,11 +1341,13 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateFormat = "MMM yyyy"
         
+        xAxisLabels.removeAll(keepCapacity: true)
         for (index, financialMetric) in enumerate(financialMetrics) {
             let label: String = dateFormatter.stringFromDate(financialMetric.date)
             xAxisLabels.append(label)
         }
         
+        xAxisCustomTickLocations.removeAll(keepCapacity: true)
         for index in 0...(numberOfDataPointPerPlot - 1) {
             xAxisCustomTickLocations.append(Double(index) + 0.5)
         }
@@ -1812,99 +1823,10 @@ class GraphContentViewController: UIViewController, CPTPlotDataSource, CPTBarPlo
     // MARK: - Peer Data Change
     
     func reloadGraphDueToPeerCompanyAddRemoveNotification(notification: NSNotification) {
-        updatePeerGraphData()
-        graph.reloadData()
-        plotLabelState = 0
-        addRemoveAnnotationsAllPlots()
-    }
-    
-    func updatePeerGraphData() {
-        
-        switch pageIdentifier {
-            
-        case "Growth":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let revenueGrowthPredicate = NSPredicate(format: "(company == %@) AND (type == 'Revenue Growth')", company)
-            request.predicate = revenueGrowthPredicate
-            revenueGrowthArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            peersRevenueGrowthArray = correspondingPeersAverageArrayForTargetFinancialMetrics(revenueGrowthArray)
-            
-        case "GrossMargin":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let grossMarginPredicate = NSPredicate(format: "(company == %@) AND (type == 'Gross Margin')", company)
-            request.predicate = grossMarginPredicate
-            grossMarginArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            peersGrossMarginArray = correspondingPeersAverageArrayForTargetFinancialMetrics(grossMarginArray)
-            
-        case "SG&A":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let sgAndAPredicate = NSPredicate(format: "(company == %@) AND (type == 'SG&A As Percent Of Revenue')", company)
-            request.predicate = sgAndAPredicate
-            sgAndAArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            peersSgAndAArray = correspondingPeersAverageArrayForTargetFinancialMetrics(sgAndAArray)
-            
-        case "R&D":
-            
-            let entityDescription = NSEntityDescription.entityForName("FinancialMetric", inManagedObjectContext: managedObjectContext)
-            let request = NSFetchRequest()
-            request.entity = entityDescription
-            
-            let sortDescriptor = NSSortDescriptor(key: "date", ascending: true)
-            request.sortDescriptors = [sortDescriptor]
-            
-            var error: NSError? = nil
-            
-            let rAndDPredicate = NSPredicate(format: "(company == %@) AND (type == 'R&D As Percent Of Revenue')", company)
-            request.predicate = rAndDPredicate
-            rAndDArray = managedObjectContext.executeFetchRequest(request, error: &error) as! [FinancialMetric]
-            if error != nil {
-                println("Fetch request error: \(error?.description)")
-            }
-            
-            peersRAndDArray = correspondingPeersAverageArrayForTargetFinancialMetrics(rAndDArray)
-            
-        default:
-            break
-        }
+        graph = nil
+        plots.removeAll(keepCapacity: true)
+        graph = CPTXYGraph()
+        configureGraph()
     }
     
     
