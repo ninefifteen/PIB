@@ -546,7 +546,7 @@ class Company: NSManagedObject {
         companyPeers.removeObject(peerCompany)
         peers = companyPeers.copy() as! NSSet
         
-        if peerCompany.targets.count < 1 {
+        if !peerCompany.isTargetCompany.boolValue && peerCompany.targets.count < 1 {
             managedObjectContext.deleteObject(peerCompany)
         }
         
